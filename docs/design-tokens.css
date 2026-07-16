@@ -42,6 +42,13 @@
   --move-line:    transform .38s ease, opacity .25s ease;   /* line highlight */
   --move-focus:   opacity .25s, filter .25s;                /* primitive focus */
   --t-min: 150ms;  --t-max: 900ms;  --t-autoplay: 1600ms;
+  /* PM6 transition groups (timing only — no lesson overrides) */
+  --t-enter: 200ms;
+  --t-bind: 450ms;
+  --t-move: 550ms;
+  --t-transform: 450ms;
+  --t-return: 550ms;
+  --t-fade: 300ms;
 
   /* ── LAYOUT ──────────────────────────────────────────────── */
   --grid-unit: 28px;          /* background grid AND spacing rhythm */

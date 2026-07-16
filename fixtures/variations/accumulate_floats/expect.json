@@ -1,0 +1,8 @@
+{
+  "pattern": "ACCUMULATE",
+  "stateBindingCount": 1,
+  "loopCount": 1,
+  "branchCount": 0,
+  "mutationCount": 0,
+  "returnsCount": 1
+}

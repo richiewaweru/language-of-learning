@@ -1,6 +1,7 @@
 {
   "id": "scene-accumulate",
   "graphRef": "fixtures/accumulate",
+  "motionVersion": "0.2",
   "layout": [
     {
       "id": "bind-L2C4",
@@ -59,6 +60,116 @@
       "height": 28
     }
   ],
+  "edges": [
+    {
+      "id": "edge-fn-L1C0-bind-L2C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L2C4",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 182,
+        "x2": 140,
+        "y2": 126
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-loop-L3C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "loop-L3C4",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 182,
+        "x2": 238,
+        "y2": 224
+      }
+    },
+    {
+      "id": "edge-loop-L3C4-bind-L1C20-iterates",
+      "fromNode": "loop-L3C4",
+      "toNode": "bind-L1C20",
+      "kind": "repeat",
+      "path": {
+        "x1": 238,
+        "y1": 224,
+        "x2": 112,
+        "y2": 70
+      }
+    },
+    {
+      "id": "edge-loop-L3C4-op-L4C16-contains",
+      "fromNode": "loop-L3C4",
+      "toNode": "op-L4C16",
+      "kind": "control",
+      "path": {
+        "x1": 238,
+        "y1": 224,
+        "x2": 168,
+        "y2": 252
+      }
+    },
+    {
+      "id": "edge-op-L4C16-bind-L2C4-reads",
+      "fromNode": "op-L4C16",
+      "toNode": "bind-L2C4",
+      "kind": "data",
+      "path": {
+        "x1": 168,
+        "y1": 252,
+        "x2": 140,
+        "y2": 126
+      }
+    },
+    {
+      "id": "edge-op-L4C16-bind-L3C8-reads",
+      "fromNode": "op-L4C16",
+      "toNode": "bind-L3C8",
+      "kind": "data",
+      "path": {
+        "x1": 168,
+        "y1": 252,
+        "x2": 238,
+        "y2": 70
+      }
+    },
+    {
+      "id": "edge-op-L4C16-bind-L2C4-writes",
+      "fromNode": "op-L4C16",
+      "toNode": "bind-L2C4",
+      "kind": "data",
+      "path": {
+        "x1": 168,
+        "y1": 252,
+        "x2": 140,
+        "y2": 126
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-ret-L5C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "ret-L5C4",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 182,
+        "x2": 126,
+        "y2": 308
+      }
+    },
+    {
+      "id": "edge-ret-L5C4-bind-L2C4-returns",
+      "fromNode": "ret-L5C4",
+      "toNode": "bind-L2C4",
+      "kind": "return",
+      "path": {
+        "x1": 126,
+        "y1": 308,
+        "x2": 140,
+        "y2": 126
+      }
+    }
+  ],
   "steps": [
     {
       "index": 0,
@@ -66,7 +177,18 @@
         "fn-L1C0"
       ],
       "line": 1,
-      "actions": [],
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[3, 5, 2]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
       "caption": {
         "key": "call.enter",
         "params": {
@@ -85,7 +207,8 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "—",
-          "newRepr": "0"
+          "newRepr": "0",
+          "inputTokenId": "tok-S1-state_init-0"
         }
       ],
       "caption": {
@@ -106,7 +229,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 0
+          "itemIndex": 0,
+          "itemRepr": "3",
+          "tokenId": "tok-S2-loop_advance-0",
+          "collection": "bind-L1C20"
         }
       ],
       "caption": {
@@ -127,7 +253,8 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "0",
-          "newRepr": "3"
+          "newRepr": "3",
+          "inputTokenId": "tok-S3-state_change-0"
         }
       ],
       "caption": {
@@ -149,7 +276,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 1
+          "itemIndex": 1,
+          "itemRepr": "5",
+          "tokenId": "tok-S4-loop_advance-0",
+          "collection": "bind-L1C20"
         }
       ],
       "caption": {
@@ -170,7 +300,8 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "3",
-          "newRepr": "8"
+          "newRepr": "8",
+          "inputTokenId": "tok-S5-state_change-0"
         }
       ],
       "caption": {
@@ -192,7 +323,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 2
+          "itemIndex": 2,
+          "itemRepr": "2",
+          "tokenId": "tok-S6-loop_advance-0",
+          "collection": "bind-L1C20"
         }
       ],
       "caption": {
@@ -213,7 +347,8 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "8",
-          "newRepr": "10"
+          "newRepr": "10",
+          "inputTokenId": "tok-S7-state_change-0"
         }
       ],
       "caption": {
@@ -235,7 +370,10 @@
         {
           "type": "exit_return",
           "repr": "10",
-          "port": "ret-L5C4"
+          "port": "ret-L5C4",
+          "tokenId": "tok-S8-return_exit-0",
+          "returnNode": "ret-L5C4",
+          "functionNode": "fn-L1C0"
         }
       ],
       "caption": {

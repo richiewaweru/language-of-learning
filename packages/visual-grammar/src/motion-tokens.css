@@ -1,0 +1,121 @@
+/* ═══════════════════════════════════════════════════════════════
+   MOTION TOKENS — runtime motion layer (P-motion)
+   The runtime owns 100% of timing/easing (SC1 / MC3). These classes
+   re-use the timing law from docs/design-tokens.css §MOTION and never
+   introduce a new hue (constitution A4) — status = weight/opacity of
+   the element's own semantic hue only.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Fallback timing tokens — real values come from design-tokens.css; these keep
+   the motion layer self-contained if the token sheet is not present. */
+:root {
+  --move-token: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  --move-line: transform 0.38s ease, opacity 0.25s ease;
+  --move-focus: opacity 0.25s, filter 0.25s;
+  --t-min: 150ms;
+  --t-max: 900ms;
+  --t-autoplay: 1600ms;
+  --dim-opacity: 0.35;
+  --radius-pill: 999px;
+  --border-w: 1.5px;
+  --data-blue: #3757d5;
+  --paper: #fffdf8;
+}
+
+/* Runtime value token — a rounded pill carrying one value identity (M1). */
+.vg-runtime-token {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+  min-width: 1.75rem;
+  height: 1.5rem;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-pill);
+  border: var(--border-w) solid var(--data-blue);
+  background: color-mix(in srgb, var(--data-blue) 14%, var(--paper));
+  color: var(--data-blue);
+  font: 600 12px/1.2 var(--font-mono, ui-monospace, monospace);
+  white-space: nowrap;
+  pointer-events: none;
+  transition: var(--move-token);
+  z-index: 3;
+}
+
+/* Status = same hue, changed weight (constitution C2/C3). Never a new color. */
+.vg-runtime-token[data-status='idle'] {
+  opacity: var(--dim-opacity);
+}
+
+.vg-runtime-token[data-status='entering'],
+.vg-runtime-token[data-status='moving'] {
+  opacity: 1;
+  transition: var(--move-token);
+}
+
+.vg-runtime-token[data-status='bound'] {
+  opacity: 1;
+  transition: var(--move-token);
+}
+
+.vg-runtime-token[data-status='consumed'] {
+  opacity: var(--dim-opacity);
+}
+
+.vg-runtime-token[data-status='returned'] {
+  opacity: 1;
+  border-color: var(--exit-green, #2f7f58);
+  background: color-mix(in srgb, var(--exit-green, #2f7f58) 14%, var(--paper));
+  color: var(--exit-green, #2f7f58);
+}
+
+/* Ghost = translucent previous state (M2/M4). */
+.vg-runtime-token[data-status='ghost'] {
+  opacity: var(--dim-opacity);
+  border-style: dashed;
+  text-decoration: line-through;
+}
+
+/* Motion path highlight (M3): edge lit while a value travels it. */
+.vg-motion-path {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+}
+
+.vg-motion-edge {
+  fill: none;
+  stroke: var(--flow-teal, #0e8a8a);
+  stroke-width: var(--border-w);
+  opacity: var(--dim-opacity);
+  transition: var(--move-line);
+}
+
+.vg-motion-edge[data-active='true'] {
+  stroke: var(--data-blue);
+  opacity: 1;
+  stroke-width: 2.5px;
+}
+
+.vg-motion-edge[data-faded='true'] {
+  opacity: calc(var(--dim-opacity) * 0.6);
+}
+
+/* Reduced motion: no travel — tokens/edges snap (M10). */
+@media (prefers-reduced-motion: reduce) {
+  .vg-runtime-token,
+  .vg-motion-edge {
+    transition: none !important;
+  }
+}
+
+.vg-canvas.reduced .vg-runtime-token,
+.vg-canvas.reduced .vg-motion-edge,
+.slice.reduced .vg-runtime-token,
+.slice.reduced .vg-motion-edge {
+  transition: none !important;
+}

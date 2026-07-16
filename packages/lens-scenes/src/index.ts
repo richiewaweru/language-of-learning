@@ -7,6 +7,7 @@ export {
 } from './scene-builder.js';
 export { resolveSelection, pickPrimary } from './selection.js';
 export { buildScene } from './build-scene.js';
+export { deriveMotionState, emptyMotionState, reduceSceneActions } from './motion-state.js';
 export { buildTransferCheck, gradeTransferCheck } from './transfer.js';
 export type { TransferCheck } from './transfer.js';
 export type {

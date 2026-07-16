@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Scene, SceneAction, Selection } from '@lol/lens-contracts';
-  import type { SemanticGraph } from '@lol/lens-scenes';
-  import { renderCaption } from '@lol/lens-scenes';
+  import type { SemanticGraph, Trace } from '@lol/lens-scenes';
+  import { renderCaption, deriveMotionState } from '@lol/lens-scenes';
   import ValueToken from './ValueToken.svelte';
   import BindingTag from './BindingTag.svelte';
   import CollectionFrame from './CollectionFrame.svelte';
@@ -9,11 +9,17 @@
   import OperationNode from './OperationNode.svelte';
   import LoopFrame from './LoopFrame.svelte';
   import BranchFork from './BranchFork.svelte';
+  import BranchRoute from './BranchRoute.svelte';
   import ReturnPort from './ReturnPort.svelte';
   import StateCell from './StateCell.svelte';
+  import StateTransition from './StateTransition.svelte';
   import EffectPulse from './EffectPulse.svelte';
   import UnsupportedRegion from './UnsupportedRegion.svelte';
   import TraceControls from './TraceControls.svelte';
+  import RuntimeTokenLayer from './RuntimeTokenLayer.svelte';
+  import MotionPath from './MotionPath.svelte';
+  import ReturnExit from './ReturnExit.svelte';
+  import { cancelAllTransitions } from './motion-controller.js';
   import { loopItemCountFromTrace, returnReprFromScene } from './trace-display.js';
 
   type TraceLike = {
@@ -107,6 +113,75 @@
     return ghosts;
   });
 
+  // PM2: MotionState is a pure derivation of (scene, graph, trace, stepIndex).
+  // It never becomes a second source of truth — Selection.stepIndex still leads.
+  const motion = $derived(
+    deriveMotionState(scene, graph, trace as unknown as Trace, stepIndex),
+  );
+
+  const layoutById = $derived(new Map(scene.layout.map((n) => [n.id, n])));
+
+  // PM3: labelled old→new morph near the state cell during the change beat.
+  const stateTransitions = $derived.by(() => {
+    const out: Array<{
+      id: string;
+      x: number;
+      y: number;
+      width: number;
+      oldRepr: string;
+      newRepr: string;
+    }> = [];
+    for (const a of currentStep?.actions ?? []) {
+      if (a.type !== 'change_state') continue;
+      const ln = layoutById.get(a.cell);
+      if (!ln) continue;
+      out.push({ id: a.cell, x: ln.x, y: ln.y, width: ln.width, oldRepr: a.oldRepr, newRepr: a.newRepr });
+    }
+    return out;
+  });
+
+  // PM4: route chips per branch node with a recorded result (dim the untaken).
+  const branchRoutes = $derived.by(() => {
+    const out: Array<{
+      id: string;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      result: boolean;
+    }> = [];
+    for (const ln of scene.layout) {
+      const result = motion.branchResults[ln.id];
+      if (result === undefined) continue;
+      out.push({ id: ln.id, x: ln.x, y: ln.y, width: ln.width, height: ln.height, result });
+    }
+    return out;
+  });
+
+  // PM5: return token at the port + a label outside the function boundary.
+  const returnExit = $derived.by(() => {
+    if (motion.returnValue === undefined) return null;
+    const portNode = scene.layout.find((n) => n.kind === 'return');
+    if (!portNode) return null;
+    const boundary = scene.layout.find((n) => n.kind === 'function');
+    return {
+      port: { x: portNode.x, y: portNode.y, width: portNode.width, height: portNode.height },
+      boundary: boundary
+        ? { x: boundary.x, y: boundary.y, width: boundary.width, height: boundary.height }
+        : undefined,
+      returnValue: motion.returnValue,
+    };
+  });
+
+  let canvasEl = $state<HTMLDivElement | null>(null);
+
+  // On selection change (scrub/jump/back), cancel in-flight CSS transitions so
+  // tokens don't slide from a stale position. Render-only; never mutates state.
+  $effect(() => {
+    void stepIndex;
+    if (canvasEl) cancelAllTransitions(canvasEl);
+  });
+
   function nodeById(id: string) {
     return graph.nodes.find((n) => n.id === id);
   }
@@ -165,9 +240,54 @@
       line: idx >= 0 ? trace.steps[idx]?.line : selection.line,
     });
   }
+
+  /** PM6: keyboard controls (ArrowLeft/Right, Home, Space, Escape). */
+  function onKeydown(e: KeyboardEvent) {
+    const tag = (e.target as HTMLElement | null)?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    switch (e.key) {
+      case 'ArrowRight':
+        e.preventDefault();
+        step();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        back();
+        break;
+      case 'Home':
+        e.preventDefault();
+        reset();
+        break;
+      case ' ':
+      case 'Spacebar':
+        e.preventDefault();
+        if (playing) stopPlay();
+        else play();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        stopPlay();
+        break;
+      default:
+        break;
+    }
+  }
+
+  const liveSummary = $derived.by(() => {
+    const caption = currentStep ? renderCaption(currentStep.caption) : '';
+    const ret = motion.returnValue ? ` Result ${motion.returnValue}.` : '';
+    return `Step ${stepIndex} of ${maxStep}. ${caption}.${ret}`;
+  });
 </script>
 
-<div class="slice" class:reduced={reducedMotion}>
+<div
+  class="slice"
+  class:reduced={reducedMotion}
+  tabindex="0"
+  role="region"
+  aria-label="Scene player"
+  onkeydown={onKeydown}
+>
   <TraceControls
     {stepIndex}
     {maxStep}
@@ -177,14 +297,33 @@
     onplay={play}
     onpause={stopPlay}
     onreset={reset}
-    onscrub={go}
+    onscrub={(index) => {
+      stopPlay();
+      go(index);
+    }}
   />
+
+  <p class="vg-live sr-only" aria-live="polite" aria-atomic="true">{liveSummary}</p>
 
   <p class="vg-caption" data-testid="caption">
     {currentStep ? renderCaption(currentStep.caption) : ''}
   </p>
 
-  <div class="vg-canvas" style:width="{width}px" style:height="{height}px" data-testid="scene-canvas">
+  <div
+    class="vg-canvas"
+    class:reduced={reducedMotion}
+    bind:this={canvasEl}
+    style:width="{width}px"
+    style:height="{height}px"
+    data-testid="scene-canvas"
+  >
+    <MotionPath
+      edges={scene.edges}
+      activePaths={motion.activePaths}
+      fadedPaths={motion.fadedPaths}
+      {width}
+      {height}
+    />
     {#each scene.layout as layoutNode (layoutNode.id)}
       {@const node = nodeById(layoutNode.id)}
       {@const focused = focusIds.has(layoutNode.id)}
@@ -318,6 +457,39 @@
         />
       {/if}
     {/each}
+
+    {#each branchRoutes as route (route.id)}
+      <BranchRoute
+        x={route.x}
+        y={route.y}
+        width={route.width}
+        height={route.height}
+        result={route.result}
+        {reducedMotion}
+      />
+    {/each}
+
+    <RuntimeTokenLayer {motion} layout={scene.layout} edges={scene.edges} {reducedMotion} />
+
+    {#each stateTransitions as t (t.id)}
+      <StateTransition
+        x={t.x}
+        y={t.y}
+        width={t.width}
+        oldRepr={t.oldRepr}
+        newRepr={t.newRepr}
+        {reducedMotion}
+      />
+    {/each}
+
+    {#if returnExit}
+      <ReturnExit
+        port={returnExit.port}
+        boundary={returnExit.boundary}
+        returnValue={returnExit.returnValue}
+        {reducedMotion}
+      />
+    {/if}
   </div>
 
   <pre class="bindings" data-testid="bindings">{JSON.stringify(bindings, null, 2)}</pre>
@@ -338,5 +510,18 @@
     font: 12px/1.4 var(--font-mono);
     max-height: 160px;
     overflow: auto;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .slice:focus {
+    outline: 2px solid var(--work-purple);
+    outline-offset: 2px;
   }
 </style>

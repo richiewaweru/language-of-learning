@@ -169,3 +169,66 @@ Saves now carry `engineVersion: "0.1.1"` and `packages/analyzer-python` is bumpe
 
 Recreated function-component-poc.html — original unavailable. PM0 contract phase.
 
+## Phase PM0–PM7 summary (gate-PM7, 2026-07-16)
+
+Action-driven semantic motion landed: contracts (`motionVersion` 0.2), deterministic `deriveMotionState`, token/path/state/branch/return layers in visual-grammar, keyboard + reduced-motion a11y, PM7 SVG regression assets, learner protocol doc. Analyzer still does not emit `effect_fire` for print in the v0.1 subset — return exit is implemented; effect contrast awaits an effect-emitting construct.
+
+### DECISION: RuntimeTokenStatus enum from PM0 contract (PM1)
+
+Brief draft used labels like `entering`/`stored`; committed Zod enum is `idle|moving|bound|consumed|returned|ghost`. Reducer maps onto the enum (document precedence).
+
+
+## Phase PM1 summary (implemented, pending judge, 2026-07-16)
+
+`deriveMotionState(scene, graph, trace, stepIndex)` is a deterministic pure fold of
+`scene.steps[].actions` over `0..stepIndex` (MC2) with the trace binding snapshot
+overlaid for that step (T1). Split into `emptyMotionState` + `reduceSceneActions`
+(pure, clones its input) + `deriveMotionState`. The action-builder now emits richer
+motion actions (spawn/bind/tokenIds) and `buildScene` stamps `motionVersion: '0.2'`
+plus straight-line layout edges from graph relations. Goldens regenerated from the
+builder (never hand-tuned); `content/scenes/*` refreshed via `content:rebuild`.
+
+### DECISION: MotionState token status mapping (PM1)
+
+`RuntimeTokenState.status` is the closed six-value enum fixed by the motion contract
+in PM0 (`idle | moving | bound | consumed | returned | ghost`). The P-motion plan's
+action-level semantic labels (entering / stored / returning / complete) are **not**
+enum members, so — per 00-authority (smallest compliant choice when the plan and the
+committed schema disagree, schema wins) — they map onto the enum:
+spawn_value→`idle`, move_value→`moving`, bind_value→`bound`, advance_item→`moving`,
+append_value→`bound` (stored), change_state new→`bound` + old→`ghost`,
+exit_return→`returned`. No enum was invented/expanded. Status is descriptive only;
+the renderer (PM4) derives animation from position deltas between two MotionStates.
+
+### DECISION: ghosts is a string[] of ghost token ids (PM1)
+
+The PM1 brief sketched `ghosts[cell]=oldRepr` (a record), but the committed
+`MotionStateSchema.ghosts` (PM0) is `z.array(z.string())`. Schema wins: `change_state`
+creates a ghost token `${cell}::ghost` (status `ghost`, repr = oldRepr) and pushes its
+id into `ghosts` (deduped). Bindings are authoritative from the trace snapshot, so a
+name→repr map is unnecessary in `ghosts`.
+
+### DECISION: bindings overlaid (replaced) from the trace snapshot (PM1)
+
+`deriveMotionState` sets `state.bindings = { ...trace.steps[stepIndex].bindings }`
+(name-keyed), so scrubbing to any step yields bindings byte-equal to that trace step
+(T1 back-safe). Collections are then parsed from the trace binding of each
+`collection` node (`"[3, 5]"` → `["3","5"]`) keyed by collection node id.
+
+### DECISION: layout edges from relations, straight-line, motionVersion 0.2 (PM1)
+
+`buildScene` emits `LayoutEdge[]` from graph relations
+(contains→control, reads/writes/mutates→data, iterates→repeat, returns→return) with
+`path {x1,y1,x2,y2}` from layout node centres (LE1 — no hand coords). PM3 will refine
+anchors/curves; PM1 only needs a non-empty, deterministic edge set.
+
+### FIX: golden fixture loader excludes motion-actions (pre-existing PM0 breakage)
+
+`fixtures/motion-actions/` (committed in PM0, 97e0b9d) is a contract-level action-schema
+fixture set, not a pattern fixture, but it sat in the `fixtures/` root and broke
+`tests/fixtures/fixture-loader.test.ts` (which expects exactly the six pattern dirs).
+`test:fixtures` was already red at HEAD before PM1. Added `motion-actions` to the same
+exclusion list as `hostile/negative/variations`; the "exactly six pattern fixtures with
+required golden files" guarantee is preserved (not weakened). Canonical motion-action
+fixtures used by tests live under `packages/lens-contracts/fixtures/motion-actions/`.
+

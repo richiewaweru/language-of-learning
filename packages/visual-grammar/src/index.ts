@@ -11,3 +11,15 @@ export { default as EffectPulse } from './EffectPulse.svelte';
 export { default as UnsupportedRegion } from './UnsupportedRegion.svelte';
 export { default as TraceControls } from './TraceControls.svelte';
 export { default as ScenePlayer } from './ScenePlayer.svelte';
+export { default as RuntimeTokenLayer } from './RuntimeTokenLayer.svelte';
+export { default as MotionPath } from './MotionPath.svelte';
+export { default as StateTransition } from './StateTransition.svelte';
+export { default as BranchRoute } from './BranchRoute.svelte';
+export { default as ReturnExit } from './ReturnExit.svelte';
+export {
+  msFromCssDuration,
+  prefersReducedMotion,
+  applyDuration,
+  cancelTransition,
+  cancelAllTransitions,
+} from './motion-controller.js';

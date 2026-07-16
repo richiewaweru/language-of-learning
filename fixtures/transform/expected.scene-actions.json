@@ -2,7 +2,18 @@
   "steps": [
     {
       "index": 0,
-      "actions": []
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[1, 2, 3]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ]
     },
     {
       "index": 1,
@@ -10,7 +21,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 0
+          "itemIndex": 0,
+          "itemRepr": "1",
+          "tokenId": "tok-S1-loop_advance-0",
+          "collection": "bind-L1C15"
         }
       ]
     },
@@ -21,7 +35,15 @@
           "type": "move_value",
           "repr": "2",
           "fromNode": "bind-L3C8",
-          "toNode": "coll-L2C4"
+          "toNode": "coll-L2C4",
+          "tokenId": "tok-S2-collection_append-0"
+        },
+        {
+          "type": "append_value",
+          "collection": "coll-L2C4",
+          "valueRepr": "2",
+          "tokenId": "tok-S2-collection_append-0",
+          "newIndex": 0
         }
       ]
     },
@@ -31,7 +53,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 1
+          "itemIndex": 1,
+          "itemRepr": "2",
+          "tokenId": "tok-S3-loop_advance-0",
+          "collection": "bind-L1C15"
         }
       ]
     },
@@ -42,7 +67,15 @@
           "type": "move_value",
           "repr": "4",
           "fromNode": "bind-L3C8",
-          "toNode": "coll-L2C4"
+          "toNode": "coll-L2C4",
+          "tokenId": "tok-S4-collection_append-0"
+        },
+        {
+          "type": "append_value",
+          "collection": "coll-L2C4",
+          "valueRepr": "4",
+          "tokenId": "tok-S4-collection_append-0",
+          "newIndex": 1
         }
       ]
     },
@@ -52,7 +85,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 2
+          "itemIndex": 2,
+          "itemRepr": "3",
+          "tokenId": "tok-S5-loop_advance-0",
+          "collection": "bind-L1C15"
         }
       ]
     },
@@ -63,7 +99,15 @@
           "type": "move_value",
           "repr": "6",
           "fromNode": "bind-L3C8",
-          "toNode": "coll-L2C4"
+          "toNode": "coll-L2C4",
+          "tokenId": "tok-S6-collection_append-0"
+        },
+        {
+          "type": "append_value",
+          "collection": "coll-L2C4",
+          "valueRepr": "6",
+          "tokenId": "tok-S6-collection_append-0",
+          "newIndex": 2
         }
       ]
     },
@@ -73,7 +117,10 @@
         {
           "type": "exit_return",
           "repr": "[2, 4, 6]",
-          "port": "ret-L5C4"
+          "port": "ret-L5C4",
+          "tokenId": "tok-S7-return_exit-0",
+          "returnNode": "ret-L5C4",
+          "functionNode": "fn-L1C0"
         }
       ]
     }

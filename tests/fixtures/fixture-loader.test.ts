@@ -23,7 +23,8 @@ describe('golden fixture loader', () => {
           d.isDirectory() &&
           d.name !== 'hostile' &&
           d.name !== 'negative' &&
-          d.name !== 'variations',
+          d.name !== 'variations' &&
+          d.name !== 'motion-actions',
       )
       .map((d) => d.name)
       .sort();

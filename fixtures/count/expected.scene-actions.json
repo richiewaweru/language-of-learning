@@ -2,7 +2,18 @@
   "steps": [
     {
       "index": 0,
-      "actions": []
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[-1, 2, 0, 3]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ]
     },
     {
       "index": 1,
@@ -11,7 +22,8 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "—",
-          "newRepr": "0"
+          "newRepr": "0",
+          "inputTokenId": "tok-S1-state_init-0"
         }
       ]
     },
@@ -21,7 +33,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 0
+          "itemIndex": 0,
+          "itemRepr": "-1",
+          "tokenId": "tok-S2-loop_advance-0",
+          "collection": "bind-L1C19"
         }
       ]
     },
@@ -41,7 +56,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 1
+          "itemIndex": 1,
+          "itemRepr": "2",
+          "tokenId": "tok-S4-loop_advance-0",
+          "collection": "bind-L1C19"
         }
       ]
     },
@@ -62,7 +80,8 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "0",
-          "newRepr": "1"
+          "newRepr": "1",
+          "inputTokenId": "tok-S6-state_change-0"
         }
       ]
     },
@@ -72,7 +91,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 2
+          "itemIndex": 2,
+          "itemRepr": "0",
+          "tokenId": "tok-S7-loop_advance-0",
+          "collection": "bind-L1C19"
         }
       ]
     },
@@ -92,7 +114,10 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 3
+          "itemIndex": 3,
+          "itemRepr": "3",
+          "tokenId": "tok-S9-loop_advance-0",
+          "collection": "bind-L1C19"
         }
       ]
     },
@@ -113,7 +138,8 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "1",
-          "newRepr": "2"
+          "newRepr": "2",
+          "inputTokenId": "tok-S11-state_change-0"
         }
       ]
     },
@@ -123,7 +149,10 @@
         {
           "type": "exit_return",
           "repr": "2",
-          "port": "ret-L6C4"
+          "port": "ret-L6C4",
+          "tokenId": "tok-S12-return_exit-0",
+          "returnNode": "ret-L6C4",
+          "functionNode": "fn-L1C0"
         }
       ]
     }

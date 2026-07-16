@@ -19,6 +19,7 @@
     "test:api-save": "python tools/run_api_save_tests.py",
     "test:parity-ops": "python tools/run_interpreter_parity.py",
     "test:visual": "vitest run packages/visual-grammar/src",
+    "capture:pm7": "pnpm exec tsx tools/capture_pm7_screenshots.ts",
     "content:rebuild": "pnpm exec tsx tools/rebuild_content_scenes.ts",
     "test:all": "pnpm test:analyzer && pnpm test:trace && pnpm test:variations && pnpm test:patterns && pnpm test:scenes && pnpm test:fixtures && pnpm test:journey && pnpm test:api-save && pnpm test:lessons && pnpm test:parity-ops && pnpm test:visual && pnpm typecheck && pnpm lint",
     "api": "python -m uvicorn apps.api.main:app --reload --host 127.0.0.1 --port 8000",

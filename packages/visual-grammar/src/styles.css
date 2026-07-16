@@ -1,4 +1,5 @@
 /* Visual grammar canvas — semantic tokens only on elements; skin on chrome. */
+@import './motion-tokens.css';
 
 .vg-canvas {
   position: relative;
