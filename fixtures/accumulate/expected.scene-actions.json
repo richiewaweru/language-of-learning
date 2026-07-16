@@ -1,12 +1,29 @@
 {
   "steps": [
     {
+      "index": 0,
+      "actions": []
+    },
+    {
       "index": 1,
-      "actions": [{ "type": "change_state", "cell": "bind-total", "oldRepr": "—", "newRepr": "0" }]
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "—",
+          "newRepr": "0"
+        }
+      ]
     },
     {
       "index": 2,
-      "actions": [{ "type": "advance_item", "loop": "loop-1", "itemIndex": 0 }]
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ]
     },
     {
       "index": 3,
@@ -21,7 +38,55 @@
     },
     {
       "index": 4,
-      "actions": [{ "type": "exit_return", "repr": "10", "port": "ret-1" }]
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "3",
+          "newRepr": "8"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "8",
+          "newRepr": "10"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "10",
+          "port": "ret-1"
+        }
+      ]
     }
   ]
 }

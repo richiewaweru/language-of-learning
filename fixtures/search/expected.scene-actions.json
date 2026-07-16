@@ -1,12 +1,88 @@
 {
   "steps": [
     {
+      "index": 0,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ]
+    },
+    {
       "index": 2,
-      "actions": [{ "type": "evaluate", "branch": "branch-1", "result": true }]
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ]
     },
     {
       "index": 3,
-      "actions": [{ "type": "exit_return", "repr": "4", "port": "ret-early" }]
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "4",
+          "port": "ret-early"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "-1",
+          "port": "ret-fallback"
+        }
+      ]
     }
   ]
 }

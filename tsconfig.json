@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "packages/lens-contracts" },
-    { "path": "packages/lens-patterns" }
+    { "path": "packages/lens-patterns" },
+    { "path": "packages/lens-scenes" }
   ]
 }

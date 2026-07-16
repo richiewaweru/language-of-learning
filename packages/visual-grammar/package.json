@@ -1,1 +1,26 @@
-{ "name": "@lol/visual-grammar", "version": "0.1.0", "private": true, "scripts": { "build": "echo stub" } }
+{
+  "name": "@lol/visual-grammar",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "svelte": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "svelte": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "build": "echo visual-grammar source exports",
+    "check": "echo ok"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  },
+  "dependencies": {
+    "@lol/lens-contracts": "workspace:*",
+    "@lol/lens-scenes": "workspace:*"
+  }
+}

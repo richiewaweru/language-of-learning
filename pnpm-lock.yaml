@@ -41,6 +41,12 @@ importers:
       '@lol/lens-contracts':
         specifier: workspace:*
         version: link:../../packages/lens-contracts
+      '@lol/lens-scenes':
+        specifier: workspace:*
+        version: link:../../packages/lens-scenes
+      '@lol/visual-grammar':
+        specifier: workspace:*
+        version: link:../../packages/visual-grammar
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^3.3.1
@@ -82,11 +88,25 @@ importers:
         specifier: workspace:*
         version: link:../lens-contracts
 
-  packages/lens-scenes: {}
+  packages/lens-scenes:
+    dependencies:
+      '@lol/lens-contracts':
+        specifier: workspace:*
+        version: link:../lens-contracts
 
   packages/trace-runtime: {}
 
-  packages/visual-grammar: {}
+  packages/visual-grammar:
+    dependencies:
+      '@lol/lens-contracts':
+        specifier: workspace:*
+        version: link:../lens-contracts
+      '@lol/lens-scenes':
+        specifier: workspace:*
+        version: link:../lens-scenes
+      svelte:
+        specifier: ^5.0.0
+        version: 5.56.5(@typescript-eslint/types@8.64.0)
 
 packages:
 

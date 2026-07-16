@@ -5,7 +5,13 @@
 <main>
   <p class="brand">Language of Learning</p>
   <p class="tagline">Structural Code Lens — v0.1 skeleton</p>
-  <p class="link-row"><a href="/debug/graph">Open graph inspector</a></p>
+  <p class="link-row">
+    <a href="/slices/accumulate">Accumulate slice</a>
+    ·
+    <a href="/slices/filter">Filter slice</a>
+    ·
+    <a href="/debug/graph">Graph inspector</a>
+  </p>
 </main>
 
 <style>

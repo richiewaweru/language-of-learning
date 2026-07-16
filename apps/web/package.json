@@ -10,7 +10,9 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@lol/lens-contracts": "workspace:*"
+    "@lol/lens-contracts": "workspace:*",
+    "@lol/lens-scenes": "workspace:*",
+    "@lol/visual-grammar": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.3.1",

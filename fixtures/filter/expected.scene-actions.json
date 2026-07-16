@@ -1,17 +1,118 @@
 {
   "steps": [
     {
+      "index": 0,
+      "actions": []
+    },
+    {
       "index": 1,
-      "actions": [{ "type": "evaluate", "branch": "branch-1", "result": true }]
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ]
     },
     {
       "index": 2,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 5,
       "actions": [
         {
           "type": "move_value",
           "repr": "3",
           "fromNode": "bind-price",
           "toNode": "coll-results"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 3
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "5",
+          "fromNode": "bind-price",
+          "toNode": "coll-results"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "[3, 5]",
+          "port": "ret-1"
         }
       ]
     }

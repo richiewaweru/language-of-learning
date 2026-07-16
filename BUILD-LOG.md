@@ -64,3 +64,19 @@ When multiple rules could apply, `detectPattern` returns a single primary hit in
 ## Phase P3 summary (gate-P3, 2026-07-16)
 
 Implemented the six-pattern deterministic rule engine, matched all positive `expected.pattern.json` fixtures, and verified 100% precision on three negative lookalike fixtures with no candidate/LLM path.
+
+### DECISION: canonicalize P0 scene-action scaffolds with scene builder (P4-02)
+
+P0 `expected.scene-actions.json` files were sparse scaffolds. For P4 they were rewritten from `buildSceneActions(graph, trace)` so every trace step has declarative actions. Caption keys use a closed template set in `CAPTION_TEMPLATES` (SC3).
+
+### DECISION: SVG screenshots for P4 gate assets (P4-06)
+
+Gate asks for initial/mid/final × accumulate+filter screenshots. Assets are deterministic SVGs rendered from the layout engine (`tools/capture_p4_screenshots.ts`) into `BUILD-LOG/assets/p4/`. This avoids non-deterministic browser capture while still proving layout + step state.
+
+### DECISION: paste variations are fixture-matched in P4 (P4-05)
+
+Interactive slices accept pasted source and match known variations under `fixtures/` + `fixtures/variations/`. Live analyze-from-paste is deferred to P5 Decode (honest message when unmatched).
+
+## Phase P4 summary (gate-P4, 2026-07-16)
+
+Shipped layout + scene builder + selection resolver, visual-grammar primitives with TraceControls, interactive accumulate/filter slices (back-step restores trace bindings; reduced-motion honored), and 6 screenshot SVGs.

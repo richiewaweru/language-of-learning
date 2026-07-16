@@ -1,8 +1,18 @@
 {
   "steps": [
     {
+      "index": 0,
+      "actions": []
+    },
+    {
       "index": 1,
-      "actions": [{ "type": "advance_item", "loop": "loop-1", "itemIndex": 0 }]
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ]
     },
     {
       "index": 2,
@@ -10,8 +20,60 @@
         {
           "type": "move_value",
           "repr": "2",
-          "fromNode": "op-mul",
+          "fromNode": "bind-v",
           "toNode": "coll-doubled"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "4",
+          "fromNode": "bind-v",
+          "toNode": "coll-doubled"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "6",
+          "fromNode": "bind-v",
+          "toNode": "coll-doubled"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "[2, 4, 6]",
+          "port": "ret-1"
         }
       ]
     }

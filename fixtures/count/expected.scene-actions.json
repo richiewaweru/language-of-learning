@@ -1,13 +1,130 @@
 {
   "steps": [
     {
+      "index": 0,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-count",
+          "oldRepr": "—",
+          "newRepr": "0"
+        }
+      ]
+    },
+    {
       "index": 2,
-      "actions": [{ "type": "evaluate", "branch": "branch-1", "result": true }]
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ]
     },
     {
       "index": 3,
       "actions": [
-        { "type": "change_state", "cell": "bind-count", "oldRepr": "0", "newRepr": "1" }
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-count",
+          "oldRepr": "0",
+          "newRepr": "1"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 3
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-count",
+          "oldRepr": "1",
+          "newRepr": "2"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "2",
+          "port": "ret-1"
+        }
       ]
     }
   ]

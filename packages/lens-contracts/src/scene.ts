@@ -73,3 +73,6 @@ export const SceneActionsFixtureSchema = z.object({
 
 export type Scene = z.infer<typeof SceneSchema>;
 export type SceneAction = z.infer<typeof SceneActionSchema>;
+export type SceneStep = z.infer<typeof SceneStepSchema>;
+export type LayoutNode = z.infer<typeof LayoutNodeSchema>;
+export type SceneActionsFixture = z.infer<typeof SceneActionsFixtureSchema>;

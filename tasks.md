@@ -298,3 +298,52 @@
 5. `pnpm test:analyzer`   → expect: all pass (regression)
 
 **Phase P3 complete.** Tag: `gate-P3`
+
+## Phase P4 — lens-scenes + visual-grammar [gate: pnpm test:scenes && pnpm --filter web build && screenshots + reduced-motion + back-step]
+
+- [x] P4-01 lens-scenes layout engine + overlap validator
+      done-when: layout tests pass for accumulate/filter; zero hand coords; nesting ≤3; overlap fails loudly
+      status: ✓ judged
+      evidence: `pnpm test:scenes` layout tests pass; LayoutError on overlap/nesting
+      judge: 2026-07-16 accepted
+
+- [x] P4-02 Scene builder (trace → declarative actions + captions)
+      done-when: scene-actions match rewritten fixture expectations for all six patterns; captions deterministic
+      status: ✓ judged
+      evidence: all six expected.scene-actions.json rewritten from builder; caption templates in CAPTION_TEMPLATES
+      judge: 2026-07-16 accepted
+
+- [x] P4-03 Selection resolver (line↔nodes, column/nesting priority, node↔steps)
+      done-when: selection resolver unit tests cover SY1–SY3
+      status: ✓ judged
+      evidence: SY1/SY2/SY3 tests in scenes.test.ts pass
+      judge: 2026-07-16 accepted
+
+- [x] P4-04 visual-grammar: 11 primitives + TraceControls (back/step/play/scrub/reset)
+      done-when: package exports components; reduced-motion CSS tokens honored
+      status: ✓ judged
+      evidence: @lol/visual-grammar exports 11 primitives + TraceControls + ScenePlayer; prefers-reduced-motion in styles.css
+      judge: 2026-07-16 accepted
+
+- [x] P4-05 Interactive accumulate + filter slices with back-step state restore
+      done-when: `/slices/accumulate` and `/slices/filter` build; back restores exact bindings; variations selectable
+      status: ✓ judged
+      evidence: web build includes both slice routes; ScenePlayer binds from trace.steps[i].bindings; variations under fixtures/variations/
+      judge: 2026-07-16 accepted
+
+- [x] P4-06 Screenshot set (initial/mid/final × accumulate+filter) to BUILD-LOG assets
+      done-when: 6 screenshot files exist under BUILD-LOG/assets/p4/
+      status: ✓ judged
+      evidence: tools/capture_p4_screenshots.ts → 6 SVG files in BUILD-LOG/assets/p4/
+      judge: 2026-07-16 accepted
+
+## Gate block P4 (run all; paste outputs to PROGRESS.md)
+
+1. `pnpm test:scenes`            → expect: all pass
+2. `pnpm test:patterns`          → expect: all pass (regression)
+3. `pnpm typecheck`              → exit 0
+4. `pnpm lint`                   → exit 0
+5. `pnpm --filter web build`     → exit 0 with /slices/accumulate and /slices/filter
+6. Screenshot assets present     → 6 files under BUILD-LOG/assets/p4/
+
+**Phase P4 complete.** Tag: `gate-P4`

@@ -1,0 +1,200 @@
+/* Visual grammar canvas — semantic tokens only on elements; skin on chrome. */
+
+.vg-canvas {
+  position: relative;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--grid-unit) var(--grid-unit);
+  background-color: var(--bg);
+  border: var(--border-w) solid var(--ink);
+  overflow: auto;
+}
+
+.vg-node {
+  position: absolute;
+  box-sizing: border-box;
+  font: 600 12px/1.2 var(--font-mono);
+  color: var(--ink);
+  transition: var(--move-focus);
+}
+
+.vg-node[data-dim='true'] {
+  opacity: var(--dim-opacity);
+}
+
+.vg-node[data-focus='true'] {
+  box-shadow: var(--focus-glow);
+  z-index: 2;
+}
+
+.vg-value {
+  border-radius: var(--radius-pill);
+  border: var(--border-w) solid var(--data-blue);
+  background: color-mix(in srgb, var(--data-blue) 12%, var(--paper));
+  color: var(--data-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+}
+
+.vg-binding {
+  border: var(--border-w) solid var(--data-blue);
+  background: var(--paper);
+  color: var(--data-blue);
+  display: flex;
+  align-items: center;
+  padding: 0 0.4rem;
+}
+
+.vg-binding[data-role='state'],
+.vg-state {
+  border: var(--border-w-strong) solid var(--state-gold);
+  outline: 1px solid var(--state-gold);
+  outline-offset: 2px;
+  color: var(--state-gold);
+  background: color-mix(in srgb, var(--state-gold) 10%, var(--paper));
+}
+
+.vg-collection {
+  border: var(--border-w) dashed var(--data-blue);
+  color: var(--data-blue);
+  background: var(--paper);
+  padding: 0.35rem;
+}
+
+.vg-function {
+  border: var(--border-w-strong) solid var(--work-purple);
+  color: var(--work-purple);
+  background: color-mix(in srgb, var(--work-purple) 6%, transparent);
+}
+
+.vg-loop {
+  border: var(--border-w) solid var(--flow-teal);
+  color: var(--flow-teal);
+  background: color-mix(in srgb, var(--flow-teal) 6%, transparent);
+}
+
+.vg-loop-track {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 6px;
+  height: 4px;
+  background: color-mix(in srgb, var(--flow-teal) 25%, transparent);
+  border-radius: 2px;
+}
+
+.vg-loop-marker {
+  position: absolute;
+  top: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--flow-teal);
+  transition: var(--move-token);
+}
+
+.vg-branch {
+  border: var(--border-w) solid var(--branch-magenta);
+  color: var(--branch-magenta);
+  background: color-mix(in srgb, var(--branch-magenta) 8%, transparent);
+  clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+}
+
+.vg-operation {
+  border: var(--border-w) solid var(--flow-teal);
+  color: var(--ink);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vg-mutation {
+  border: var(--border-w) solid var(--state-gold);
+  color: var(--state-gold);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  padding: 0 0.4rem;
+}
+
+.vg-return {
+  border: var(--border-w) solid var(--exit-green);
+  color: var(--exit-green);
+  background: color-mix(in srgb, var(--exit-green) 10%, var(--paper));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vg-effect {
+  border: var(--border-w) solid var(--effect-amber);
+  color: var(--effect-amber);
+  background: var(--paper);
+}
+
+.vg-unsupported {
+  border: var(--border-w) dashed var(--alert-orange);
+  color: var(--alert-orange);
+  background: color-mix(in srgb, var(--alert-orange) 8%, var(--paper));
+}
+
+.vg-ghost {
+  opacity: 0.45;
+  text-decoration: line-through;
+  margin-right: 0.35rem;
+}
+
+.vg-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--paper);
+  border: var(--border-w) solid var(--ink);
+  box-shadow: var(--shadow-btn);
+}
+
+.vg-controls button {
+  font: 700 12px/1 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.55rem 0.75rem;
+  border: var(--border-w) solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-btn);
+  cursor: pointer;
+}
+
+.vg-controls button:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.vg-controls button:disabled {
+  opacity: var(--dim-opacity);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.vg-scrub {
+  flex: 1;
+  min-width: 120px;
+}
+
+.vg-caption {
+  font: 500 14px/1.4 var(--font-ui);
+  color: var(--ink);
+  margin: 0.5rem 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vg-node,
+  .vg-loop-marker {
+    transition: none !important;
+  }
+}

@@ -1,12 +1,39 @@
 {
   "steps": [
     {
+      "index": 0,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-rate",
+          "oldRepr": "—",
+          "newRepr": "0.16"
+        }
+      ]
+    },
+    {
       "index": 2,
-      "actions": [{ "type": "evaluate", "branch": "branch-guard", "result": false }]
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-guard",
+          "result": false
+        }
+      ]
     },
     {
       "index": 3,
-      "actions": [{ "type": "exit_return", "repr": "16.0", "port": "ret-main" }]
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "16.0",
+          "port": "ret-main"
+        }
+      ]
     }
   ]
 }
