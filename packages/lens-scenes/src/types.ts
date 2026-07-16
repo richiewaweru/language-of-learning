@@ -12,6 +12,7 @@ export type GraphNode = {
   body?: string;
   trueBody?: string;
   falseBody?: string;
+  conditionExpr?: string;
   targetRef?: string;
   mutationType?: string;
   valueRef?: string;

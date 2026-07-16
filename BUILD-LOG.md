@@ -80,3 +80,19 @@ Interactive slices accept pasted source and match known variations under `fixtur
 ## Phase P4 summary (gate-P4, 2026-07-16)
 
 Shipped layout + scene builder + selection resolver, visual-grammar primitives with TraceControls, interactive accumulate/filter slices (back-step restores trace bindings; reduced-motion honored), and 6 screenshot SVGs.
+
+### DECISION: FastAPI JSON file store for P5 persistence
+
+Foundation mentions SQLite behind a repository interface. For v0.1-local Decode, analyses are stored as JSON files under `data/analyses/` and telemetry as `data/events.ndjson`. Same localhost API surface; Postgres remains deferred.
+
+### DECISION: CodeMirror for Decode editor (P5)
+
+Brief allows CodeMirror or Monaco. Chose CodeMirror (lighter) with `@codemirror/lang-python`.
+
+### DECISION: analyze in Python API; pattern/scene in TypeScript client (P5)
+
+`/analyze` returns graph+trace from shared analyzer/tracer packages. Pattern detection and scene build run in the browser from existing TS packages — one analyze round-trip, no duplicate Python ports.
+
+## Phase P5 summary (gate-P5, 2026-07-16)
+
+Decode surface live at `/decode` with local FastAPI, transfer checks, save/load, NDJSON events, and a 3-snippet journey gate.

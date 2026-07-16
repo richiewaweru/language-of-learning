@@ -13,6 +13,8 @@
     "test:trace": "python tools/run_trace_tests.py",
     "test:patterns": "pnpm --filter @lol/lens-patterns test",
     "test:scenes": "pnpm --filter @lol/lens-scenes test",
+    "test:journey": "python tools/run_journey_tests.py",
+    "api": "uvicorn apps.api.main:app --reload --host 127.0.0.1 --port 8000",
     "pyodide-parity": "node tools/run_pyodide_parity.mjs",
     "trace-pyodide-parity": "node tools/run_trace_pyodide_parity.mjs",
     "lint": "eslint .",

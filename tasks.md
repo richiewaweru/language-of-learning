@@ -347,3 +347,40 @@
 6. Screenshot assets present     → 6 files under BUILD-LOG/assets/p4/
 
 **Phase P4 complete.** Tag: `gate-P4`
+
+## Phase P5 — Decode surface [gate: journey on 3 fresh snippets + web build + api + save/load]
+
+- [x] P5-01 Local API: analyze (graph+trace), save/load analyses, NDJSON events
+      done-when: `python -m apps.api` health + analyze/save/load/events endpoints pass smoke tests
+      status: ✓ judged
+      evidence: FastAPI `apps/api/main.py`; journey TestClient covers health/analyze/save/load/events
+      judge: 2026-07-16 accepted
+
+- [x] P5-02 Deterministic transfer-check generator from graph
+      done-when: unit tests generate "which line is X" from graph nodes with graded answers
+      status: ✓ judged
+      evidence: `buildTransferCheck` / `gradeTransferCheck` in lens-scenes; scenes.test.ts covers grading
+      judge: 2026-07-16 accepted
+
+- [x] P5-03 Decode UI: editor, sample-call, analyze, CODE/SHAPE/TRACE/PATTERN, unsupported
+      done-when: `/decode` builds; four views sync via Selection; unsupported panel shows regions
+      status: ✓ judged
+      evidence: `/decode` with CodeMirror, four tabs, unsupported panel, Selection resolver; web build includes route
+      judge: 2026-07-16 accepted
+
+- [x] P5-04 Learner journey e2e on 3 fresh snippets
+      done-when: `pnpm test:journey` reports 3/3 complete (analyze → step → transfer → save/load)
+      status: ✓ judged
+      evidence: `pnpm test:journey` → 3/3 fresh snippets complete (ACCUMULATE/FILTER/SEARCH)
+      judge: 2026-07-16 accepted
+
+## Gate block P5 (run all; paste outputs to PROGRESS.md)
+
+1. `pnpm test:journey`           → expect: 3/3 fresh snippets complete
+2. `pnpm test:scenes`            → expect: all pass (regression)
+3. `pnpm test:patterns`          → expect: all pass (regression)
+4. `pnpm typecheck`              → exit 0
+5. `pnpm lint`                   → exit 0
+6. `pnpm --filter web build`     → exit 0 with `/decode` route
+
+**Phase P5 complete.** Tag: `gate-P5`

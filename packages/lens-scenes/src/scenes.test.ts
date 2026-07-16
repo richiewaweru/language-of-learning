@@ -5,6 +5,8 @@ import { SceneSchema, SceneActionsFixtureSchema } from '@lol/lens-contracts';
 import {
   buildScene,
   buildSceneActions,
+  buildTransferCheck,
+  gradeTransferCheck,
   layoutGraph,
   LayoutError,
   resolveSelection,
@@ -107,13 +109,25 @@ describe('selection resolver', () => {
   });
 });
 
+describe('transfer check', () => {
+  it('asks which line for state binding on accumulate', () => {
+    const graph = loadGraph('accumulate');
+    const check = buildTransferCheck(graph);
+    expect(check).not.toBeNull();
+    expect(check!.prompt).toMatch(/Which line contains/);
+    expect(check!.answerLine).toBeGreaterThan(0);
+    const grade = gradeTransferCheck(check!, check!.answerLine);
+    expect(grade.correct).toBe(true);
+    expect(gradeTransferCheck(check!, check!.answerLine + 1).correct).toBe(false);
+  });
+});
+
 describe('back-step binding snapshots', () => {
   it('each accumulate step carries full bindings (T1)', () => {
     const trace = loadTrace('accumulate');
     for (const step of trace.steps) {
       expect(step.bindings).toBeTypeOf('object');
     }
-    // stepping back to index i restores bindings at i
     const mid = trace.steps[3]!;
     const prior = trace.steps[2]!;
     expect(prior.bindings).not.toEqual(mid.bindings);

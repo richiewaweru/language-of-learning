@@ -10,9 +10,14 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.6",
     "@lol/lens-contracts": "workspace:*",
+    "@lol/lens-patterns": "workspace:*",
     "@lol/lens-scenes": "workspace:*",
-    "@lol/visual-grammar": "workspace:*"
+    "@lol/visual-grammar": "workspace:*",
+    "codemirror": "^6.0.2"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.3.1",
