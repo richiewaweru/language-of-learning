@@ -10,7 +10,7 @@ Six pattern fixtures for v0.1. Each directory contains:
 - `expected.scene-actions.json` — declarative scene actions per step
 - `ANALYSIS.md` — derivation notes (not validated by loader)
 
-Expected values are hand-derived for P0 shape validation. Graph byte parity gated in P1; trace byte parity gated in P2.
+Expected values are hand-derived for P0 shape validation. Graph byte parity gated in P1; trace byte parity gated in P2; pattern precision gated in P3.
 
 ## Hostile fixtures (`fixtures/hostile/`)
 
@@ -23,6 +23,16 @@ Sandbox containment cases (not loaded by the six-pattern shape test):
 | eval_attempt | dynamic eval | `eval` |
 | import_attempt | module import | `import` |
 | dunder_escape | dunder introspection | `dunder` |
+
+## Negative pattern fixtures (`fixtures/negative/`)
+
+Lookalikes that must **not** fire a registry rule (P3 precision):
+
+| Directory | Looks like | Why it fails |
+|---|---|---|
+| overwrite_not_accumulate | ACCUMULATE | writes state from iterator without reading prior value |
+| plain_append_not_transform | TRANSFORM | appends iterator with no feeding operation |
+| branch_literal_not_count | COUNT | branch assigns a literal, not `+ 1` / return / append |
 
 ## Patterns
 

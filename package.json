@@ -11,6 +11,7 @@
     "test:fixtures": "vitest run tests/fixtures",
     "test:analyzer": "python tools/run_analyzer_tests.py",
     "test:trace": "python tools/run_trace_tests.py",
+    "test:patterns": "pnpm --filter @lol/lens-patterns test",
     "pyodide-parity": "node tools/run_pyodide_parity.mjs",
     "trace-pyodide-parity": "node tools/run_trace_pyodide_parity.mjs",
     "lint": "eslint .",

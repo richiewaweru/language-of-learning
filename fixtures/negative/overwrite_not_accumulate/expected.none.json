@@ -1,0 +1,3 @@
+{
+  "mustNotMatch": ["ACCUMULATE", "COUNT", "FILTER", "TRANSFORM", "SEARCH", "GUARD"]
+}

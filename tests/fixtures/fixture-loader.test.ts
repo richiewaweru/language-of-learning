@@ -18,7 +18,7 @@ const REQUIRED_FILES = [
 describe('golden fixture loader', () => {
   it('discovers six pattern directories with required files', () => {
     const dirs = readdirSync(FIXTURES_ROOT, { withFileTypes: true })
-      .filter((d) => d.isDirectory() && d.name !== 'hostile')
+      .filter((d) => d.isDirectory() && d.name !== 'hostile' && d.name !== 'negative')
       .map((d) => d.name)
       .sort();
 

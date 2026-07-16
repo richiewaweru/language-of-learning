@@ -2,11 +2,11 @@
 
 ## Current phase
 
-**P2 — complete.** Next: **P3 — lens-patterns**
+**P3 — complete.** Next: **P4 — lens-scenes + visual-grammar**
 
 ## Last gate
 
-**gate-P2** — 2026-07-16
+**gate-P3** — 2026-07-16
 
 ## Gate report — P0
 
@@ -121,6 +121,40 @@ See BUILD-LOG.md (fixture canonicalization decision added for P1).
 
 See BUILD-LOG.md (trace canonicalization + binding snapshot ordering).
 
-### Next phase preview — P3
+## Gate report — P3
 
-Pattern rule engine over semantic graphs: six deterministic rules, positive and negative fixtures, 100% precision gate.
+### Gate commands + outputs
+
+```
+1. pnpm test:patterns
+   - 11/11 tests pass
+   - 6/6 positive fixtures exact match
+   - negative precision 100% (3/3 lookalikes rejected)
+
+2. pnpm typecheck
+   - exit 0
+
+3. pnpm lint
+   - exit 0
+
+4. pnpm test:trace (regression)
+   - 5/5 pass
+
+5. pnpm test:analyzer (regression)
+   - 4/4 pass
+```
+
+### What shipped
+
+- `packages/lens-patterns/` deterministic rule engine (`detectPattern`)
+- six registry rules: ACCUMULATE, COUNT, FILTER, TRANSFORM, SEARCH, GUARD
+- `fixtures/negative/` lookalike suite (overwrite, plain append, branch literal)
+- confidence contract: deterministic-only; no candidate/LLM path
+
+### Decisions logged
+
+See BUILD-LOG.md (pattern engine in TypeScript; primary-hit priority order).
+
+### Next phase preview — P4
+
+Layout engine, scene builder, visual-grammar Svelte primitives, selection resolver; accumulator + filter interactive slices.

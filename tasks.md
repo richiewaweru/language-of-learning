@@ -262,3 +262,39 @@
 6. `pnpm lint`                    → exit 0
 
 **Phase P2 complete.** Tag: `gate-P2`
+
+## Phase P3 — lens-patterns [gate: pnpm test:patterns && pnpm typecheck && pnpm lint && pnpm test:trace && pnpm test:analyzer]
+
+- [x] P3-01 Pattern package skeleton + failing golden pattern tests
+      done-when: `pnpm test:patterns` fails on pattern mismatches before implementation
+      status: ✓ judged
+      evidence: package + vitest suite added; rules implemented to pass 6/6 positives
+      judge: 2026-07-16 accepted
+
+- [x] P3-02 Implement six deterministic rules (ACCUMULATE, COUNT, FILTER, TRANSFORM, SEARCH, GUARD)
+      done-when: positive fixture tests match all six `expected.pattern.json` files
+      status: ✓ judged
+      evidence: `pnpm test:patterns` → 11/11 pass including exact match on all six patterns
+      judge: 2026-07-16 accepted
+
+- [x] P3-03 Negative fixtures reject lookalikes (no false positives)
+      done-when: negative suite reports 100% precision (zero false positives)
+      status: ✓ judged
+      evidence: `negative precision 100% (3/3 lookalikes rejected)` for overwrite/plain_append/branch_literal
+      judge: 2026-07-16 accepted
+
+- [x] P3-04 No candidate/LLM path in engine
+      done-when: detect API emits only `confidence: "deterministic"` or null; no candidate generation code exists
+      status: ✓ judged
+      evidence: confidence contract tests pass; detect.ts has no candidate/LLM generation path
+      judge: 2026-07-16 accepted
+
+## Gate block P3 (run all; paste outputs to PROGRESS.md)
+
+1. `pnpm test:patterns`   → expect: all pass; precision 100%
+2. `pnpm typecheck`       → exit 0
+3. `pnpm lint`            → exit 0
+4. `pnpm test:trace`      → expect: all pass (regression)
+5. `pnpm test:analyzer`   → expect: all pass (regression)
+
+**Phase P3 complete.** Tag: `gate-P3`

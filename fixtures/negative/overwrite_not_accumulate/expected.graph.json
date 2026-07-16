@@ -1,0 +1,150 @@
+{
+  "version": "0.1",
+  "source": "def overwrite_total(prices):\n    total = 0\n    for price in prices:\n        total = 0 + price\n    return total",
+  "nodes": [
+    {
+      "id": "fn-overwrite_total",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 5,
+        "endCol": 16
+      },
+      "name": "overwrite_total",
+      "params": [
+        "bind-prices"
+      ]
+    },
+    {
+      "id": "bind-prices",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 20,
+        "endLine": 1,
+        "endCol": 26
+      },
+      "name": "prices",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-total",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 2,
+        "endCol": 13
+      },
+      "name": "total",
+      "role": "state",
+      "mutable": true,
+      "initialRepr": "0"
+    },
+    {
+      "id": "val-0",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 12,
+        "endLine": 2,
+        "endCol": 13
+      },
+      "repr": "0",
+      "pyType": "int"
+    },
+    {
+      "id": "loop-1",
+      "kind": "loop",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 4,
+        "endLine": 4,
+        "endCol": 24
+      },
+      "iteratorName": "price",
+      "collectionRef": "bind-prices",
+      "body": "op-add"
+    },
+    {
+      "id": "bind-price",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 8,
+        "endLine": 3,
+        "endCol": 13
+      },
+      "name": "price",
+      "role": "iterator",
+      "mutable": false
+    },
+    {
+      "id": "op-add",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 16,
+        "endLine": 4,
+        "endCol": 24
+      },
+      "expr": "0 + price"
+    },
+    {
+      "id": "ret-1",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 4,
+        "endLine": 5,
+        "endCol": 16
+      },
+      "valueRef": "bind-total"
+    }
+  ],
+  "relations": [
+    {
+      "from": "fn-overwrite_total",
+      "type": "contains",
+      "to": "bind-total"
+    },
+    {
+      "from": "fn-overwrite_total",
+      "type": "contains",
+      "to": "loop-1"
+    },
+    {
+      "from": "loop-1",
+      "type": "iterates",
+      "to": "bind-prices"
+    },
+    {
+      "from": "loop-1",
+      "type": "contains",
+      "to": "op-add"
+    },
+    {
+      "from": "op-add",
+      "type": "reads",
+      "to": "bind-price"
+    },
+    {
+      "from": "op-add",
+      "type": "writes",
+      "to": "bind-total"
+    },
+    {
+      "from": "fn-overwrite_total",
+      "type": "contains",
+      "to": "ret-1"
+    },
+    {
+      "from": "ret-1",
+      "type": "returns",
+      "to": "bind-total"
+    }
+  ],
+  "unsupported": []
+}

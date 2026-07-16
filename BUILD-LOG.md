@@ -52,3 +52,15 @@ The P0 trace fixtures were shape-valid abbreviated scaffolds. For P2, after the 
 ## Phase P2 summary (gate-P2, 2026-07-16)
 
 Implemented graph-guided instrumented execution in `packages/trace-runtime`, verified 6/6 fixture traces in CPython and Pyodide, added a five-case hostile sandbox suite under `fixtures/hostile/`, and logged trace canonicalization above.
+
+### DECISION: pattern engine in TypeScript (P3)
+
+`@lol/lens-patterns` is TypeScript (not Python) because rules operate on JSON graphs already produced by the analyzer; the Decode surface can import the same package without a second Pyodide round-trip. Detection remains deterministic and offline.
+
+### DECISION: primary-hit priority order (P3)
+
+When multiple rules could apply, `detectPattern` returns a single primary hit in order: GUARD → SEARCH → FILTER → TRANSFORM → COUNT → ACCUMULATE. COUNT and ACCUMULATE are mutually exclusive by iterator-read vs `+ 1` unread rules from the semantic contract.
+
+## Phase P3 summary (gate-P3, 2026-07-16)
+
+Implemented the six-pattern deterministic rule engine, matched all positive `expected.pattern.json` fixtures, and verified 100% precision on three negative lookalike fixtures with no candidate/LLM path.
