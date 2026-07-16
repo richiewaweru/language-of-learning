@@ -455,3 +455,170 @@
 4. tools/smoke-test.md present (10 items)
 
 **Phase P7 complete.** Tag: `gate-P7`
+
+## Phase F0 — Ground truth [gate: visit_stmt=1 · CI · fresh evidence]
+
+- [x] F0-01 Fresh-environment evidence in PROGRESS
+      done-when: pasted command outputs for full suite
+      status: ✓ judged
+      evidence: PROGRESS.md gate-F0 section
+      judge: 2026-07-16 accepted
+
+- [x] F0-02 Dedupe visit_stmt + filter mutation unit test
+      done-when: grep -c "def visit_stmt" = 1; filter mutation test green
+      status: ✓ judged
+      evidence: analyzer.py single dispatcher; test_filter_emits_mutation_node_and_mutates_relation
+      judge: 2026-07-16 accepted
+
+- [x] F0-03 GitHub Actions CI + README badge
+      done-when: .github/workflows/ci.yml exists; badge in README
+      status: ✓ judged
+      evidence: ci.yml + README badge
+      judge: 2026-07-16 accepted
+
+- [x] F0-04 Seed F0–F4 process files / BUILD-LOG cause
+      done-when: tasks.md has F0–F4; BUILD-LOG opens corrective cause
+      status: ✓ judged
+      evidence: tasks.md + BUILD-LOG corrective entry
+      judge: 2026-07-16 accepted
+
+## Gate block F0
+
+1. `grep -c "def visit_stmt" packages/analyzer-python/src/lol_analyzer/analyzer.py` → 1
+2. `pnpm test:analyzer` green (incl. filter mutation guard)
+3. CI workflow present
+
+**Phase F0 complete.** Tag: `gate-F0`
+
+## Phase F1 — Analyzer generalization [gate: position IDs · variations 12+]
+
+- [ ] F1-01 Contract-compliant position IDs (N2)
+      done-when: fixture-string greps = 0; id-regex unit test green
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F1-02 Delete fixture-shaped emission logic
+      done-when: no name/literal special cases remain
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F1-03 Multiple-mutation support (analyzer + tracer)
+      done-when: two-append variant traces with distinct mutation ids
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F1-04 Regenerate golden expectations honestly
+      done-when: full suite green vs regenerated files; BUILD-LOG lists causes
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F1-05 Generalization suite (12+ variations with expect.json)
+      done-when: 12/12 (13 w/ two-append) pass; standing gate
+      status: todo
+      evidence:
+      judge:
+
+## Gate block F1
+
+1. greps for fixture strings = 0
+2. full suite green
+3. variations 100%
+
+**Phase F1 complete.** Tag: `gate-F1`
+
+## Phase F2 — Truth path [gate: re-verify save · content:rebuild]
+
+- [ ] F2-01 Server re-verification on save
+      done-when: tamper test + hostile 422
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F2-02 Engine version stamping (0.1.1)
+      done-when: engineVersion on saves
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F2-03 pnpm content:rebuild + CI drift check
+      done-when: rebuild clean; CI step
+      status: todo
+      evidence:
+      judge:
+
+## Gate block F2
+
+1. tamper + hostile-save tests
+2. content:rebuild drift-free
+
+**Phase F2 complete.** Tag: `gate-F2`
+
+## Phase F3 — One Selection object [gate: controlled ScenePlayer · sync tests]
+
+- [ ] F3-01 ScenePlayer controlled (selection + onselectionchange)
+      done-when: no stepIndex = $state canonical
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F3-02 Decode wires all views through one store
+      done-when: bidirectional sync tests green
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F3-03 Slices and Learn use same Selection mechanism
+      done-when: no second selection pathway in apps/web
+      status: todo
+      evidence:
+      judge:
+
+## Gate block F3
+
+1. grep stepIndex = $state = 0
+2. sync tests both directions
+
+**Phase F3 complete.** Tag: `gate-F3`
+
+## Phase F4 — Renderer truth & presentation [gate: final corrective]
+
+- [ ] F4-01 Derive loop item count from trace
+      done-when: itemCount={5} gone; 3 and 6 item cases
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F4-02 Return port from exit_return / result.repr
+      done-when: __return__ gone from web/visual-grammar
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F4-03 No first-node [0] fallbacks
+      done-when: grep packages = 0
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F4-04 Learn preview banner
+      done-when: PENDING-RICHIE shows badge
+      status: todo
+      evidence:
+      judge:
+
+- [ ] F4-05 ADRs 0007/0008 + interpreter parity test
+      done-when: docs exist; parity green or listed
+      status: todo
+      evidence:
+      judge:
+
+## Gate block F4
+
+See CORRECTIVE-RUN-unified.md final 10-command block.
+
+**Phase F4 complete.** Tag: `gate-F4`
+

@@ -123,6 +123,8 @@ class Analyzer:
             self.visit_if(stmt, parent_id, top_level=top_level)
         elif isinstance(stmt, ast.Return):
             self.visit_return(stmt, parent_id, top_level=top_level)
+        elif isinstance(stmt, ast.Expr):
+            self.visit_expr_stmt(stmt, parent_id)
         else:
             self.add_unsupported(stmt, type(stmt).__name__)
 
@@ -403,20 +405,6 @@ class Analyzer:
             pass
         else:
             self.add_unsupported(arg, type(arg).__name__)
-
-    def visit_stmt(self, stmt: ast.stmt, parent_id: str, top_level: bool = False) -> None:  # type: ignore[override]
-        if isinstance(stmt, ast.Assign):
-            self.visit_assign(stmt, parent_id)
-        elif isinstance(stmt, ast.For):
-            self.visit_for(stmt, parent_id)
-        elif isinstance(stmt, ast.If):
-            self.visit_if(stmt, parent_id, top_level=top_level)
-        elif isinstance(stmt, ast.Return):
-            self.visit_return(stmt, parent_id, top_level=top_level)
-        elif isinstance(stmt, ast.Expr):
-            self.visit_expr_stmt(stmt, parent_id)
-        else:
-            self.add_unsupported(stmt, type(stmt).__name__)
 
     def binding_role(self, name: str, value: ast.expr) -> str:
         if name in self.loop_iterators:

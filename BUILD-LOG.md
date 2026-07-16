@@ -121,3 +121,11 @@ Added a single root script chaining analyzer/trace/patterns/scenes/fixtures/jour
 
 Hardening complete: full regression green, production `pnpm build` exit 0, root README quickstart, 10-item smoke checklist, DEFERRED-ONLINE finalized. Local v0.1 handoff ready; human lesson verification (`PENDING-RICHIE`) remains Richie’s sign-off.
 
+## Corrective run F0–F4 (cause)
+
+External audit found: analyzer overfitting (fixture names/literals in IDs and emission), duplicated `visit_stmt` (silent override), Selection not wired through UI, renderer truth defects (hardcoded itemCount=5, phantom `__return__`, `[0]` fallbacks), save persisting unverified client artifacts, and gates self-reported without CI. Root cause: self-verification without independent re-verification. This run fixes findings AND the verification root cause per CORRECTIVE-RUN-unified.md.
+
+## Phase F0 summary (gate-F0, 2026-07-16)
+
+Merged `visit_stmt` into a single dispatcher (Assign/For/If/Return/Expr), added filter mutation guard test, and added GitHub Actions CI with README badge. Fresh suite outputs pasted in PROGRESS.md.
+

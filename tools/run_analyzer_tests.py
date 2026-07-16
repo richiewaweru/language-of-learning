@@ -40,6 +40,24 @@ class AnalyzerFixtureTests(unittest.TestCase):
         unsupported = analyze_source("while True:\n    break\n")
         self.assertTrue(unsupported["unsupported"])
 
+    def test_filter_emits_mutation_node_and_mutates_relation(self) -> None:
+        """Guards against a silent second visit_stmt that drops Expr handling."""
+        graph = load_graph("filter")
+        mutations = [n for n in graph["nodes"] if n["kind"] == "mutation"]
+        self.assertEqual(len(mutations), 1, mutations)
+        self.assertTrue(
+            any(
+                r["type"] == "mutates" and r["from"] == mutations[0]["id"]
+                for r in graph["relations"]
+            ),
+            graph["relations"],
+        )
+        analyzer_path = (
+            ROOT / "packages" / "analyzer-python" / "src" / "lol_analyzer" / "analyzer.py"
+        )
+        text = analyzer_path.read_text(encoding="utf-8")
+        self.assertEqual(text.count("def visit_stmt"), 1)
+
     def test_all_fixture_graphs_match_expected(self) -> None:
         matched = 0
         for fixture in FIXTURES:

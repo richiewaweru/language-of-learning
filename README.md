@@ -1,5 +1,7 @@
 # Language of Learning (v0.1-local)
 
+[![CI](https://github.com/richiewaweru/language-of-learning/actions/workflows/ci.yml/badge.svg)](https://github.com/richiewaweru/language-of-learning/actions/workflows/ci.yml)
+
 Deterministic structural code lens for beginner Python: paste a supported function, see graph / trace / pattern / scene, and study the **How loops build results** pathway.
 
 Authority: `docs/semantic-contract.md` → `docs/visual-constitution.md` + `docs/design-tokens.css` → `docs/foundation-plan.md`.

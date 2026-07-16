@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JS deps
+        run: pnpm install
+
+      - name: Install Python deps
+        run: pip install -r apps/api/requirements.txt
+
+      - name: Build contracts
+        run: pnpm --filter @lol/lens-contracts build
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Analyzer tests
+        run: pnpm test:analyzer
+
+      - name: Trace tests
+        run: pnpm test:trace
+
+      - name: Pattern tests
+        run: pnpm test:patterns
+
+      - name: Scene tests
+        run: pnpm test:scenes
+
+      - name: Fixture shape tests
+        run: pnpm test:fixtures
+
+      - name: Lesson checks
+        run: pnpm test:lessons

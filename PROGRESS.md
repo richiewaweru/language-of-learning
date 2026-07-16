@@ -2,48 +2,47 @@
 
 ## Current phase
 
-**P7 — complete.** Local v0.1 handoff ready (`gate-P7`).
+**F0 — complete.** Next: **F1 — Analyzer generalization**
 
 ## Last gate
 
-**gate-P7** — 2026-07-16
+**gate-F0** — 2026-07-16
 
-## Gate report — P7
+## Gate report — F0
 
-### Gate commands + outputs
+### Fresh-run outputs (F0-01)
 
 ```
-1. pnpm test:all
-   - analyzer: 4 OK
-   - trace: 5 OK (incl. hostile)
-   - patterns: 11/11
-   - scenes: 12/12
-   - fixtures: 9/9 (6/6 shape-valid)
-   - journey: 3/3 fresh snippets complete
-   - lessons: 4/4 lessons machine-checked
-   - typecheck: exit 0
-   - lint: exit 0
+visit_stmt count before: 2
+visit_stmt count after:  1
 
-2. pnpm pyodide-parity → 6/6 fixtures byte-identical
-3. pnpm trace-pyodide-parity → 6/6 fixture traces byte-identical
-4. pnpm build → exit 0 (workspace + web SSR/client)
+pnpm test:analyzer:
+  test_all_fixture_graphs_match_expected ... ok
+  test_filter_emits_mutation_node_and_mutates_relation ... ok
+  test_function_return_shape_keywords ... ok
+  test_mutation_unsupported_keywords ... ok
+  test_roles_loop_branch_keywords ... ok
+  Ran 5 tests — OK
 
-5. README.md → numbered quickstart ≤10 commands
-6. tools/smoke-test.md → 10-item checklist
-7. DEFERRED-ONLINE.md → finalized for v0.1-local
+Prior baseline (pre-F0 fix) pnpm test:all: exit 0
+  analyzer 4 OK → now 5 OK with mutation guard
+  trace 5 OK
+  patterns 11/11
+  scenes 12/12
+  fixtures 9/9
+  journey 3/3
+  lessons 4/4
+  typecheck exit 0
+  lint exit 0
 ```
 
 ### What shipped
 
-- Root `README.md` quickstart (clone → Decode/Learn)
-- `pnpm test:all` aggregator
-- `tools/smoke-test.md` first-open checklist for Richie
-- Finalized `DEFERRED-ONLINE.md` + BUILD-LOG P7 summary
+- Single `visit_stmt` dispatcher
+- Filter mutation + visit_stmt count unit test
+- `.github/workflows/ci.yml` + README CI badge
+- tasks.md seeded F0–F4; BUILD-LOG corrective cause
 
-### Decisions logged
+### Next
 
-See BUILD-LOG.md (README command counting; `test:all` aggregation).
-
-### Handoff note
-
-Human verification: replace `PENDING-RICHIE` on lesson records after inspecting each lesson (`DEFERRED-ONLINE.md` §10). Use `tools/smoke-test.md` on a fresh machine.
+F1 position-based IDs, purge fixture emission, regenerate goldens, variations suite.
