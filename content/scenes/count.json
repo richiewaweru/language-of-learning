@@ -1,0 +1,338 @@
+{
+  "id": "scene-count",
+  "graphRef": "fixtures/count",
+  "layout": [
+    {
+      "id": "bind-count",
+      "kind": "binding",
+      "x": 56,
+      "y": 98,
+      "width": 168,
+      "height": 56
+    },
+    {
+      "id": "op-inc",
+      "kind": "operation",
+      "x": 112,
+      "y": 308,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "branch-1",
+      "kind": "branch",
+      "x": 84,
+      "y": 238,
+      "width": 308,
+      "height": 112
+    },
+    {
+      "id": "loop-1",
+      "kind": "loop",
+      "x": 56,
+      "y": 168,
+      "width": 364,
+      "height": 196
+    },
+    {
+      "id": "ret-1",
+      "kind": "return",
+      "x": 56,
+      "y": 378,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-count_positive",
+      "kind": "function",
+      "x": 28,
+      "y": 28,
+      "width": 476,
+      "height": 392
+    },
+    {
+      "id": "bind-numbers",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    },
+    {
+      "id": "bind-n",
+      "kind": "binding",
+      "x": 182,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "fn-count_positive"
+      ],
+      "line": 1,
+      "actions": [],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "count_positive"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "bind-count"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-count",
+          "oldRepr": "—",
+          "newRepr": "0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "count",
+          "repr": "0"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "-1"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "2"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "op-add"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-count",
+          "oldRepr": "0",
+          "newRepr": "1"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "count",
+          "old": "0",
+          "new": "1"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "0"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 3
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "3"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "focus": [
+        "op-add"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-count",
+          "oldRepr": "1",
+          "newRepr": "2"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "count",
+          "old": "1",
+          "new": "2"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "focus": [
+        "ret-1"
+      ],
+      "line": 6,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "2",
+          "port": "ret-1"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "2"
+        }
+      }
+    }
+  ]
+}

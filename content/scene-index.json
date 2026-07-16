@@ -1,0 +1,18 @@
+{
+  "scene-accumulate": {
+    "fixture": "accumulate",
+    "examplePath": "fixtures/accumulate"
+  },
+  "scene-count": {
+    "fixture": "count",
+    "examplePath": "fixtures/count"
+  },
+  "scene-filter": {
+    "fixture": "filter",
+    "examplePath": "fixtures/filter"
+  },
+  "scene-transform": {
+    "fixture": "transform",
+    "examplePath": "fixtures/transform"
+  }
+}

@@ -12,6 +12,7 @@ const expectedFiles = [
   'scene-actions-fixture.json',
   'selection.json',
   'lesson-revision.json',
+  'pathway.json',
 ];
 
 describe('JSON Schema export', () => {

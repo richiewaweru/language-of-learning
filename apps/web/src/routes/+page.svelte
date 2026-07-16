@@ -6,6 +6,8 @@
   <p class="brand">Language of Learning</p>
   <p class="tagline">Structural Code Lens — v0.1 skeleton</p>
   <p class="link-row">
+    <a href="/learn">Learn</a>
+    ·
     <a href="/decode">Decode</a>
     ·
     <a href="/slices/accumulate">Accumulate slice</a>

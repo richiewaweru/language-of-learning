@@ -1,0 +1,249 @@
+{
+  "id": "scene-accumulate",
+  "graphRef": "fixtures/accumulate",
+  "layout": [
+    {
+      "id": "bind-total",
+      "kind": "binding",
+      "x": 56,
+      "y": 98,
+      "width": 168,
+      "height": 56
+    },
+    {
+      "id": "op-add",
+      "kind": "operation",
+      "x": 84,
+      "y": 238,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "loop-1",
+      "kind": "loop",
+      "x": 56,
+      "y": 168,
+      "width": 364,
+      "height": 112
+    },
+    {
+      "id": "ret-1",
+      "kind": "return",
+      "x": 56,
+      "y": 294,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-calculate_total",
+      "kind": "function",
+      "x": 28,
+      "y": 28,
+      "width": 476,
+      "height": 308
+    },
+    {
+      "id": "bind-prices",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    },
+    {
+      "id": "bind-price",
+      "kind": "binding",
+      "x": 182,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "fn-calculate_total"
+      ],
+      "line": 1,
+      "actions": [],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "calculate_total"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "bind-total"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "—",
+          "newRepr": "0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "total",
+          "repr": "0"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "3"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "op-add"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "0",
+          "newRepr": "3"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "0",
+          "new": "3"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "5"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "op-add"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "3",
+          "newRepr": "8"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "3",
+          "new": "8"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "2"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "op-add"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "8",
+          "newRepr": "10"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "8",
+          "new": "10"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "focus": [
+        "ret-1"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "10",
+          "port": "ret-1"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "10"
+        }
+      }
+    }
+  ]
+}

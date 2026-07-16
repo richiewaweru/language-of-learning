@@ -1,0 +1,38 @@
+{
+  "$ref": "#/definitions/pathway",
+  "definitions": {
+    "pathway": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "lessonSlugs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "version",
+        "slug",
+        "title",
+        "summary",
+        "lessonSlugs"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

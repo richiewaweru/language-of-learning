@@ -15,6 +15,7 @@ const exports = [
   ['scene-actions-fixture', ContractSchemas.sceneActionsFixture],
   ['selection', ContractSchemas.selection],
   ['lesson-revision', ContractSchemas.lessonRevision],
+  ['pathway', ContractSchemas.pathway],
 ] as const;
 
 mkdirSync(schemasDir, { recursive: true });

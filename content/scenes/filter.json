@@ -1,0 +1,314 @@
+{
+  "id": "scene-filter",
+  "graphRef": "fixtures/filter",
+  "layout": [
+    {
+      "id": "coll-results",
+      "kind": "collection",
+      "x": 56,
+      "y": 98,
+      "width": 168,
+      "height": 56
+    },
+    {
+      "id": "mut-append",
+      "kind": "mutation",
+      "x": 112,
+      "y": 308,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "branch-1",
+      "kind": "branch",
+      "x": 84,
+      "y": 238,
+      "width": 308,
+      "height": 112
+    },
+    {
+      "id": "loop-1",
+      "kind": "loop",
+      "x": 56,
+      "y": 168,
+      "width": 364,
+      "height": 196
+    },
+    {
+      "id": "ret-1",
+      "kind": "return",
+      "x": 56,
+      "y": 378,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-positive_prices",
+      "kind": "function",
+      "x": 28,
+      "y": 28,
+      "width": 476,
+      "height": 392
+    },
+    {
+      "id": "bind-prices",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    },
+    {
+      "id": "bind-price",
+      "kind": "binding",
+      "x": 182,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "fn-positive_prices"
+      ],
+      "line": 1,
+      "actions": [],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "positive_prices"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "-2"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "3"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "mut-append"
+      ],
+      "line": 6,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "3",
+          "fromNode": "bind-price",
+          "toNode": "coll-results"
+        }
+      ],
+      "caption": {
+        "key": "collection.append",
+        "params": {
+          "repr": "3",
+          "collection": "results"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "0"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 3
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "5"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "focus": [
+        "branch-1"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-1",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-1",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "focus": [
+        "mut-append"
+      ],
+      "line": 6,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "5",
+          "fromNode": "bind-price",
+          "toNode": "coll-results"
+        }
+      ],
+      "caption": {
+        "key": "collection.append",
+        "params": {
+          "repr": "5",
+          "collection": "results"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "focus": [
+        "ret-1"
+      ],
+      "line": 8,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "[3, 5]",
+          "port": "ret-1"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "[3, 5]"
+        }
+      }
+    }
+  ]
+}

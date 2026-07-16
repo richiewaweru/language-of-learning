@@ -1,0 +1,232 @@
+{
+  "id": "scene-transform",
+  "graphRef": "fixtures/transform",
+  "layout": [
+    {
+      "id": "coll-doubled",
+      "kind": "collection",
+      "x": 56,
+      "y": 98,
+      "width": 168,
+      "height": 56
+    },
+    {
+      "id": "mut-append",
+      "kind": "mutation",
+      "x": 84,
+      "y": 238,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "loop-1",
+      "kind": "loop",
+      "x": 56,
+      "y": 168,
+      "width": 364,
+      "height": 112
+    },
+    {
+      "id": "ret-1",
+      "kind": "return",
+      "x": 56,
+      "y": 294,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-double_all",
+      "kind": "function",
+      "x": 28,
+      "y": 28,
+      "width": 476,
+      "height": 308
+    },
+    {
+      "id": "bind-values",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    },
+    {
+      "id": "bind-v",
+      "kind": "binding",
+      "x": 182,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    },
+    {
+      "id": "op-mul",
+      "kind": "operation",
+      "x": 308,
+      "y": 56,
+      "width": 140,
+      "height": 28
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "fn-double_all"
+      ],
+      "line": 1,
+      "actions": [],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "double_all"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 0
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "1"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "mut-append"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "2",
+          "fromNode": "bind-v",
+          "toNode": "coll-doubled"
+        }
+      ],
+      "caption": {
+        "key": "collection.append",
+        "params": {
+          "repr": "2",
+          "collection": "doubled"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 1
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "2"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "mut-append"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "4",
+          "fromNode": "bind-v",
+          "toNode": "coll-doubled"
+        }
+      ],
+      "caption": {
+        "key": "collection.append",
+        "params": {
+          "repr": "4",
+          "collection": "doubled"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "loop-1"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-1",
+          "itemIndex": 2
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "3"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "mut-append"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "6",
+          "fromNode": "bind-v",
+          "toNode": "coll-doubled"
+        }
+      ],
+      "caption": {
+        "key": "collection.append",
+        "params": {
+          "repr": "6",
+          "collection": "doubled"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "ret-1"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "[2, 4, 6]",
+          "port": "ret-1"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "[2, 4, 6]"
+        }
+      }
+    }
+  ]
+}

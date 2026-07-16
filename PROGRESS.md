@@ -2,62 +2,60 @@
 
 ## Current phase
 
-**P5 — complete.** Next: **P6 — Content & Learn**
+**P6 — complete.** Next: **P7 — Hardening & handoff**
 
 ## Last gate
 
-**gate-P5** — 2026-07-16
-
-## Gate report — P4
-
-### Gate commands + outputs
-
-```
-1. pnpm test:scenes → 11/11 (now 12 with transfer)
-2. pnpm test:patterns → 11/11
-3. pnpm typecheck → exit 0
-4. pnpm lint → exit 0
-5. pnpm --filter web build → /slices/*
-6. BUILD-LOG/assets/p4/ → 6 SVGs
-```
+**gate-P6** — 2026-07-16
 
 ## Gate report — P5
 
 ### Gate commands + outputs
 
 ```
-1. pnpm test:journey
+1. pnpm test:journey → 3/3 fresh snippets complete
+2. pnpm test:scenes → 12/12 pass
+3. pnpm test:patterns → 11/11 pass
+4. pnpm typecheck → exit 0
+5. pnpm lint → exit 0
+6. pnpm --filter web build → /decode present
+```
+
+## Gate report — P6
+
+### Gate commands + outputs
+
+```
+1. pnpm test:lessons
+   - 4/4 lessons machine-checked
+   - accumulate / count / filter / transform
+
+2. pnpm test:journey (regression)
    - 3/3 fresh snippets complete
-   - sum_scores→ACCUMULATE, keep_positive→FILTER, first_match→SEARCH
-   - analyze / save / load / transfer / pattern+scene pipeline
 
-2. pnpm test:scenes
-   - 12/12 pass (includes transfer-check unit test)
-
-3. pnpm test:patterns
-   - 11/11 pass
-
-4. pnpm typecheck
+3. pnpm typecheck
    - exit 0
 
-5. pnpm lint
+4. pnpm lint
    - exit 0
 
-6. pnpm --filter web build
-   - exit 0 with /decode route
+5. pnpm --filter web build
+   - exit 0 with /learn, /learn/how-loops-build-results, and 4 lesson routes
 ```
 
 ### What shipped
 
-- `apps/api/` FastAPI: `/analyze`, `/analyses`, `/events` (SQLite-free JSON store + NDJSON)
-- `/decode` CodeMirror editor, sample-call, four synced views, unsupported panel, transfer check, save/load
-- `buildTransferCheck` / `gradeTransferCheck` in `@lol/lens-scenes`
-- `pnpm test:journey` + `pnpm api` scripts
+- `content/pathways/how-loops-build-results.json` + four lesson JSON files
+- `content/scenes/` pre-rendered scenes (static initial state)
+- `PathwaySchema` in lens-contracts + JSON Schema export
+- Learn routes: index → pathway → lessons with prev/next nav
+- Static-first pages + “Run it yourself” interactive ScenePlayer
+- `pnpm test:lessons` machine-check script; `verified_by: PENDING-RICHIE`
 
 ### Decisions logged
 
-See BUILD-LOG.md (JSON file store; CodeMirror; API analyze in Python / pattern+scene in TS).
+See BUILD-LOG.md (four lessons = accumulate/count/filter/transform; Pyodide on demand deferred to Decode link).
 
-### Next phase preview — P6
+### Next phase preview — P7
 
-Lesson schema, four-lesson loops pathway, static-first Learn pages, machine-check verification.
+Full test run, production build, README quickstart, smoke-test script, finalize DEFERRED-ONLINE.

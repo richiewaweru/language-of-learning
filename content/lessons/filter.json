@@ -1,0 +1,40 @@
+{
+  "version": "0.1",
+  "slug": "filter",
+  "title": "Filter — keep only some items",
+  "objectives": [
+    "Recognize a loop with a branch whose true path appends to a new collection",
+    "See flow-teal loop and branch-magenta fork together",
+    "Predict which items land in the result list"
+  ],
+  "prerequisites": ["accumulate"],
+  "blocks": [
+    {
+      "type": "text",
+      "content": "FILTER builds a new collection by keeping items that pass a test. Untaken paths dim; they do not vanish."
+    },
+    {
+      "type": "scene",
+      "sceneId": "scene-filter"
+    },
+    {
+      "type": "text",
+      "content": "Canonical example: `positive_prices` from fixtures/filter."
+    },
+    {
+      "type": "check",
+      "checkId": "filter-line-append"
+    }
+  ],
+  "checks": [
+    {
+      "id": "filter-line-append",
+      "prompt": "Which line appends a kept item?",
+      "answerKey": "6",
+      "rubric": "Line 6: results.append(price)"
+    }
+  ],
+  "verification": {
+    "verified_by": "PENDING-RICHIE"
+  }
+}

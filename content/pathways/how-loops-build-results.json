@@ -1,0 +1,12 @@
+{
+  "version": "0.1",
+  "slug": "how-loops-build-results",
+  "title": "How loops build results",
+  "summary": "Four patterns for building a result with a loop: accumulate, count, filter, and transform.",
+  "lessonSlugs": [
+    "accumulate",
+    "count",
+    "filter",
+    "transform"
+  ]
+}

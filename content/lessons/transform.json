@@ -1,0 +1,40 @@
+{
+  "version": "0.1",
+  "slug": "transform",
+  "title": "Transform — change every item",
+  "objectives": [
+    "Recognize a loop that appends an operation-of-iterator with no branch",
+    "Contrast TRANSFORM with FILTER",
+    "Transfer: spot which pattern a new snippet uses"
+  ],
+  "prerequisites": ["filter"],
+  "blocks": [
+    {
+      "type": "text",
+      "content": "TRANSFORM maps every item into a new collection. There is no keep/skip branch — every iteration appends a computed value."
+    },
+    {
+      "type": "scene",
+      "sceneId": "scene-transform"
+    },
+    {
+      "type": "text",
+      "content": "Canonical example: `double_all` from fixtures/transform. Next: open Decode and paste a fresh loop to name its pattern."
+    },
+    {
+      "type": "check",
+      "checkId": "transform-line-append"
+    }
+  ],
+  "checks": [
+    {
+      "id": "transform-line-append",
+      "prompt": "Which line appends the transformed value?",
+      "answerKey": "4",
+      "rubric": "Line 4: doubled.append(v * 2)"
+    }
+  ],
+  "verification": {
+    "verified_by": "PENDING-RICHIE"
+  }
+}

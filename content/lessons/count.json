@@ -1,0 +1,40 @@
+{
+  "version": "0.1",
+  "slug": "count",
+  "title": "Count — tally matching items",
+  "objectives": [
+    "See COUNT as accumulate with +1 when the iterator is unread in the update",
+    "Notice the branch that decides whether to increment",
+    "Contrast COUNT with ACCUMULATE"
+  ],
+  "prerequisites": ["accumulate"],
+  "blocks": [
+    {
+      "type": "text",
+      "content": "COUNT keeps a tally. The update is `count + 1` and does not read the iterator in the arithmetic — only the branch cares about the item."
+    },
+    {
+      "type": "scene",
+      "sceneId": "scene-count"
+    },
+    {
+      "type": "text",
+      "content": "Canonical example: `count_positive` from fixtures/count."
+    },
+    {
+      "type": "check",
+      "checkId": "count-line-inc"
+    }
+  ],
+  "checks": [
+    {
+      "id": "count-line-inc",
+      "prompt": "Which line increments the count?",
+      "answerKey": "5",
+      "rubric": "Line 5: count = count + 1"
+    }
+  ],
+  "verification": {
+    "verified_by": "PENDING-RICHIE"
+  }
+}

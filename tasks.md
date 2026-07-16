@@ -384,3 +384,39 @@
 6. `pnpm --filter web build`     → exit 0 with `/decode` route
 
 **Phase P5 complete.** Tag: `gate-P5`
+
+## Phase P6 — Content & Learn [gate: pnpm test:lessons && pathway navigable + web build]
+
+- [x] P6-01 Author pathway + four lesson JSON (blocks reference sceneIds/examples)
+      done-when: content validates against lesson schema; pathway lists 4 lessons
+      status: ✓ judged
+      evidence: content/pathways + content/lessons/{accumulate,count,filter,transform}.json
+      judge: 2026-07-16 accepted
+
+- [x] P6-02 Pre-render static scene payloads for each lesson example
+      done-when: content/scenes/*.json exist; machine-check confirms scene nodes ⊆ graph
+      status: ✓ judged
+      evidence: content/scenes/{accumulate,count,filter,transform}.json from buildScene
+      judge: 2026-07-16 accepted
+
+- [x] P6-03 Learn routes: pathway index + static-first lesson pages + nav
+      done-when: `/learn/how-loops-build-results` and four lesson routes build; prev/next navigable
+      status: ✓ judged
+      evidence: web build includes /learn, /learn/[pathway], /learn/[pathway]/[lesson]
+      judge: 2026-07-16 accepted
+
+- [x] P6-04 Machine-check script + PENDING-RICHIE verification records
+      done-when: `pnpm test:lessons` reports 4/4 machine-checked
+      status: ✓ judged
+      evidence: `pnpm test:lessons` → 4/4 lessons machine-checked; verified_by PENDING-RICHIE
+      judge: 2026-07-16 accepted
+
+## Gate block P6 (run all; paste outputs to PROGRESS.md)
+
+1. `pnpm test:lessons`           → expect: 4/4 machine-checked
+2. `pnpm test:journey`           → expect: 3/3 (regression)
+3. `pnpm typecheck`              → exit 0
+4. `pnpm lint`                   → exit 0
+5. `pnpm --filter web build`     → exit 0 with /learn pathway + 4 lessons
+
+**Phase P6 complete.** Tag: `gate-P6`

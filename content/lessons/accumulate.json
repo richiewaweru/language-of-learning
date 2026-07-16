@@ -1,0 +1,40 @@
+{
+  "version": "0.1",
+  "slug": "accumulate",
+  "title": "Accumulate — build up one value",
+  "objectives": [
+    "Recognize a state binding updated from its prior value and the iterator",
+    "Map the loop frame to the code that walks a collection",
+    "Predict the running total after each step"
+  ],
+  "prerequisites": [],
+  "blocks": [
+    {
+      "type": "text",
+      "content": "Sometimes a loop builds one answer by folding each item into a running total. That pattern is ACCUMULATE."
+    },
+    {
+      "type": "scene",
+      "sceneId": "scene-accumulate"
+    },
+    {
+      "type": "text",
+      "content": "Canonical example: `calculate_total` from fixtures/accumulate. The state cell `total` starts at 0 and grows as `price` arrives."
+    },
+    {
+      "type": "check",
+      "checkId": "accumulate-line-total"
+    }
+  ],
+  "checks": [
+    {
+      "id": "accumulate-line-total",
+      "prompt": "Which line initializes the running total?",
+      "answerKey": "2",
+      "rubric": "Line 2: total = 0"
+    }
+  ],
+  "verification": {
+    "verified_by": "PENDING-RICHIE"
+  }
+}

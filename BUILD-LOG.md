@@ -96,3 +96,16 @@ Brief allows CodeMirror or Monaco. Chose CodeMirror (lighter) with `@codemirror/
 ## Phase P5 summary (gate-P5, 2026-07-16)
 
 Decode surface live at `/decode` with local FastAPI, transfer checks, save/load, NDJSON events, and a 3-snippet journey gate.
+
+### DECISION: four-lesson pathway = accumulate/count/filter/transform (P6)
+
+Authoring doc lists accumulate/count/filter/transform plus compare/transfer. Brief requires exactly four lessons. Chose the four pattern lessons; compare/transfer live as in-lesson checks and Decode handoff rather than separate lesson pages.
+
+### DECISION: “Run it yourself” uses ScenePlayer, not in-page Pyodide (P6)
+
+Static-first pages render step-0 layout without JS animation. Interactive stepping uses existing visual-grammar ScenePlayer with precomputed traces. Live re-analyze stays on `/decode` (P5). Full in-page Pyodide remains deferred.
+
+## Phase P6 summary (gate-P6, 2026-07-16)
+
+Authored the “How loops build results” pathway, pre-rendered scenes, Learn routes with static-first lessons, and a machine-check gate reporting 4/4 with PENDING-RICHIE verification placeholders.
+
