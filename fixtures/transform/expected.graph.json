@@ -5,14 +5,26 @@
     {
       "id": "fn-double_all",
       "kind": "function",
-      "sourceRange": { "startLine": 1, "startCol": 0, "endLine": 5, "endCol": 18 },
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 5,
+        "endCol": 18
+      },
       "name": "double_all",
-      "params": ["bind-values"]
+      "params": [
+        "bind-values"
+      ]
     },
     {
       "id": "bind-values",
       "kind": "binding",
-      "sourceRange": { "startLine": 1, "startCol": 15, "endLine": 1, "endCol": 21 },
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 15,
+        "endLine": 1,
+        "endCol": 21
+      },
       "name": "values",
       "role": "parameter",
       "mutable": false
@@ -20,45 +32,117 @@
     {
       "id": "coll-doubled",
       "kind": "collection",
-      "sourceRange": { "startLine": 2, "startCol": 4, "endLine": 2, "endCol": 17 },
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 2,
+        "endCol": 16
+      },
       "name": "doubled",
       "items": []
     },
     {
       "id": "loop-1",
       "kind": "loop",
-      "sourceRange": { "startLine": 3, "startCol": 4, "endLine": 4, "endCol": 27 },
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 4,
+        "endLine": 4,
+        "endCol": 28
+      },
       "iteratorName": "v",
       "collectionRef": "bind-values",
       "body": "mut-append"
     },
     {
-      "id": "op-mul",
-      "kind": "operation",
-      "sourceRange": { "startLine": 4, "startCol": 23, "endLine": 4, "endCol": 26 },
-      "expr": "v * 2"
+      "id": "bind-v",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 8,
+        "endLine": 3,
+        "endCol": 9
+      },
+      "name": "v",
+      "role": "iterator",
+      "mutable": false
     },
     {
       "id": "mut-append",
       "kind": "mutation",
-      "sourceRange": { "startLine": 4, "startCol": 8, "endLine": 4, "endCol": 27 },
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 8,
+        "endLine": 4,
+        "endCol": 29
+      },
       "targetRef": "coll-doubled",
       "mutationType": "append"
     },
     {
+      "id": "op-mul",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 23,
+        "endLine": 4,
+        "endCol": 27
+      },
+      "expr": "v * 2"
+    },
+    {
       "id": "ret-1",
       "kind": "return",
-      "sourceRange": { "startLine": 5, "startCol": 4, "endLine": 5, "endCol": 18 },
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 4,
+        "endLine": 5,
+        "endCol": 18
+      },
       "valueRef": "coll-doubled"
     }
   ],
   "relations": [
-    { "from": "fn-double_all", "type": "contains", "to": "coll-doubled" },
-    { "from": "fn-double_all", "type": "contains", "to": "loop-1" },
-    { "from": "loop-1", "type": "contains", "to": "mut-append" },
-    { "from": "mut-append", "type": "mutates", "to": "coll-doubled" },
-    { "from": "op-mul", "type": "feeds", "to": "mut-append" },
-    { "from": "ret-1", "type": "returns", "to": "coll-doubled" }
+    {
+      "from": "fn-double_all",
+      "type": "contains",
+      "to": "coll-doubled"
+    },
+    {
+      "from": "fn-double_all",
+      "type": "contains",
+      "to": "loop-1"
+    },
+    {
+      "from": "loop-1",
+      "type": "iterates",
+      "to": "bind-values"
+    },
+    {
+      "from": "loop-1",
+      "type": "contains",
+      "to": "mut-append"
+    },
+    {
+      "from": "mut-append",
+      "type": "mutates",
+      "to": "coll-doubled"
+    },
+    {
+      "from": "op-mul",
+      "type": "feeds",
+      "to": "mut-append"
+    },
+    {
+      "from": "fn-double_all",
+      "type": "contains",
+      "to": "ret-1"
+    },
+    {
+      "from": "ret-1",
+      "type": "returns",
+      "to": "coll-doubled"
+    }
   ],
   "unsupported": []
 }

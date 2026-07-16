@@ -2,11 +2,11 @@
 
 ## Current phase
 
-**P0 — complete.** Next: **P1 — analyzer-python**
+**P1 — complete.** Next: **P2 — trace-runtime**
 
 ## Last gate
 
-**gate-P0** — 2026-07-16
+**gate-P1** — 2026-07-16
 
 ## Gate report — P0
 
@@ -43,6 +43,45 @@
 
 See BUILD-LOG.md (docs layout, reference gap, package naming).
 
-### Next phase preview — P1
+## Gate report — P1
 
-Pure Python analyzer: AST → semantic graph per contract. Gate: six golden fixtures byte-identical in CPython + Pyodide; 10 unseen snippets reviewed.
+### Gate commands + outputs
+
+```
+1. pnpm test:analyzer
+   - 4/4 tests pass
+   - includes exact graph match across 6 fixtures
+
+2. pnpm pyodide-parity
+   - 6/6 fixtures byte-identical
+
+3. python tools/review_unseen.py
+   - 10/10 reviewed
+
+4. pnpm --filter web build
+   - passes with /debug/graph route present
+
+5. pnpm typecheck
+   - exit 0
+
+6. pnpm lint
+   - exit 0
+```
+
+### What shipped
+
+- `packages/analyzer-python/src/lol_analyzer/` shared analyzer package
+- `tools/analyze_graph.py` CLI
+- `tools/run_analyzer_tests.py` CPython fixture tests
+- `tools/run_pyodide_parity.mjs` Pyodide parity runner
+- refined `fixtures/*/expected.graph.json` files to canonical analyzer output
+- `tools/review_unseen.py` + unseen review log in `BUILD-LOG.md`
+- `apps/web/src/routes/debug/graph/` fixture-backed graph inspector
+
+### Decisions logged
+
+See BUILD-LOG.md (fixture canonicalization decision added for P1).
+
+### Next phase preview — P2
+
+Instrumented execution and honest sandboxing: canonical traces, hostile fixtures, caps, and calm failure banners.

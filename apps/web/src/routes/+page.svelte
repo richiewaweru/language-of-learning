@@ -5,6 +5,7 @@
 <main>
   <p class="brand">Language of Learning</p>
   <p class="tagline">Structural Code Lens — v0.1 skeleton</p>
+  <p class="link-row"><a href="/debug/graph">Open graph inspector</a></p>
 </main>
 
 <style>
@@ -24,5 +25,13 @@
   .tagline {
     color: var(--muted);
     margin: 0;
+  }
+
+  .link-row {
+    margin-top: 1rem;
+  }
+
+  a {
+    color: var(--data-blue);
   }
 </style>

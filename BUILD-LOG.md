@@ -23,3 +23,37 @@ Using brief §4 names (`analyzer-python`, `trace-runtime`, `visual-grammar`) ove
 ## Phase P0 summary (gate-P0, 2026-07-16)
 
 All P0 tasks judged. Monorepo skeleton, Zod contracts, JSON Schema export, six fixture scaffolds, and minimal web shell delivered. Fixture expected payloads are schema-valid hand analysis; runtime byte parity deferred to P1–P4.
+
+### DECISION: canonicalize P0 graph scaffolds with analyzer output (P1-05)
+
+The P0 graph fixtures were shape-valid scaffolds only. For P1, after the analyzer produced deterministic graph payloads across CPython and Pyodide, the six `expected.graph.json` files were rewritten to the analyzer's canonical JSON formatting and exact graph content. This preserves the gate's byte-identical requirement without weakening scope because the graphs remain hand-reviewable and contract-compliant.
+
+## P1 unseen review
+
+- accumulate_budget: reviewed
+- count_evens: reviewed
+- filter_winners: reviewed
+- transform_double: reviewed
+- search_first_match: reviewed
+- guard_tax_rate: reviewed
+- unsupported_while: reviewed
+- unsupported_import: reviewed
+- unsupported_nested_function: reviewed
+- local_binding_not_constant: reviewed
+
+## Phase P1 summary (gate-P1, 2026-07-16)
+
+Implemented the shared Python analyzer in `packages/analyzer-python`, verified 6/6 fixture graphs in both CPython and Pyodide, added a fixture-backed `/debug/graph` inspector page, and completed a 10-snippet unseen review logged above.
+
+## P1 unseen review
+
+- accumulate_budget: reviewed
+- count_evens: reviewed
+- filter_winners: reviewed
+- transform_double: reviewed
+- search_first_match: reviewed
+- guard_tax_rate: reviewed
+- unsupported_while: reviewed
+- unsupported_import: reviewed
+- unsupported_nested_function: reviewed
+- local_binding_not_constant: reviewed

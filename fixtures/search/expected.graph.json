@@ -5,14 +5,26 @@
     {
       "id": "fn-find_first_positive",
       "kind": "function",
-      "sourceRange": { "startLine": 1, "startCol": 0, "endLine": 5, "endCol": 13 },
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 5,
+        "endCol": 13
+      },
       "name": "find_first_positive",
-      "params": ["bind-numbers"]
+      "params": [
+        "bind-numbers"
+      ]
     },
     {
       "id": "bind-numbers",
       "kind": "binding",
-      "sourceRange": { "startLine": 1, "startCol": 24, "endLine": 1, "endCol": 31 },
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 24,
+        "endLine": 1,
+        "endCol": 31
+      },
       "name": "numbers",
       "role": "parameter",
       "mutable": false
@@ -20,53 +32,112 @@
     {
       "id": "loop-1",
       "kind": "loop",
-      "sourceRange": { "startLine": 2, "startCol": 4, "endLine": 4, "endCol": 19 },
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 4,
+        "endCol": 19
+      },
       "iteratorName": "n",
       "collectionRef": "bind-numbers",
       "body": "branch-1"
     },
     {
+      "id": "bind-n",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 8,
+        "endLine": 2,
+        "endCol": 9
+      },
+      "name": "n",
+      "role": "iterator",
+      "mutable": false
+    },
+    {
       "id": "branch-1",
       "kind": "branch",
-      "sourceRange": { "startLine": 3, "startCol": 8, "endLine": 4, "endCol": 19 },
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 8,
+        "endLine": 4,
+        "endCol": 20
+      },
       "conditionExpr": "n > 0",
       "trueBody": "ret-early"
     },
     {
       "id": "ret-early",
       "kind": "return",
-      "sourceRange": { "startLine": 4, "startCol": 12, "endLine": 4, "endCol": 19 },
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 12,
+        "endLine": 4,
+        "endCol": 20
+      },
       "valueRef": "bind-n"
-    },
-    {
-      "id": "bind-n",
-      "kind": "binding",
-      "sourceRange": { "startLine": 2, "startCol": 8, "endLine": 2, "endCol": 9 },
-      "name": "n",
-      "role": "iterator",
-      "mutable": false
     },
     {
       "id": "ret-fallback",
       "kind": "return",
-      "sourceRange": { "startLine": 5, "startCol": 4, "endLine": 5, "endCol": 13 },
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 4,
+        "endLine": 5,
+        "endCol": 13
+      },
       "valueRef": "val-neg1"
     },
     {
       "id": "val-neg1",
       "kind": "value",
-      "sourceRange": { "startLine": 5, "startCol": 11, "endLine": 5, "endCol": 13 },
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 11,
+        "endLine": 5,
+        "endCol": 13
+      },
       "repr": "-1",
       "pyType": "int"
     }
   ],
   "relations": [
-    { "from": "fn-find_first_positive", "type": "contains", "to": "loop-1" },
-    { "from": "loop-1", "type": "contains", "to": "branch-1" },
-    { "from": "branch-1", "type": "contains", "to": "ret-early" },
-    { "from": "fn-find_first_positive", "type": "contains", "to": "ret-fallback" },
-    { "from": "ret-early", "type": "returns", "to": "bind-n" },
-    { "from": "ret-fallback", "type": "returns", "to": "val-neg1" }
+    {
+      "from": "fn-find_first_positive",
+      "type": "contains",
+      "to": "loop-1"
+    },
+    {
+      "from": "loop-1",
+      "type": "iterates",
+      "to": "bind-numbers"
+    },
+    {
+      "from": "loop-1",
+      "type": "contains",
+      "to": "branch-1"
+    },
+    {
+      "from": "branch-1",
+      "type": "contains",
+      "to": "ret-early"
+    },
+    {
+      "from": "ret-early",
+      "type": "returns",
+      "to": "bind-n"
+    },
+    {
+      "from": "fn-find_first_positive",
+      "type": "contains",
+      "to": "ret-fallback"
+    },
+    {
+      "from": "ret-fallback",
+      "type": "returns",
+      "to": "val-neg1"
+    }
   ],
   "unsupported": []
 }

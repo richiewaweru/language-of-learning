@@ -1,0 +1,91 @@
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "packages" / "analyzer-python" / "src"))
+
+from lol_analyzer import analyze_source, canonical_json  # noqa: E402
+
+
+FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard"]
+
+
+class AnalyzerFixtureTests(unittest.TestCase):
+    maxDiff = None
+
+    def test_function_return_shape_keywords(self) -> None:
+        graph = load_graph("accumulate")
+        kinds = [node["kind"] for node in graph["nodes"]]
+        self.assertIn("function", kinds)
+        self.assertIn("return", kinds)
+        self.assertEqual(graph["nodes"][0]["id"], "fn-calculate_total")
+
+    def test_roles_loop_branch_keywords(self) -> None:
+        graph = load_graph("count")
+        roles = {node["id"]: node.get("role") for node in graph["nodes"] if node["kind"] == "binding"}
+        self.assertEqual(roles["bind-count"], "state")
+        self.assertEqual(roles["bind-n"], "iterator")
+        self.assertTrue(any(node["kind"] == "loop" for node in graph["nodes"]))
+        self.assertTrue(any(node["kind"] == "branch" for node in graph["nodes"]))
+
+    def test_mutation_unsupported_keywords(self) -> None:
+        graph = load_graph("filter")
+        relation_types = [rel["type"] for rel in graph["relations"]]
+        self.assertIn("mutates", relation_types)
+        unsupported = analyze_source("while True:\n    break\n")
+        self.assertTrue(unsupported["unsupported"])
+
+    def test_all_fixture_graphs_match_expected(self) -> None:
+        matched = 0
+        for fixture in FIXTURES:
+            actual = canonical_json(load_graph(fixture))
+            expected = (fixture_dir(fixture) / "expected.graph.json").read_text(encoding="utf-8")
+            self.assertEqual(actual, expected, fixture)
+            matched += 1
+        self.assertEqual(matched, 6)
+
+
+def fixture_dir(name: str) -> Path:
+    return ROOT / "fixtures" / name
+
+
+def load_graph(name: str) -> dict:
+    source = (fixture_dir(name) / "source.py").read_text(encoding="utf-8").rstrip()
+    return analyze_source(source)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("keywords", nargs="*", help="Optional substrings to select tests")
+    args = parser.parse_args()
+
+    suite = unittest.defaultTestLoader.loadTestsFromTestCase(AnalyzerFixtureTests)
+    if args.keywords:
+        selected = unittest.TestSuite()
+        lowered = [k.lower() for k in args.keywords]
+        for test in iterate_suite(suite):
+            name = test.id().split(".")[-1].lower()
+            if any(keyword in name for keyword in lowered):
+                selected.addTest(test)
+        suite = selected
+
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(suite)
+    return 0 if result.wasSuccessful() else 1
+
+
+def iterate_suite(suite: unittest.TestSuite):
+    for test in suite:
+        if isinstance(test, unittest.TestSuite):
+            yield from iterate_suite(test)
+        else:
+            yield test
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

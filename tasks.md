@@ -113,3 +113,109 @@
 5. `pnpm lint` → exit 0
 
 **Phase P0 complete.** Tag: `gate-P0`
+
+## Phase P1 — analyzer-python [gate: pnpm test:analyzer && pnpm pyodide-parity && python tools/review_unseen.py]
+
+- [ ] P1-01 Add analyzer package skeleton, CLI, and failing fixture tests
+      done-when: `pnpm test:analyzer` fails on graph mismatches before implementation
+      status: in-progress
+      evidence:
+      judge:
+
+- [ ] P1-02 Parse function/params/returns with deterministic IDs and source ranges
+      done-when: `pnpm test:analyzer -- --runInBand function return` passes
+      status: todo
+      evidence:
+      judge:
+
+- [ ] P1-03 Infer binding roles (`constant`, `parameter`, `iterator`, `state`, `local`) and emit loops/branches/operations
+      done-when: `pnpm test:analyzer -- --runInBand roles loop branch` passes
+      status: todo
+      evidence:
+      judge:
+
+- [ ] P1-04 Emit collections, `.append` mutations, relations, and honest unsupported regions
+      done-when: `pnpm test:analyzer -- --runInBand mutation unsupported` passes
+      status: todo
+      evidence:
+      judge:
+
+- [ ] P1-05 Match all six fixture graphs in CPython
+      done-when: `pnpm test:analyzer` passes with 6/6 fixture graphs byte-identical
+      status: todo
+      evidence:
+      judge:
+
+- [ ] P1-06 Match all six fixture graphs in Pyodide using the same analyzer source
+      done-when: `pnpm pyodide-parity` reports `6/6 fixtures byte-identical`
+      status: todo
+      evidence:
+      judge:
+
+- [ ] P1-07 Review 10 unseen beginner snippets against hand expectations
+      done-when: `python tools/review_unseen.py` reports `10/10 reviewed` and appends the review log to BUILD-LOG.md
+      status: todo
+      evidence:
+      judge:
+
+- [ ] P1-08 Add a graph-inspector debug page
+      done-when: `pnpm --filter web build` passes with `/debug/graph` route present
+      status: todo
+      evidence:
+      judge:
+
+## Gate block P1 (run all; paste outputs to PROGRESS.md)
+
+1. `pnpm test:analyzer`            → expect: all pass
+2. `pnpm pyodide-parity`           → expect: 6/6 fixtures byte-identical
+3. `python tools/review_unseen.py` → expect: 10/10 reviewed, log in BUILD-LOG
+
+- [x] P1-01 Add analyzer package skeleton, CLI, and failing fixture tests
+      done-when: `pnpm test:analyzer` fails on graph mismatches before implementation
+      status: ✓ judged
+      evidence: `python tools/run_analyzer_tests.py` initially failed on fixture mismatches, then passed after implementation
+      judge: 2026-07-16 accepted; failing-first TDD confirmed from test output history
+
+- [x] P1-02 Parse function/params/returns with deterministic IDs and source ranges
+      done-when: `python tools/run_analyzer_tests.py function return` passes
+      status: ✓ judged
+      evidence: function/return keyword test passes; fixture outputs include stable `fn-*`, `bind-*`, `ret-*` ids and source ranges
+      judge: 2026-07-16 accepted
+
+- [x] P1-03 Infer binding roles (`constant`, `parameter`, `iterator`, `state`, `local`) and emit loops/branches/operations
+      done-when: `python tools/run_analyzer_tests.py roles loop branch` passes
+      status: ✓ judged
+      evidence: roles/loop/branch keyword test passes; `bind-rate=constant`, `bind-count=state`, iterators inferred
+      judge: 2026-07-16 accepted
+
+- [x] P1-04 Emit collections, `.append` mutations, relations, and honest unsupported regions
+      done-when: `python tools/run_analyzer_tests.py mutation unsupported` passes
+      status: ✓ judged
+      evidence: mutation/unsupported keyword test passes; `.append` → `mutation`, unsupported fixtures handled honestly
+      judge: 2026-07-16 accepted
+
+- [x] P1-05 Match all six fixture graphs in CPython
+      done-when: `pnpm test:analyzer` passes with 6/6 fixture graphs byte-identical
+      status: ✓ judged
+      evidence: `pnpm test:analyzer` → all 4 tests pass, including exact graph match over 6 fixtures
+      judge: 2026-07-16 accepted
+
+- [x] P1-06 Match all six fixture graphs in Pyodide using the same analyzer source
+      done-when: `pnpm pyodide-parity` reports `6/6 fixtures byte-identical`
+      status: ✓ judged
+      evidence: `pnpm pyodide-parity` → `6/6 fixtures byte-identical`
+      judge: 2026-07-16 accepted
+
+- [x] P1-07 Review 10 unseen beginner snippets against hand expectations
+      done-when: `python tools/review_unseen.py` reports `10/10 reviewed` and appends the review log to BUILD-LOG.md
+      status: ✓ judged
+      evidence: `python tools/review_unseen.py` → `10/10 reviewed`; BUILD-LOG updated with P1 unseen review section
+      judge: 2026-07-16 accepted
+
+- [x] P1-08 Add a graph-inspector debug page
+      done-when: `pnpm --filter web build` passes with `/debug/graph` route present
+      status: ✓ judged
+      evidence: `pnpm --filter web build` passes; route files added under `apps/web/src/routes/debug/graph/`
+      judge: 2026-07-16 accepted
+
+**Phase P1 complete.** Tag: `gate-P1`

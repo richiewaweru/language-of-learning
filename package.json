@@ -9,6 +9,8 @@
     "build": "pnpm -r build",
     "test": "vitest run",
     "test:fixtures": "vitest run tests/fixtures",
+    "test:analyzer": "python tools/run_analyzer_tests.py",
+    "pyodide-parity": "node tools/run_pyodide_parity.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --build",
     "export-schemas": "pnpm --filter @lol/lens-contracts export-schemas"
@@ -19,6 +21,7 @@
     "@types/node": "^22.10.5",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",
+    "pyodide": "^0.28.3",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0",
     "vitest": "^3.0.4"
