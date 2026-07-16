@@ -9,7 +9,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-total",
+          "cell": "bind-L2C4",
           "oldRepr": "—",
           "newRepr": "0"
         }
@@ -20,7 +20,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 0
         }
       ]
@@ -30,7 +30,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-total",
+          "cell": "bind-L2C4",
           "oldRepr": "0",
           "newRepr": "3"
         }
@@ -41,7 +41,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 1
         }
       ]
@@ -51,7 +51,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-total",
+          "cell": "bind-L2C4",
           "oldRepr": "3",
           "newRepr": "8"
         }
@@ -62,7 +62,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 2
         }
       ]
@@ -72,7 +72,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-total",
+          "cell": "bind-L2C4",
           "oldRepr": "8",
           "newRepr": "10"
         }
@@ -84,7 +84,7 @@
         {
           "type": "exit_return",
           "repr": "10",
-          "port": "ret-1"
+          "port": "ret-L5C4"
         }
       ]
     }

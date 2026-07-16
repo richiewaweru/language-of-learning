@@ -1,6 +1,15 @@
 {
   "pattern": "FILTER",
   "confidence": "deterministic",
-  "memberNodes": ["loop-1", "branch-1", "mut-append", "coll-results"],
-  "related": ["ACCUMULATE", "COUNT", "TRANSFORM"]
+  "memberNodes": [
+    "loop-L4C4",
+    "branch-L5C8",
+    "mut-L6C12",
+    "coll-L2C4"
+  ],
+  "related": [
+    "ACCUMULATE",
+    "COUNT",
+    "TRANSFORM"
+  ]
 }

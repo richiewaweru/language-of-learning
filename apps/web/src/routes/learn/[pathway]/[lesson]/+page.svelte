@@ -2,9 +2,11 @@
   import { ScenePlayer } from '@lol/visual-grammar';
   import '@lol/visual-grammar/styles.css';
   import type { SemanticGraph, Trace } from '@lol/lens-scenes';
+  import type { Selection } from '@lol/lens-contracts';
 
   let { data } = $props();
   let runInteractive = $state(false);
+  let selection = $state<Selection>({ stepIndex: 0 });
   let checkAnswers = $state<Record<string, string>>({});
   let checkFeedback = $state<Record<string, string>>({});
 
@@ -28,6 +30,10 @@
     {data.pathway.title} · Lesson {data.lessonIndex}/{data.lessonCount}
   </p>
   <h1>{data.lesson.title}</h1>
+
+  {#if data.lesson.verification?.verified_by === 'PENDING-RICHIE' || !data.lesson.verification?.verified_by}
+    <p class="preview-badge" role="status">Machine-checked · awaiting human verification</p>
+  {/if}
 
   <ul class="objectives">
     {#each data.lesson.objectives as obj}
@@ -75,6 +81,8 @@
               scene={pack.scene}
               graph={pack.example.graph as SemanticGraph}
               trace={pack.example.trace as Trace}
+              {selection}
+              onselectionchange={(next) => (selection = next)}
               width={Math.max(...pack.scene.layout.map((n) => n.x + n.width)) + 28}
               height={Math.max(...pack.scene.layout.map((n) => n.y + n.height)) + 28}
             />
@@ -140,6 +148,15 @@
   h1 {
     color: var(--work-purple);
     margin: 0.25rem 0 1rem;
+  }
+  .preview-badge {
+    display: inline-block;
+    margin: 0 0 1rem;
+    padding: 0.35rem 0.6rem;
+    border: var(--border-w) solid var(--ink);
+    font: 600 12px/1.2 var(--font-ui);
+    letter-spacing: 0.04em;
+    background: var(--paper);
   }
   .objectives {
     color: var(--muted);

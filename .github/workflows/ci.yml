@@ -55,5 +55,13 @@ jobs:
       - name: Fixture shape tests
         run: pnpm test:fixtures
 
+      - name: API save re-verification tests
+        run: pnpm test:api-save
+
       - name: Lesson checks
         run: pnpm test:lessons
+
+      - name: Content scenes rebuild (drift check)
+        run: |
+          pnpm content:rebuild
+          git diff --exit-code content/

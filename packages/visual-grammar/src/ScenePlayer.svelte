@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Scene, SceneAction } from '@lol/lens-contracts';
+  import type { Scene, SceneAction, Selection } from '@lol/lens-contracts';
   import type { SemanticGraph } from '@lol/lens-scenes';
   import { renderCaption } from '@lol/lens-scenes';
   import ValueToken from './ValueToken.svelte';
@@ -14,20 +14,25 @@
   import EffectPulse from './EffectPulse.svelte';
   import UnsupportedRegion from './UnsupportedRegion.svelte';
   import TraceControls from './TraceControls.svelte';
+  import { loopItemCountFromTrace, returnReprFromScene } from './trace-display.js';
 
   type TraceLike = {
     steps: Array<{
       index: number;
+      line?: number;
       bindings: Record<string, string>;
       focus: string[];
       event: { type: string; [key: string]: unknown };
     }>;
+    result?: { repr?: string };
   };
 
   let {
     scene,
     graph,
     trace,
+    selection,
+    onselectionchange,
     width = 640,
     height = 480,
     reducedMotion = false,
@@ -35,16 +40,19 @@
     scene: Scene;
     graph: SemanticGraph;
     trace: TraceLike;
+    selection: Selection;
+    onselectionchange?: (next: Selection) => void;
     width?: number;
     height?: number;
     reducedMotion?: boolean;
   } = $props();
 
-  let stepIndex = $state(0);
   let playing = $state(false);
   let playTimer: ReturnType<typeof setInterval> | null = null;
 
   const maxStep = $derived(Math.max(scene.steps.length - 1, 0));
+  // Controlled: stepIndex is derived from the parent-owned Selection, never owned here.
+  const stepIndex = $derived(Math.min(Math.max(selection.stepIndex ?? 0, 0), maxStep));
   const currentStep = $derived(scene.steps[stepIndex]);
   const bindings = $derived(trace.steps[stepIndex]?.bindings ?? {});
   const focusIds = $derived(new Set(currentStep?.focus ?? []));
@@ -63,6 +71,21 @@
     }
     return 0;
   });
+
+  const loopItemCount = $derived.by(() => {
+    const loop = graph.nodes.find((n) => n.kind === 'loop');
+    const collRef = loop && 'collectionRef' in loop ? (loop as { collectionRef?: string }).collectionRef : undefined;
+    const coll = collRef ? graph.nodes.find((n) => n.id === collRef) : undefined;
+    const fallback =
+      coll && 'items' in coll && Array.isArray((coll as { items?: unknown[] }).items)
+        ? (coll as { items: unknown[] }).items.length
+        : 0;
+    return loopItemCountFromTrace(trace.steps, fallback);
+  });
+
+  const returnRepr = $derived(
+    returnReprFromScene(scene.steps, stepIndex, trace.result?.repr ?? ''),
+  );
 
   const branchResult = $derived.by(() => {
     const map = new Map<string, boolean>();
@@ -88,8 +111,13 @@
     return graph.nodes.find((n) => n.id === id);
   }
 
+  function emit(next: Selection) {
+    onselectionchange?.(next);
+  }
+
   function go(index: number) {
-    stepIndex = Math.max(0, Math.min(maxStep, index));
+    const clamped = Math.max(0, Math.min(maxStep, index));
+    emit({ ...selection, nodeId: undefined, stepIndex: clamped, line: trace.steps[clamped]?.line });
   }
 
   function back() {
@@ -125,13 +153,17 @@
         stopPlay();
         return;
       }
-      stepIndex += 1;
+      go(stepIndex + 1);
     }, 1600);
   }
 
   function selectNode(id: string) {
     const idx = scene.steps.findIndex((s) => s.focus.includes(id));
-    if (idx >= 0) go(idx);
+    emit({
+      nodeId: id,
+      stepIndex: idx >= 0 ? idx : (selection.stepIndex ?? 0),
+      line: idx >= 0 ? trace.steps[idx]?.line : selection.line,
+    });
   }
 </script>
 
@@ -204,7 +236,7 @@
           height={layoutNode.height}
           iteratorName={node.iteratorName ?? 'item'}
           itemIndex={loopItemIndex}
-          itemCount={5}
+          itemCount={loopItemCount}
           {focused}
           onclick={() => selectNode(layoutNode.id)}
         />
@@ -250,7 +282,7 @@
           y={layoutNode.y}
           width={layoutNode.width}
           height={layoutNode.height}
-          label={`return ${bindings.__return__ ?? ''}`}
+          label={`return ${returnRepr}`}
           {focused}
           onclick={() => selectNode(layoutNode.id)}
         />

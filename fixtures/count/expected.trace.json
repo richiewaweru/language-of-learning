@@ -1,6 +1,6 @@
 {
   "call": {
-    "functionId": "fn-count_positive",
+    "functionId": "fn-L1C0",
     "argsRepr": [
       "[-1, 2, 0, 3]"
     ]
@@ -10,19 +10,19 @@
       "index": 0,
       "line": 1,
       "focus": [
-        "fn-count_positive"
+        "fn-L1C0"
       ],
       "bindings": {},
       "event": {
         "type": "call_enter",
-        "functionId": "fn-count_positive"
+        "functionId": "fn-L1C0"
       }
     },
     {
       "index": 1,
       "line": 2,
       "focus": [
-        "bind-count"
+        "bind-L2C4"
       ],
       "bindings": {
         "count": "0",
@@ -30,7 +30,7 @@
       },
       "event": {
         "type": "state_init",
-        "binding": "bind-count",
+        "binding": "bind-L2C4",
         "repr": "0"
       }
     },
@@ -38,7 +38,7 @@
       "index": 2,
       "line": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "bindings": {
         "count": "0",
@@ -47,7 +47,7 @@
       },
       "event": {
         "type": "loop_advance",
-        "loop": "loop-1",
+        "loop": "loop-L3C4",
         "itemIndex": 0,
         "itemRepr": "-1"
       }
@@ -56,7 +56,7 @@
       "index": 3,
       "line": 4,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "bindings": {
         "count": "0",
@@ -65,7 +65,7 @@
       },
       "event": {
         "type": "condition_eval",
-        "branch": "branch-1",
+        "branch": "branch-L4C8",
         "result": false
       }
     },
@@ -73,7 +73,7 @@
       "index": 4,
       "line": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "bindings": {
         "count": "0",
@@ -82,7 +82,7 @@
       },
       "event": {
         "type": "loop_advance",
-        "loop": "loop-1",
+        "loop": "loop-L3C4",
         "itemIndex": 1,
         "itemRepr": "2"
       }
@@ -91,7 +91,7 @@
       "index": 5,
       "line": 4,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "bindings": {
         "count": "0",
@@ -100,7 +100,7 @@
       },
       "event": {
         "type": "condition_eval",
-        "branch": "branch-1",
+        "branch": "branch-L4C8",
         "result": true
       }
     },
@@ -108,7 +108,7 @@
       "index": 6,
       "line": 5,
       "focus": [
-        "op-add"
+        "op-L5C20"
       ],
       "bindings": {
         "count": "1",
@@ -117,7 +117,7 @@
       },
       "event": {
         "type": "state_change",
-        "binding": "bind-count",
+        "binding": "bind-L2C4",
         "oldRepr": "0",
         "newRepr": "1"
       }
@@ -126,7 +126,7 @@
       "index": 7,
       "line": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "bindings": {
         "count": "1",
@@ -135,7 +135,7 @@
       },
       "event": {
         "type": "loop_advance",
-        "loop": "loop-1",
+        "loop": "loop-L3C4",
         "itemIndex": 2,
         "itemRepr": "0"
       }
@@ -144,7 +144,7 @@
       "index": 8,
       "line": 4,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "bindings": {
         "count": "1",
@@ -153,7 +153,7 @@
       },
       "event": {
         "type": "condition_eval",
-        "branch": "branch-1",
+        "branch": "branch-L4C8",
         "result": false
       }
     },
@@ -161,7 +161,7 @@
       "index": 9,
       "line": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "bindings": {
         "count": "1",
@@ -170,7 +170,7 @@
       },
       "event": {
         "type": "loop_advance",
-        "loop": "loop-1",
+        "loop": "loop-L3C4",
         "itemIndex": 3,
         "itemRepr": "3"
       }
@@ -179,7 +179,7 @@
       "index": 10,
       "line": 4,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "bindings": {
         "count": "1",
@@ -188,7 +188,7 @@
       },
       "event": {
         "type": "condition_eval",
-        "branch": "branch-1",
+        "branch": "branch-L4C8",
         "result": true
       }
     },
@@ -196,7 +196,7 @@
       "index": 11,
       "line": 5,
       "focus": [
-        "op-add"
+        "op-L5C20"
       ],
       "bindings": {
         "count": "2",
@@ -205,7 +205,7 @@
       },
       "event": {
         "type": "state_change",
-        "binding": "bind-count",
+        "binding": "bind-L2C4",
         "oldRepr": "1",
         "newRepr": "2"
       }
@@ -214,7 +214,7 @@
       "index": 12,
       "line": 6,
       "focus": [
-        "ret-1"
+        "ret-L6C4"
       ],
       "bindings": {
         "count": "2",

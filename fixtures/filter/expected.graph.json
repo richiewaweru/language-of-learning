@@ -3,7 +3,7 @@
   "source": "def positive_prices(prices):\n    results = []\n\n    for price in prices:\n        if price > 0:\n            results.append(price)\n\n    return results",
   "nodes": [
     {
-      "id": "fn-positive_prices",
+      "id": "fn-L1C0",
       "kind": "function",
       "sourceRange": {
         "startLine": 1,
@@ -13,11 +13,11 @@
       },
       "name": "positive_prices",
       "params": [
-        "bind-prices"
+        "bind-L1C20"
       ]
     },
     {
-      "id": "bind-prices",
+      "id": "bind-L1C20",
       "kind": "binding",
       "sourceRange": {
         "startLine": 1,
@@ -30,7 +30,7 @@
       "mutable": false
     },
     {
-      "id": "coll-results",
+      "id": "coll-L2C4",
       "kind": "collection",
       "sourceRange": {
         "startLine": 2,
@@ -42,7 +42,7 @@
       "items": []
     },
     {
-      "id": "loop-1",
+      "id": "loop-L4C4",
       "kind": "loop",
       "sourceRange": {
         "startLine": 4,
@@ -51,11 +51,11 @@
         "endCol": 32
       },
       "iteratorName": "price",
-      "collectionRef": "bind-prices",
-      "body": "branch-1"
+      "collectionRef": "bind-L1C20",
+      "body": "branch-L5C8"
     },
     {
-      "id": "bind-price",
+      "id": "bind-L4C8",
       "kind": "binding",
       "sourceRange": {
         "startLine": 4,
@@ -68,7 +68,7 @@
       "mutable": false
     },
     {
-      "id": "branch-1",
+      "id": "branch-L5C8",
       "kind": "branch",
       "sourceRange": {
         "startLine": 5,
@@ -77,10 +77,10 @@
         "endCol": 33
       },
       "conditionExpr": "price > 0",
-      "trueBody": "mut-append"
+      "trueBody": "mut-L6C12"
     },
     {
-      "id": "mut-append",
+      "id": "mut-L6C12",
       "kind": "mutation",
       "sourceRange": {
         "startLine": 6,
@@ -88,11 +88,11 @@
         "endLine": 6,
         "endCol": 33
       },
-      "targetRef": "coll-results",
+      "targetRef": "coll-L2C4",
       "mutationType": "append"
     },
     {
-      "id": "ret-1",
+      "id": "ret-L8C4",
       "kind": "return",
       "sourceRange": {
         "startLine": 8,
@@ -100,49 +100,49 @@
         "endLine": 8,
         "endCol": 18
       },
-      "valueRef": "coll-results"
+      "valueRef": "coll-L2C4"
     }
   ],
   "relations": [
     {
-      "from": "fn-positive_prices",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "coll-results"
+      "to": "coll-L2C4"
     },
     {
-      "from": "fn-positive_prices",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "loop-1"
+      "to": "loop-L4C4"
     },
     {
-      "from": "loop-1",
+      "from": "loop-L4C4",
       "type": "iterates",
-      "to": "bind-prices"
+      "to": "bind-L1C20"
     },
     {
-      "from": "loop-1",
+      "from": "loop-L4C4",
       "type": "contains",
-      "to": "branch-1"
+      "to": "branch-L5C8"
     },
     {
-      "from": "branch-1",
+      "from": "branch-L5C8",
       "type": "contains",
-      "to": "mut-append"
+      "to": "mut-L6C12"
     },
     {
-      "from": "mut-append",
+      "from": "mut-L6C12",
       "type": "mutates",
-      "to": "coll-results"
+      "to": "coll-L2C4"
     },
     {
-      "from": "fn-positive_prices",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "ret-1"
+      "to": "ret-L8C4"
     },
     {
-      "from": "ret-1",
+      "from": "ret-L8C4",
       "type": "returns",
-      "to": "coll-results"
+      "to": "coll-L2C4"
     }
   ],
   "unsupported": []

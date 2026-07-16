@@ -1,6 +1,6 @@
 {
   "call": {
-    "functionId": "fn-apply_tax",
+    "functionId": "fn-L1C0",
     "argsRepr": [
       "100"
     ]
@@ -10,19 +10,19 @@
       "index": 0,
       "line": 1,
       "focus": [
-        "fn-apply_tax"
+        "fn-L1C0"
       ],
       "bindings": {},
       "event": {
         "type": "call_enter",
-        "functionId": "fn-apply_tax"
+        "functionId": "fn-L1C0"
       }
     },
     {
       "index": 1,
       "line": 2,
       "focus": [
-        "bind-rate"
+        "bind-L2C4"
       ],
       "bindings": {
         "amount": "100",
@@ -30,7 +30,7 @@
       },
       "event": {
         "type": "state_init",
-        "binding": "bind-rate",
+        "binding": "bind-L2C4",
         "repr": "0.16"
       }
     },
@@ -38,7 +38,7 @@
       "index": 2,
       "line": 3,
       "focus": [
-        "branch-guard"
+        "branch-L3C4"
       ],
       "bindings": {
         "amount": "100",
@@ -46,7 +46,7 @@
       },
       "event": {
         "type": "condition_eval",
-        "branch": "branch-guard",
+        "branch": "branch-L3C4",
         "result": false
       }
     },
@@ -54,7 +54,7 @@
       "index": 3,
       "line": 5,
       "focus": [
-        "ret-main"
+        "ret-L5C4"
       ],
       "bindings": {
         "amount": "100",

@@ -3,7 +3,7 @@
   "graphRef": "fixtures/transform",
   "layout": [
     {
-      "id": "coll-doubled",
+      "id": "coll-L2C4",
       "kind": "collection",
       "x": 56,
       "y": 98,
@@ -11,7 +11,7 @@
       "height": 56
     },
     {
-      "id": "mut-append",
+      "id": "mut-L4C8",
       "kind": "mutation",
       "x": 84,
       "y": 238,
@@ -19,7 +19,7 @@
       "height": 28
     },
     {
-      "id": "loop-1",
+      "id": "loop-L3C4",
       "kind": "loop",
       "x": 56,
       "y": 168,
@@ -27,7 +27,7 @@
       "height": 112
     },
     {
-      "id": "ret-1",
+      "id": "ret-L5C4",
       "kind": "return",
       "x": 56,
       "y": 294,
@@ -35,7 +35,7 @@
       "height": 28
     },
     {
-      "id": "fn-double_all",
+      "id": "fn-L1C0",
       "kind": "function",
       "x": 28,
       "y": 28,
@@ -43,7 +43,7 @@
       "height": 308
     },
     {
-      "id": "bind-values",
+      "id": "bind-L1C15",
       "kind": "binding",
       "x": 56,
       "y": 56,
@@ -51,7 +51,7 @@
       "height": 28
     },
     {
-      "id": "bind-v",
+      "id": "bind-L3C8",
       "kind": "binding",
       "x": 182,
       "y": 56,
@@ -59,7 +59,7 @@
       "height": 28
     },
     {
-      "id": "op-mul",
+      "id": "op-L4C23",
       "kind": "operation",
       "x": 308,
       "y": 56,
@@ -71,7 +71,7 @@
     {
       "index": 0,
       "focus": [
-        "fn-double_all"
+        "fn-L1C0"
       ],
       "line": 1,
       "actions": [],
@@ -85,13 +85,13 @@
     {
       "index": 1,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "line": 3,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 0
         }
       ],
@@ -105,15 +105,15 @@
     {
       "index": 2,
       "focus": [
-        "mut-append"
+        "mut-L4C8"
       ],
       "line": 4,
       "actions": [
         {
           "type": "move_value",
           "repr": "2",
-          "fromNode": "bind-v",
-          "toNode": "coll-doubled"
+          "fromNode": "bind-L3C8",
+          "toNode": "coll-L2C4"
         }
       ],
       "caption": {
@@ -127,13 +127,13 @@
     {
       "index": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "line": 3,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 1
         }
       ],
@@ -147,15 +147,15 @@
     {
       "index": 4,
       "focus": [
-        "mut-append"
+        "mut-L4C8"
       ],
       "line": 4,
       "actions": [
         {
           "type": "move_value",
           "repr": "4",
-          "fromNode": "bind-v",
-          "toNode": "coll-doubled"
+          "fromNode": "bind-L3C8",
+          "toNode": "coll-L2C4"
         }
       ],
       "caption": {
@@ -169,13 +169,13 @@
     {
       "index": 5,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "line": 3,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 2
         }
       ],
@@ -189,15 +189,15 @@
     {
       "index": 6,
       "focus": [
-        "mut-append"
+        "mut-L4C8"
       ],
       "line": 4,
       "actions": [
         {
           "type": "move_value",
           "repr": "6",
-          "fromNode": "bind-v",
-          "toNode": "coll-doubled"
+          "fromNode": "bind-L3C8",
+          "toNode": "coll-L2C4"
         }
       ],
       "caption": {
@@ -211,14 +211,14 @@
     {
       "index": 7,
       "focus": [
-        "ret-1"
+        "ret-L5C4"
       ],
       "line": 5,
       "actions": [
         {
           "type": "exit_return",
           "repr": "[2, 4, 6]",
-          "port": "ret-1"
+          "port": "ret-L5C4"
         }
       ],
       "caption": {

@@ -3,7 +3,7 @@
   "source": "def calculate_total(prices):\n    total = 0\n    for price in prices:\n        total = total + price\n    return total",
   "nodes": [
     {
-      "id": "fn-calculate_total",
+      "id": "fn-L1C0",
       "kind": "function",
       "sourceRange": {
         "startLine": 1,
@@ -13,11 +13,11 @@
       },
       "name": "calculate_total",
       "params": [
-        "bind-prices"
+        "bind-L1C20"
       ]
     },
     {
-      "id": "bind-prices",
+      "id": "bind-L1C20",
       "kind": "binding",
       "sourceRange": {
         "startLine": 1,
@@ -30,7 +30,7 @@
       "mutable": false
     },
     {
-      "id": "bind-total",
+      "id": "bind-L2C4",
       "kind": "binding",
       "sourceRange": {
         "startLine": 2,
@@ -44,7 +44,7 @@
       "initialRepr": "0"
     },
     {
-      "id": "val-0",
+      "id": "val-L2C12",
       "kind": "value",
       "sourceRange": {
         "startLine": 2,
@@ -56,7 +56,7 @@
       "pyType": "int"
     },
     {
-      "id": "loop-1",
+      "id": "loop-L3C4",
       "kind": "loop",
       "sourceRange": {
         "startLine": 3,
@@ -65,11 +65,11 @@
         "endCol": 28
       },
       "iteratorName": "price",
-      "collectionRef": "bind-prices",
-      "body": "op-add"
+      "collectionRef": "bind-L1C20",
+      "body": "op-L4C16"
     },
     {
-      "id": "bind-price",
+      "id": "bind-L3C8",
       "kind": "binding",
       "sourceRange": {
         "startLine": 3,
@@ -82,7 +82,7 @@
       "mutable": false
     },
     {
-      "id": "op-add",
+      "id": "op-L4C16",
       "kind": "operation",
       "sourceRange": {
         "startLine": 4,
@@ -93,7 +93,7 @@
       "expr": "total + price"
     },
     {
-      "id": "ret-1",
+      "id": "ret-L5C4",
       "kind": "return",
       "sourceRange": {
         "startLine": 5,
@@ -101,54 +101,54 @@
         "endLine": 5,
         "endCol": 16
       },
-      "valueRef": "bind-total"
+      "valueRef": "bind-L2C4"
     }
   ],
   "relations": [
     {
-      "from": "fn-calculate_total",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "bind-total"
+      "to": "bind-L2C4"
     },
     {
-      "from": "fn-calculate_total",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "loop-1"
+      "to": "loop-L3C4"
     },
     {
-      "from": "loop-1",
+      "from": "loop-L3C4",
       "type": "iterates",
-      "to": "bind-prices"
+      "to": "bind-L1C20"
     },
     {
-      "from": "loop-1",
+      "from": "loop-L3C4",
       "type": "contains",
-      "to": "op-add"
+      "to": "op-L4C16"
     },
     {
-      "from": "op-add",
+      "from": "op-L4C16",
       "type": "reads",
-      "to": "bind-total"
+      "to": "bind-L2C4"
     },
     {
-      "from": "op-add",
+      "from": "op-L4C16",
       "type": "reads",
-      "to": "bind-price"
+      "to": "bind-L3C8"
     },
     {
-      "from": "op-add",
+      "from": "op-L4C16",
       "type": "writes",
-      "to": "bind-total"
+      "to": "bind-L2C4"
     },
     {
-      "from": "fn-calculate_total",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "ret-1"
+      "to": "ret-L5C4"
     },
     {
-      "from": "ret-1",
+      "from": "ret-L5C4",
       "type": "returns",
-      "to": "bind-total"
+      "to": "bind-L2C4"
     }
   ],
   "unsupported": []

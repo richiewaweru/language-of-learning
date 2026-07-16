@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ScenePlayer } from '@lol/visual-grammar';
   import '@lol/visual-grammar/styles.css';
+  import type { Selection } from '@lol/lens-contracts';
 
   let { data } = $props();
   let variantId = $state('canonical');
@@ -8,6 +9,7 @@
   let pasteMessage = $state('');
   let forceReduced = $state(false);
   let hydrated = $state(false);
+  let selection = $state<Selection>({ stepIndex: 0 });
 
   $effect(() => {
     if (!hydrated && data.variants[0]) {
@@ -23,6 +25,7 @@
 
   function selectVariant(id: string) {
     variantId = id;
+    selection = { stepIndex: 0 };
     const v = data.variants.find((x) => x.id === id);
     if (v) {
       paste = v.source;
@@ -34,6 +37,7 @@
     const match = data.variants.find((v) => v.source.trim() === paste.trim());
     if (match) {
       variantId = match.id;
+      selection = { stepIndex: 0 };
       pasteMessage = `Matched variation “${match.label}”.`;
       return;
     }
@@ -85,6 +89,8 @@
         scene={variant.scene}
         graph={variant.graph}
         trace={variant.trace}
+        {selection}
+        onselectionchange={(next) => (selection = next)}
         width={Math.max(...variant.scene.layout.map((n) => n.x + n.width)) + 28}
         height={Math.max(...variant.scene.layout.map((n) => n.y + n.height)) + 28}
         reducedMotion={forceReduced}

@@ -3,7 +3,7 @@
   "graphRef": "fixtures/count",
   "layout": [
     {
-      "id": "bind-count",
+      "id": "bind-L2C4",
       "kind": "binding",
       "x": 56,
       "y": 98,
@@ -11,7 +11,7 @@
       "height": 56
     },
     {
-      "id": "op-inc",
+      "id": "op-L5C20",
       "kind": "operation",
       "x": 112,
       "y": 308,
@@ -19,7 +19,7 @@
       "height": 28
     },
     {
-      "id": "branch-1",
+      "id": "branch-L4C8",
       "kind": "branch",
       "x": 84,
       "y": 238,
@@ -27,7 +27,7 @@
       "height": 112
     },
     {
-      "id": "loop-1",
+      "id": "loop-L3C4",
       "kind": "loop",
       "x": 56,
       "y": 168,
@@ -35,7 +35,7 @@
       "height": 196
     },
     {
-      "id": "ret-1",
+      "id": "ret-L6C4",
       "kind": "return",
       "x": 56,
       "y": 378,
@@ -43,7 +43,7 @@
       "height": 28
     },
     {
-      "id": "fn-count_positive",
+      "id": "fn-L1C0",
       "kind": "function",
       "x": 28,
       "y": 28,
@@ -51,7 +51,7 @@
       "height": 392
     },
     {
-      "id": "bind-numbers",
+      "id": "bind-L1C19",
       "kind": "binding",
       "x": 56,
       "y": 56,
@@ -59,7 +59,7 @@
       "height": 28
     },
     {
-      "id": "bind-n",
+      "id": "bind-L3C8",
       "kind": "binding",
       "x": 182,
       "y": 56,
@@ -71,7 +71,7 @@
     {
       "index": 0,
       "focus": [
-        "fn-count_positive"
+        "fn-L1C0"
       ],
       "line": 1,
       "actions": [],
@@ -85,13 +85,13 @@
     {
       "index": 1,
       "focus": [
-        "bind-count"
+        "bind-L2C4"
       ],
       "line": 2,
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-count",
+          "cell": "bind-L2C4",
           "oldRepr": "—",
           "newRepr": "0"
         }
@@ -107,13 +107,13 @@
     {
       "index": 2,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "line": 3,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 0
         }
       ],
@@ -127,20 +127,20 @@
     {
       "index": 3,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "line": 4,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": false
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": "false"
         }
       }
@@ -148,13 +148,13 @@
     {
       "index": 4,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "line": 3,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 1
         }
       ],
@@ -168,20 +168,20 @@
     {
       "index": 5,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "line": 4,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": true
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": "true"
         }
       }
@@ -189,13 +189,13 @@
     {
       "index": 6,
       "focus": [
-        "op-add"
+        "op-L5C20"
       ],
       "line": 5,
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-count",
+          "cell": "bind-L2C4",
           "oldRepr": "0",
           "newRepr": "1"
         }
@@ -212,13 +212,13 @@
     {
       "index": 7,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "line": 3,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 2
         }
       ],
@@ -232,20 +232,20 @@
     {
       "index": 8,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "line": 4,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": false
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": "false"
         }
       }
@@ -253,13 +253,13 @@
     {
       "index": 9,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "line": 3,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 3
         }
       ],
@@ -273,20 +273,20 @@
     {
       "index": 10,
       "focus": [
-        "branch-1"
+        "branch-L4C8"
       ],
       "line": 4,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": true
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": "true"
         }
       }
@@ -294,13 +294,13 @@
     {
       "index": 11,
       "focus": [
-        "op-add"
+        "op-L5C20"
       ],
       "line": 5,
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-count",
+          "cell": "bind-L2C4",
           "oldRepr": "1",
           "newRepr": "2"
         }
@@ -317,14 +317,14 @@
     {
       "index": 12,
       "focus": [
-        "ret-1"
+        "ret-L6C4"
       ],
       "line": 6,
       "actions": [
         {
           "type": "exit_return",
           "repr": "2",
-          "port": "ret-1"
+          "port": "ret-L6C4"
         }
       ],
       "caption": {

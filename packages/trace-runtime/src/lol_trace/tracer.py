@@ -171,8 +171,9 @@ class Tracer:
             old = self.env.get(name)
             new_value = self._eval_binop(stmt.value)
             binding = self.graph.bindings.get(name)
-            op_id = self._operation_id(stmt.value)
-            line = self.graph.node_line.get(op_id, stmt.lineno)
+            op_node = self._operation_node(stmt.value)
+            op_id = op_node["id"]
+            line = op_node["sourceRange"]["startLine"]
             if binding and binding.get("role") == "state" and name in self.env:
                 self.env[name] = new_value
                 self.trace.emit(
@@ -210,7 +211,7 @@ class Tracer:
     def _exec_for(self, stmt: ast.For) -> None:
         if not isinstance(stmt.target, ast.Name) or not isinstance(stmt.iter, ast.Name):
             raise SandboxViolation("for", "Only simple for-loops are supported.")
-        loop = self.graph.loops[0] if len(self.graph.loops) == 1 else self._loop_for_line(stmt.lineno)
+        loop = self._loop_for_line(stmt.lineno)
         iterator_name = stmt.target.id
         collection = self.env[stmt.iter.id]
         if not isinstance(collection, list):
@@ -253,7 +254,6 @@ class Tracer:
     def _exec_return(self, stmt: ast.Return) -> None:
         ret = self._return_for_stmt(stmt)
         value = self._eval_expr(stmt.value)
-        self.env["__return__"] = value
         self.trace.result_repr = value_repr(value)
         self.trace.emit(
             ret["sourceRange"]["startLine"],
@@ -271,7 +271,7 @@ class Tracer:
         collection_name = target.id
         old = list(self.env[collection_name])
         self.env[collection_name].append(arg)
-        mutation = self.graph.mutations[0]
+        mutation = self._mutation_for_stmt(stmt)
         collection = self.graph.collections[collection_name]
         self.trace.emit(
             mutation["sourceRange"]["startLine"],
@@ -339,34 +339,49 @@ class Tracer:
         for loop in self.graph.loops:
             if loop["sourceRange"]["startLine"] == line:
                 return loop
-        return self.graph.loops[0]
+        raise SandboxViolation("for", f"No loop node resolves to line {line}.")
 
     def _branch_for_line(self, line: int) -> dict[str, Any]:
         for branch in self.graph.branches:
             if branch["sourceRange"]["startLine"] == line:
                 return branch
-        return self.graph.branches[0]
+        raise SandboxViolation("condition", f"No branch node resolves to line {line}.")
 
     def _return_for_stmt(self, stmt: ast.Return) -> dict[str, Any]:
         for ret in self.graph.returns:
             if ret["sourceRange"]["startLine"] == stmt.lineno:
                 return ret
-        return self.graph.returns[0]
+        raise SandboxViolation("return", f"No return node resolves to line {stmt.lineno}.")
 
-    def _operation_id(self, expr: ast.BinOp) -> str:
-        token = {
-            ast.Add: "add",
-            ast.Sub: "sub",
-            ast.Mult: "mul",
-            ast.Div: "div",
-        }.get(type(expr.op), "expr")
-        if (
-            token == "add"
-            and isinstance(expr.right, ast.Constant)
-            and value_repr(expr.right) == "1"
-        ):
-            return "op-inc"
-        return f"op-{token}"
+    def _mutation_for_stmt(self, stmt: ast.Expr) -> dict[str, Any]:
+        for mutation in self.graph.mutations:
+            source_range = mutation["sourceRange"]
+            if (
+                source_range["startLine"] == stmt.lineno
+                and source_range["startCol"] == stmt.col_offset
+            ):
+                return mutation
+        # No exact column match: fall back to a unique match on the line.
+        on_line = [m for m in self.graph.mutations if m["sourceRange"]["startLine"] == stmt.lineno]
+        if len(on_line) == 1:
+            return on_line[0]
+        raise SandboxViolation(
+            "mutation",
+            f"No mutation node resolves to line {stmt.lineno} col {stmt.col_offset}.",
+        )
+
+    def _operation_node(self, expr: ast.BinOp) -> dict[str, Any]:
+        for operation in self.graph.operations.values():
+            source_range = operation["sourceRange"]
+            if (
+                source_range["startLine"] == expr.lineno
+                and source_range["startCol"] == expr.col_offset
+            ):
+                return operation
+        raise SandboxViolation(
+            "operation",
+            f"No operation node resolves to line {expr.lineno} col {expr.col_offset}.",
+        )
 
     def _is_literal(self, node: ast.AST) -> bool:
         return isinstance(node, ast.Constant) and isinstance(

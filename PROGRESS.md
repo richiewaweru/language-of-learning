@@ -2,47 +2,37 @@
 
 ## Current phase
 
-**F0 — complete.** Next: **F1 — Analyzer generalization**
+**F4 — complete.** Corrective run F0–F4 done (`gate-F4`). P-motion deferred.
 
 ## Last gate
 
-**gate-F0** — 2026-07-16
+**gate-F4** — 2026-07-16
 
-## Gate report — F0
-
-### Fresh-run outputs (F0-01)
+## Gate report — F4 (final corrective)
 
 ```
-visit_stmt count before: 2
-visit_stmt count after:  1
-
-pnpm test:analyzer:
-  test_all_fixture_graphs_match_expected ... ok
-  test_filter_emits_mutation_node_and_mutates_relation ... ok
-  test_function_return_shape_keywords ... ok
-  test_mutation_unsupported_keywords ... ok
-  test_roles_loop_branch_keywords ... ok
-  Ran 5 tests — OK
-
-Prior baseline (pre-F0 fix) pnpm test:all: exit 0
-  analyzer 4 OK → now 5 OK with mutation guard
-  trace 5 OK
-  patterns 11/11
-  scenes 12/12
-  fixtures 9/9
-  journey 3/3
-  lessons 4/4
-  typecheck exit 0
-  lint exit 0
+1. visit_stmt count = 1
+2. analyzer fixture-string greps = 0
+3. itemCount={5} greps = 0
+4. __return__ in apps/web + visual-grammar = 0
+5. .(loops|branches|mutations|returns)[0] in packages = 0
+6. pnpm test:all — green (analyzer, trace, variations, patterns, scenes,
+   fixtures, journey, api-save, lessons, parity-ops, visual, typecheck, lint)
+7. pnpm content:rebuild — scenes regenerated with position ids
+8. docs/decisions/0007* + 0008* exist
+9. CI workflow present (content drift step included)
 ```
 
-### What shipped
+### What shipped (F1–F4)
 
-- Single `visit_stmt` dispatcher
-- Filter mutation + visit_stmt count unit test
-- `.github/workflows/ci.yml` + README CI badge
-- tasks.md seeded F0–F4; BUILD-LOG corrective cause
+- Position-based analyzer IDs + 13 variations anti-overfit suite
+- Server re-verify on save + engineVersion 0.1.1 + content:rebuild
+- Controlled ScenePlayer + Decode/slices/Learn Selection sync
+- Renderer truth (item count, return port) + Learn preview badge + ADRs
 
-### Next
+### Manual (Richie)
 
-F1 position-based IDs, purge fixture emission, regenerate goldens, variations suite.
+(a) Decode renamed accumulator → correct pattern/shape/transfer  
+(b) click line 4 → all views move; step → code follows  
+(c) filter slice: 3 items = 3 positions; return shows real value  
+(d) Learn pages show preview badge until verified_by set

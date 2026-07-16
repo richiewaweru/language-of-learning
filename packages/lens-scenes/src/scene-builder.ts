@@ -104,11 +104,13 @@ function actionsForStep(graph: SemanticGraph, step: TraceStep): SceneAction[] {
 function captionForStep(graph: SemanticGraph, step: TraceStep): SceneStep['caption'] {
   const event = step.event;
   switch (event.type) {
-    case 'call_enter':
+    case 'call_enter': {
+      const fn = byId(graph).get(event.functionId);
       return {
         key: 'call.enter',
-        params: { function: event.functionId.replace(/^fn-/, '') },
+        params: { function: fn?.name ?? event.functionId },
       };
+    }
     case 'bind_param':
       return { key: 'bind.param', params: { name: event.name, repr: event.repr } };
     case 'state_init':

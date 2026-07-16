@@ -9,7 +9,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-count",
+          "cell": "bind-L2C4",
           "oldRepr": "—",
           "newRepr": "0"
         }
@@ -20,7 +20,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 0
         }
       ]
@@ -30,7 +30,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": false
         }
       ]
@@ -40,7 +40,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 1
         }
       ]
@@ -50,7 +50,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": true
         }
       ]
@@ -60,7 +60,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-count",
+          "cell": "bind-L2C4",
           "oldRepr": "0",
           "newRepr": "1"
         }
@@ -71,7 +71,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 2
         }
       ]
@@ -81,7 +81,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": false
         }
       ]
@@ -91,7 +91,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 3
         }
       ]
@@ -101,7 +101,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L4C8",
           "result": true
         }
       ]
@@ -111,7 +111,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-count",
+          "cell": "bind-L2C4",
           "oldRepr": "1",
           "newRepr": "2"
         }
@@ -123,7 +123,7 @@
         {
           "type": "exit_return",
           "repr": "2",
-          "port": "ret-1"
+          "port": "ret-L6C4"
         }
       ]
     }

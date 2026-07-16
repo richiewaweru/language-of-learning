@@ -9,7 +9,7 @@
       "actions": [
         {
           "type": "change_state",
-          "cell": "bind-rate",
+          "cell": "bind-L2C4",
           "oldRepr": "—",
           "newRepr": "0.16"
         }
@@ -20,7 +20,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-guard",
+          "branch": "branch-L3C4",
           "result": false
         }
       ]
@@ -31,7 +31,7 @@
         {
           "type": "exit_return",
           "repr": "16.0",
-          "port": "ret-main"
+          "port": "ret-L5C4"
         }
       ]
     }

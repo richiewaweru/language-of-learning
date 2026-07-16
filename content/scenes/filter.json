@@ -3,7 +3,7 @@
   "graphRef": "fixtures/filter",
   "layout": [
     {
-      "id": "coll-results",
+      "id": "coll-L2C4",
       "kind": "collection",
       "x": 56,
       "y": 98,
@@ -11,7 +11,7 @@
       "height": 56
     },
     {
-      "id": "mut-append",
+      "id": "mut-L6C12",
       "kind": "mutation",
       "x": 112,
       "y": 308,
@@ -19,7 +19,7 @@
       "height": 28
     },
     {
-      "id": "branch-1",
+      "id": "branch-L5C8",
       "kind": "branch",
       "x": 84,
       "y": 238,
@@ -27,7 +27,7 @@
       "height": 112
     },
     {
-      "id": "loop-1",
+      "id": "loop-L4C4",
       "kind": "loop",
       "x": 56,
       "y": 168,
@@ -35,7 +35,7 @@
       "height": 196
     },
     {
-      "id": "ret-1",
+      "id": "ret-L8C4",
       "kind": "return",
       "x": 56,
       "y": 378,
@@ -43,7 +43,7 @@
       "height": 28
     },
     {
-      "id": "fn-positive_prices",
+      "id": "fn-L1C0",
       "kind": "function",
       "x": 28,
       "y": 28,
@@ -51,7 +51,7 @@
       "height": 392
     },
     {
-      "id": "bind-prices",
+      "id": "bind-L1C20",
       "kind": "binding",
       "x": 56,
       "y": 56,
@@ -59,7 +59,7 @@
       "height": 28
     },
     {
-      "id": "bind-price",
+      "id": "bind-L4C8",
       "kind": "binding",
       "x": 182,
       "y": 56,
@@ -71,7 +71,7 @@
     {
       "index": 0,
       "focus": [
-        "fn-positive_prices"
+        "fn-L1C0"
       ],
       "line": 1,
       "actions": [],
@@ -85,13 +85,13 @@
     {
       "index": 1,
       "focus": [
-        "loop-1"
+        "loop-L4C4"
       ],
       "line": 4,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 0
         }
       ],
@@ -105,20 +105,20 @@
     {
       "index": 2,
       "focus": [
-        "branch-1"
+        "branch-L5C8"
       ],
       "line": 5,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": false
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": "false"
         }
       }
@@ -126,13 +126,13 @@
     {
       "index": 3,
       "focus": [
-        "loop-1"
+        "loop-L4C4"
       ],
       "line": 4,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 1
         }
       ],
@@ -146,20 +146,20 @@
     {
       "index": 4,
       "focus": [
-        "branch-1"
+        "branch-L5C8"
       ],
       "line": 5,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": true
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": "true"
         }
       }
@@ -167,15 +167,15 @@
     {
       "index": 5,
       "focus": [
-        "mut-append"
+        "mut-L6C12"
       ],
       "line": 6,
       "actions": [
         {
           "type": "move_value",
           "repr": "3",
-          "fromNode": "bind-price",
-          "toNode": "coll-results"
+          "fromNode": "bind-L4C8",
+          "toNode": "coll-L2C4"
         }
       ],
       "caption": {
@@ -189,13 +189,13 @@
     {
       "index": 6,
       "focus": [
-        "loop-1"
+        "loop-L4C4"
       ],
       "line": 4,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 2
         }
       ],
@@ -209,20 +209,20 @@
     {
       "index": 7,
       "focus": [
-        "branch-1"
+        "branch-L5C8"
       ],
       "line": 5,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": false
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": "false"
         }
       }
@@ -230,13 +230,13 @@
     {
       "index": 8,
       "focus": [
-        "loop-1"
+        "loop-L4C4"
       ],
       "line": 4,
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 3
         }
       ],
@@ -250,20 +250,20 @@
     {
       "index": 9,
       "focus": [
-        "branch-1"
+        "branch-L5C8"
       ],
       "line": 5,
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": true
         }
       ],
       "caption": {
         "key": "branch.evaluate",
         "params": {
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": "true"
         }
       }
@@ -271,15 +271,15 @@
     {
       "index": 10,
       "focus": [
-        "mut-append"
+        "mut-L6C12"
       ],
       "line": 6,
       "actions": [
         {
           "type": "move_value",
           "repr": "5",
-          "fromNode": "bind-price",
-          "toNode": "coll-results"
+          "fromNode": "bind-L4C8",
+          "toNode": "coll-L2C4"
         }
       ],
       "caption": {
@@ -293,14 +293,14 @@
     {
       "index": 11,
       "focus": [
-        "ret-1"
+        "ret-L8C4"
       ],
       "line": 8,
       "actions": [
         {
           "type": "exit_return",
           "repr": "[3, 5]",
-          "port": "ret-1"
+          "port": "ret-L8C4"
         }
       ],
       "caption": {

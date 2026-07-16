@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -14,6 +15,11 @@ from lol_analyzer import analyze_source, canonical_json  # noqa: E402
 
 FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard"]
 
+# Contract N2: every node id is positional — <kind-prefix>-L<line>C<col> with an
+# optional ordinal suffix that breaks positional collisions. No names, literals,
+# or semantic guesses are ever encoded in an id.
+POSITION_ID_RE = re.compile(r"^[a-z]+-L[0-9]+C[0-9]+(-[0-9]+)?$")
+
 
 class AnalyzerFixtureTests(unittest.TestCase):
     maxDiff = None
@@ -23,15 +29,35 @@ class AnalyzerFixtureTests(unittest.TestCase):
         kinds = [node["kind"] for node in graph["nodes"]]
         self.assertIn("function", kinds)
         self.assertIn("return", kinds)
-        self.assertEqual(graph["nodes"][0]["id"], "fn-calculate_total")
+        # Structural: the first node is the analyzed function, identified by its
+        # name field (not by any name baked into the id).
+        self.assertEqual(graph["nodes"][0]["kind"], "function")
+        self.assertEqual(graph["nodes"][0]["name"], "calculate_total")
 
     def test_roles_loop_branch_keywords(self) -> None:
         graph = load_graph("count")
-        roles = {node["id"]: node.get("role") for node in graph["nodes"] if node["kind"] == "binding"}
-        self.assertEqual(roles["bind-count"], "state")
-        self.assertEqual(roles["bind-n"], "iterator")
+        roles = {
+            node["name"]: node.get("role")
+            for node in graph["nodes"]
+            if node["kind"] == "binding"
+        }
+        self.assertEqual(roles["count"], "state")
+        self.assertEqual(roles["n"], "iterator")
         self.assertTrue(any(node["kind"] == "loop" for node in graph["nodes"]))
         self.assertTrue(any(node["kind"] == "branch" for node in graph["nodes"]))
+
+    def test_all_emitted_ids_match_position_regex(self) -> None:
+        checked = 0
+        for fixture in FIXTURES:
+            graph = load_graph(fixture)
+            for node in graph["nodes"]:
+                self.assertRegex(
+                    node["id"],
+                    POSITION_ID_RE,
+                    f"{fixture}: id {node['id']!r} is not position-based",
+                )
+                checked += 1
+        self.assertGreater(checked, 0)
 
     def test_mutation_unsupported_keywords(self) -> None:
         graph = load_graph("filter")

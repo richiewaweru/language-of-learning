@@ -3,7 +3,7 @@
   "source": "def apply_tax(amount):\n    rate = 0.16\n    if amount <= 0:\n        return 0\n    return amount * rate",
   "nodes": [
     {
-      "id": "fn-apply_tax",
+      "id": "fn-L1C0",
       "kind": "function",
       "sourceRange": {
         "startLine": 1,
@@ -13,11 +13,11 @@
       },
       "name": "apply_tax",
       "params": [
-        "bind-amount"
+        "bind-L1C14"
       ]
     },
     {
-      "id": "bind-amount",
+      "id": "bind-L1C14",
       "kind": "binding",
       "sourceRange": {
         "startLine": 1,
@@ -30,7 +30,7 @@
       "mutable": false
     },
     {
-      "id": "bind-rate",
+      "id": "bind-L2C4",
       "kind": "binding",
       "sourceRange": {
         "startLine": 2,
@@ -44,7 +44,7 @@
       "initialRepr": "0.16"
     },
     {
-      "id": "val-rate",
+      "id": "val-L2C11",
       "kind": "value",
       "sourceRange": {
         "startLine": 2,
@@ -56,7 +56,7 @@
       "pyType": "float"
     },
     {
-      "id": "branch-guard",
+      "id": "branch-L3C4",
       "kind": "branch",
       "sourceRange": {
         "startLine": 3,
@@ -65,10 +65,10 @@
         "endCol": 16
       },
       "conditionExpr": "amount <= 0",
-      "trueBody": "ret-zero"
+      "trueBody": "ret-L4C8"
     },
     {
-      "id": "ret-zero",
+      "id": "ret-L4C8",
       "kind": "return",
       "sourceRange": {
         "startLine": 4,
@@ -76,10 +76,10 @@
         "endLine": 4,
         "endCol": 16
       },
-      "valueRef": "val-zero"
+      "valueRef": "val-L4C15"
     },
     {
-      "id": "val-zero",
+      "id": "val-L4C15",
       "kind": "value",
       "sourceRange": {
         "startLine": 4,
@@ -91,7 +91,7 @@
       "pyType": "int"
     },
     {
-      "id": "ret-main",
+      "id": "ret-L5C4",
       "kind": "return",
       "sourceRange": {
         "startLine": 5,
@@ -99,10 +99,10 @@
         "endLine": 5,
         "endCol": 24
       },
-      "valueRef": "op-mul"
+      "valueRef": "op-L5C11"
     },
     {
-      "id": "op-mul",
+      "id": "op-L5C11",
       "kind": "operation",
       "sourceRange": {
         "startLine": 5,
@@ -115,44 +115,44 @@
   ],
   "relations": [
     {
-      "from": "fn-apply_tax",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "bind-rate"
+      "to": "bind-L2C4"
     },
     {
-      "from": "fn-apply_tax",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "branch-guard"
+      "to": "branch-L3C4"
     },
     {
-      "from": "branch-guard",
+      "from": "branch-L3C4",
       "type": "contains",
-      "to": "ret-zero"
+      "to": "ret-L4C8"
     },
     {
-      "from": "ret-zero",
+      "from": "ret-L4C8",
       "type": "returns",
-      "to": "val-zero"
+      "to": "val-L4C15"
     },
     {
-      "from": "fn-apply_tax",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "ret-main"
+      "to": "ret-L5C4"
     },
     {
-      "from": "ret-main",
+      "from": "ret-L5C4",
       "type": "returns",
-      "to": "op-mul"
+      "to": "op-L5C11"
     },
     {
-      "from": "op-mul",
+      "from": "op-L5C11",
       "type": "reads",
-      "to": "bind-amount"
+      "to": "bind-L1C14"
     },
     {
-      "from": "op-mul",
+      "from": "op-L5C11",
       "type": "reads",
-      "to": "bind-rate"
+      "to": "bind-L2C4"
     }
   ],
   "unsupported": []

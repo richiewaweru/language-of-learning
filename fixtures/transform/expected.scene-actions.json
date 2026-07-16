@@ -9,7 +9,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 0
         }
       ]
@@ -20,8 +20,8 @@
         {
           "type": "move_value",
           "repr": "2",
-          "fromNode": "bind-v",
-          "toNode": "coll-doubled"
+          "fromNode": "bind-L3C8",
+          "toNode": "coll-L2C4"
         }
       ]
     },
@@ -30,7 +30,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 1
         }
       ]
@@ -41,8 +41,8 @@
         {
           "type": "move_value",
           "repr": "4",
-          "fromNode": "bind-v",
-          "toNode": "coll-doubled"
+          "fromNode": "bind-L3C8",
+          "toNode": "coll-L2C4"
         }
       ]
     },
@@ -51,7 +51,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L3C4",
           "itemIndex": 2
         }
       ]
@@ -62,8 +62,8 @@
         {
           "type": "move_value",
           "repr": "6",
-          "fromNode": "bind-v",
-          "toNode": "coll-doubled"
+          "fromNode": "bind-L3C8",
+          "toNode": "coll-L2C4"
         }
       ]
     },
@@ -73,7 +73,7 @@
         {
           "type": "exit_return",
           "repr": "[2, 4, 6]",
-          "port": "ret-1"
+          "port": "ret-L5C4"
         }
       ]
     }

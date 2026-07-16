@@ -9,7 +9,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 0
         }
       ]
@@ -19,7 +19,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": false
         }
       ]
@@ -29,7 +29,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 1
         }
       ]
@@ -39,7 +39,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": true
         }
       ]
@@ -50,8 +50,8 @@
         {
           "type": "move_value",
           "repr": "3",
-          "fromNode": "bind-price",
-          "toNode": "coll-results"
+          "fromNode": "bind-L4C8",
+          "toNode": "coll-L2C4"
         }
       ]
     },
@@ -60,7 +60,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 2
         }
       ]
@@ -70,7 +70,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": false
         }
       ]
@@ -80,7 +80,7 @@
       "actions": [
         {
           "type": "advance_item",
-          "loop": "loop-1",
+          "loop": "loop-L4C4",
           "itemIndex": 3
         }
       ]
@@ -90,7 +90,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-1",
+          "branch": "branch-L5C8",
           "result": true
         }
       ]
@@ -101,8 +101,8 @@
         {
           "type": "move_value",
           "repr": "5",
-          "fromNode": "bind-price",
-          "toNode": "coll-results"
+          "fromNode": "bind-L4C8",
+          "toNode": "coll-L2C4"
         }
       ]
     },
@@ -112,7 +112,7 @@
         {
           "type": "exit_return",
           "repr": "[3, 5]",
-          "port": "ret-1"
+          "port": "ret-L8C4"
         }
       ]
     }

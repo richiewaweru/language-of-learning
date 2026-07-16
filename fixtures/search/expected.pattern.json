@@ -1,6 +1,13 @@
 {
   "pattern": "SEARCH",
   "confidence": "deterministic",
-  "memberNodes": ["loop-1", "branch-1", "ret-early"],
-  "related": ["FILTER", "GUARD"]
+  "memberNodes": [
+    "loop-L2C4",
+    "branch-L3C8",
+    "ret-L4C12"
+  ],
+  "related": [
+    "FILTER",
+    "GUARD"
+  ]
 }

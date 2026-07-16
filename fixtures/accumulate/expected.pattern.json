@@ -1,6 +1,14 @@
 {
   "pattern": "ACCUMULATE",
   "confidence": "deterministic",
-  "memberNodes": ["loop-1", "bind-total", "op-add"],
-  "related": ["COUNT", "FILTER", "SEARCH"]
+  "memberNodes": [
+    "loop-L3C4",
+    "bind-L2C4",
+    "op-L4C16"
+  ],
+  "related": [
+    "COUNT",
+    "FILTER",
+    "SEARCH"
+  ]
 }

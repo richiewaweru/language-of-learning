@@ -1,0 +1,8 @@
+{
+  "pattern": "COUNT",
+  "stateBindingCount": 1,
+  "loopCount": 1,
+  "branchCount": 1,
+  "mutationCount": 0,
+  "returnsCount": 1
+}

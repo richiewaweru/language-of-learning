@@ -492,35 +492,35 @@
 
 ## Phase F1 — Analyzer generalization [gate: position IDs · variations 12+]
 
-- [ ] F1-01 Contract-compliant position IDs (N2)
+- [x] F1-01 Contract-compliant position IDs (N2)
       done-when: fixture-string greps = 0; id-regex unit test green
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: ids like fn-L1C0; test_all_emitted_ids_match_position_regex
+      judge: 2026-07-16 accepted
 
-- [ ] F1-02 Delete fixture-shaped emission logic
+- [x] F1-02 Delete fixture-shaped emission logic
       done-when: no name/literal special cases remain
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: analyzer greps clean; general literal→value rule
+      judge: 2026-07-16 accepted
 
-- [ ] F1-03 Multiple-mutation support (analyzer + tracer)
+- [x] F1-03 Multiple-mutation support (analyzer + tracer)
       done-when: two-append variant traces with distinct mutation ids
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: fixtures/variations/two_append_gather mutationCount=2
+      judge: 2026-07-16 accepted
 
-- [ ] F1-04 Regenerate golden expectations honestly
+- [x] F1-04 Regenerate golden expectations honestly
       done-when: full suite green vs regenerated files; BUILD-LOG lists causes
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: regenerated graph/trace/scene-actions/pattern; HAND-ANALYSIS.md per fixture
+      judge: 2026-07-16 accepted
 
-- [ ] F1-05 Generalization suite (12+ variations with expect.json)
+- [x] F1-05 Generalization suite (12+ variations with expect.json)
       done-when: 12/12 (13 w/ two-append) pass; standing gate
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: pnpm test:variations 13 variants; in test:all
+      judge: 2026-07-16 accepted
 
 ## Gate block F1
 
@@ -532,23 +532,23 @@
 
 ## Phase F2 — Truth path [gate: re-verify save · content:rebuild]
 
-- [ ] F2-01 Server re-verification on save
+- [x] F2-01 Server re-verification on save
       done-when: tamper test + hostile 422
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: pnpm test:api-save 2/2
+      judge: 2026-07-16 accepted
 
-- [ ] F2-02 Engine version stamping (0.1.1)
+- [x] F2-02 Engine version stamping (0.1.1)
       done-when: engineVersion on saves
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: engineVersion 0.1.1; analyzer package 0.1.1
+      judge: 2026-07-16 accepted
 
-- [ ] F2-03 pnpm content:rebuild + CI drift check
+- [x] F2-03 pnpm content:rebuild + CI drift check
       done-when: rebuild clean; CI step
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: content:rebuild + CI git diff --exit-code content/
+      judge: 2026-07-16 accepted
 
 ## Gate block F2
 
@@ -559,23 +559,23 @@
 
 ## Phase F3 — One Selection object [gate: controlled ScenePlayer · sync tests]
 
-- [ ] F3-01 ScenePlayer controlled (selection + onselectionchange)
+- [x] F3-01 ScenePlayer controlled (selection + onselectionchange)
       done-when: no stepIndex = $state canonical
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: grep stepIndex = $state = 0 in visual-grammar
+      judge: 2026-07-16 accepted
 
-- [ ] F3-02 Decode wires all views through one store
+- [x] F3-02 Decode wires all views through one store
       done-when: bidirectional sync tests green
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: lens-scenes resolveSelection tests both directions
+      judge: 2026-07-16 accepted
 
-- [ ] F3-03 Slices and Learn use same Selection mechanism
+- [x] F3-03 Slices and Learn use same Selection mechanism
       done-when: no second selection pathway in apps/web
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: slices + learn pass Selection to ScenePlayer
+      judge: 2026-07-16 accepted
 
 ## Gate block F3
 
@@ -586,35 +586,35 @@
 
 ## Phase F4 — Renderer truth & presentation [gate: final corrective]
 
-- [ ] F4-01 Derive loop item count from trace
+- [x] F4-01 Derive loop item count from trace
       done-when: itemCount={5} gone; 3 and 6 item cases
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: loopItemCountFromTrace; test:visual 3/3
+      judge: 2026-07-16 accepted
 
-- [ ] F4-02 Return port from exit_return / result.repr
+- [x] F4-02 Return port from exit_return / result.repr
       done-when: __return__ gone from web/visual-grammar
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: returnReprFromScene; tracer no longer sets __return__
+      judge: 2026-07-16 accepted
 
-- [ ] F4-03 No first-node [0] fallbacks
+- [x] F4-03 No first-node [0] fallbacks
       done-when: grep packages = 0
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: no .(loops|branches|mutations|returns)[0] in packages
+      judge: 2026-07-16 accepted
 
-- [ ] F4-04 Learn preview banner
+- [x] F4-04 Learn preview banner
       done-when: PENDING-RICHIE shows badge
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: lesson page preview-badge when PENDING-RICHIE
+      judge: 2026-07-16 accepted
 
-- [ ] F4-05 ADRs 0007/0008 + interpreter parity test
+- [x] F4-05 ADRs 0007/0008 + interpreter parity test
       done-when: docs exist; parity green or listed
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: docs/decisions/0007 + 0008; pnpm test:parity-ops
+      judge: 2026-07-16 accepted
 
 ## Gate block F4
 

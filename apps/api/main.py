@@ -14,10 +14,13 @@ from pydantic import BaseModel, Field
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "packages" / "analyzer-python" / "src"))
 sys.path.insert(0, str(ROOT / "packages" / "trace-runtime" / "src"))
+sys.path.insert(0, str(ROOT / "tools"))
 
 from lol_analyzer import analyze_source  # noqa: E402
 from lol_trace import run_trace  # noqa: E402
 from lol_trace.sandbox import SandboxViolation  # noqa: E402
+
+from build_artifacts import ENGINE_VERSION, ArtifactError, build_artifacts  # noqa: E402
 
 DATA = ROOT / "data"
 ANALYSES = DATA / "analyses"
@@ -27,7 +30,7 @@ DATA.mkdir(parents=True, exist_ok=True)
 if not EVENTS.exists():
     EVENTS.write_text("", encoding="utf-8")
 
-app = FastAPI(title="Language of Learning API", version="0.1.0")
+app = FastAPI(title="Language of Learning API", version=ENGINE_VERSION)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:4173"],
@@ -44,9 +47,11 @@ class AnalyzeRequest(BaseModel):
 
 class SaveAnalysisRequest(BaseModel):
     source: str
-    argsRepr: list[str]
-    graph: dict[str, Any]
-    trace: dict[str, Any]
+    argsRepr: list[str] = Field(default_factory=list)
+    # Client-supplied artifacts are accepted for backward compatibility but
+    # IGNORED — the server re-verifies and recomputes all four from source truth.
+    graph: dict[str, Any] | None = None
+    trace: dict[str, Any] | None = None
     pattern: dict[str, Any] | None = None
     scene: dict[str, Any] | None = None
     id: str | None = None
@@ -104,15 +109,32 @@ def analyze(req: AnalyzeRequest) -> dict[str, Any]:
 @app.post("/analyses")
 def save_analysis(req: SaveAnalysisRequest) -> dict[str, Any]:
     analysis_id = req.id or str(uuid.uuid4())
+    # Re-verify on save: recompute all four artifacts from source + argsRepr.
+    # Client-supplied graph/trace/pattern/scene are ignored entirely so a
+    # tampered payload (or a hostile source) can never be persisted.
+    try:
+        artifacts = build_artifacts(
+            req.source,
+            req.argsRepr,
+            scene_id=f"scene-{analysis_id}",
+        )
+    except ArtifactError as exc:
+        # Nothing persisted; surface the structured violation to the caller.
+        raise HTTPException(
+            status_code=422,
+            detail={"violation": exc.violation, "message": exc.violation["message"]},
+        ) from exc
+
     payload = {
         "id": analysis_id,
         "savedAt": datetime.now(timezone.utc).isoformat(),
+        "engineVersion": artifacts["engineVersion"],
         "source": req.source,
         "argsRepr": req.argsRepr,
-        "graph": req.graph,
-        "trace": req.trace,
-        "pattern": req.pattern,
-        "scene": req.scene,
+        "graph": artifacts["graph"],
+        "trace": artifacts["trace"],
+        "pattern": artifacts["pattern"],
+        "scene": artifacts["scene"],
     }
     path = ANALYSES / f"{analysis_id}.json"
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")

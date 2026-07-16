@@ -1,6 +1,6 @@
 {
   "call": {
-    "functionId": "fn-calculate_total",
+    "functionId": "fn-L1C0",
     "argsRepr": [
       "[3, 5, 2]"
     ]
@@ -10,19 +10,19 @@
       "index": 0,
       "line": 1,
       "focus": [
-        "fn-calculate_total"
+        "fn-L1C0"
       ],
       "bindings": {},
       "event": {
         "type": "call_enter",
-        "functionId": "fn-calculate_total"
+        "functionId": "fn-L1C0"
       }
     },
     {
       "index": 1,
       "line": 2,
       "focus": [
-        "bind-total"
+        "bind-L2C4"
       ],
       "bindings": {
         "prices": "[3, 5, 2]",
@@ -30,7 +30,7 @@
       },
       "event": {
         "type": "state_init",
-        "binding": "bind-total",
+        "binding": "bind-L2C4",
         "repr": "0"
       }
     },
@@ -38,7 +38,7 @@
       "index": 2,
       "line": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "bindings": {
         "price": "3",
@@ -47,7 +47,7 @@
       },
       "event": {
         "type": "loop_advance",
-        "loop": "loop-1",
+        "loop": "loop-L3C4",
         "itemIndex": 0,
         "itemRepr": "3"
       }
@@ -56,7 +56,7 @@
       "index": 3,
       "line": 4,
       "focus": [
-        "op-add"
+        "op-L4C16"
       ],
       "bindings": {
         "price": "3",
@@ -65,7 +65,7 @@
       },
       "event": {
         "type": "state_change",
-        "binding": "bind-total",
+        "binding": "bind-L2C4",
         "oldRepr": "0",
         "newRepr": "3"
       }
@@ -74,7 +74,7 @@
       "index": 4,
       "line": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "bindings": {
         "price": "5",
@@ -83,7 +83,7 @@
       },
       "event": {
         "type": "loop_advance",
-        "loop": "loop-1",
+        "loop": "loop-L3C4",
         "itemIndex": 1,
         "itemRepr": "5"
       }
@@ -92,7 +92,7 @@
       "index": 5,
       "line": 4,
       "focus": [
-        "op-add"
+        "op-L4C16"
       ],
       "bindings": {
         "price": "5",
@@ -101,7 +101,7 @@
       },
       "event": {
         "type": "state_change",
-        "binding": "bind-total",
+        "binding": "bind-L2C4",
         "oldRepr": "3",
         "newRepr": "8"
       }
@@ -110,7 +110,7 @@
       "index": 6,
       "line": 3,
       "focus": [
-        "loop-1"
+        "loop-L3C4"
       ],
       "bindings": {
         "price": "2",
@@ -119,7 +119,7 @@
       },
       "event": {
         "type": "loop_advance",
-        "loop": "loop-1",
+        "loop": "loop-L3C4",
         "itemIndex": 2,
         "itemRepr": "2"
       }
@@ -128,7 +128,7 @@
       "index": 7,
       "line": 4,
       "focus": [
-        "op-add"
+        "op-L4C16"
       ],
       "bindings": {
         "price": "2",
@@ -137,7 +137,7 @@
       },
       "event": {
         "type": "state_change",
-        "binding": "bind-total",
+        "binding": "bind-L2C4",
         "oldRepr": "8",
         "newRepr": "10"
       }
@@ -146,7 +146,7 @@
       "index": 8,
       "line": 5,
       "focus": [
-        "ret-1"
+        "ret-L5C4"
       ],
       "bindings": {
         "price": "2",

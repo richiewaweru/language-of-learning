@@ -88,7 +88,7 @@ describe('selection resolver', () => {
   it('SY3: node maps to steps via focus', () => {
     const graph = loadGraph('accumulate');
     const trace = loadTrace('accumulate');
-    const resolved = resolveSelection({ nodeId: 'loop-1' }, graph, trace);
+    const resolved = resolveSelection({ nodeId: 'loop-L3C4' }, graph, trace);
     expect(resolved.stepIndices.length).toBeGreaterThan(0);
     expect(resolved.line).toBeDefined();
   });
@@ -104,8 +104,70 @@ describe('selection resolver', () => {
     const graph = loadGraph('accumulate');
     const trace = loadTrace('accumulate');
     const resolved = resolveSelection({ stepIndex: 0 }, graph, trace);
-    expect(resolved.nodeIds).toContain('fn-calculate_total');
+    expect(resolved.nodeIds).toContain('fn-L1C0');
     expect(resolved.line).toBe(1);
+  });
+
+  it('line → node: selecting a line focuses nodes on it, picks the line-specific primary, and resolves a focus-consistent step', () => {
+    const graph = loadGraph('accumulate');
+    const trace = loadTrace('accumulate');
+    const scene = buildScene(graph, trace);
+
+    // Line 3 is the loop header (loop-L3C4), nested inside the function (fn-L1C0, lines 1–5).
+    const resolved = resolveSelection({ line: 3 }, graph, trace, scene.layout);
+
+    const onLine = graph.nodes.filter(
+      (n) => n.sourceRange.startLine <= 3 && n.sourceRange.endLine >= 3,
+    );
+    expect(onLine.length).toBeGreaterThan(0);
+    expect(resolved.nodeIds).toEqual(expect.arrayContaining(onLine.map((n) => n.id)));
+
+    // The loop header on the line is among the resolved nodes.
+    expect(resolved.nodeIds).toContain('loop-L3C4');
+    // A line-specific node wins as primary — never the enclosing function (fn-L1C0, lines 1–5).
+    expect(resolved.primaryNodeId).toBeDefined();
+    expect(resolved.primaryNodeId).not.toBe('fn-L1C0');
+    expect(onLine.map((n) => n.id)).toContain(resolved.primaryNodeId);
+
+    // A step is resolved and its focus intersects the line's nodes (bidirectional consistency).
+    expect(resolved.stepIndex).toBeDefined();
+    const step = trace.steps[resolved.stepIndex!]!;
+    expect(step.focus.some((id) => resolved.nodeIds.includes(id))).toBe(true);
+  });
+
+  it('node → step: selecting different nodes moves stepIndex onto their focus steps', () => {
+    const graph = loadGraph('accumulate');
+    const trace = loadTrace('accumulate');
+
+    // The loop's first focus step is index 2; the return's is index 8.
+    const loop = resolveSelection({ nodeId: 'loop-L3C4' }, graph, trace);
+    const ret = resolveSelection({ nodeId: 'ret-L5C4' }, graph, trace);
+
+    expect(loop.stepIndex).toBe(2);
+    expect(ret.stepIndex).toBe(8);
+    // Selecting a different node moves the resolved step.
+    expect(ret.stepIndex).not.toBe(loop.stepIndex);
+    // …and the resolved line follows the node.
+    expect(loop.line).toBe(3);
+    expect(ret.line).toBe(5);
+  });
+
+  it('step → line: stepping changes the resolved line as the trace advances', () => {
+    const graph = loadGraph('accumulate');
+    const trace = loadTrace('accumulate');
+
+    // Every step resolves to exactly the trace step's own line.
+    for (const step of trace.steps) {
+      const resolved = resolveSelection({ stepIndex: step.index }, graph, trace);
+      expect(resolved.line).toBe(step.line);
+    }
+
+    // Advancing across a beat boundary updates the line (3 → 4).
+    const before = resolveSelection({ stepIndex: 2 }, graph, trace);
+    const after = resolveSelection({ stepIndex: 3 }, graph, trace);
+    expect(before.line).toBe(3);
+    expect(after.line).toBe(4);
+    expect(after.line).not.toBe(before.line);
   });
 });
 

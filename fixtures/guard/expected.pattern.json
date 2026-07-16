@@ -1,6 +1,12 @@
 {
   "pattern": "GUARD",
   "confidence": "deterministic",
-  "memberNodes": ["branch-guard", "ret-zero"],
-  "related": ["SEARCH", "ACCUMULATE"]
+  "memberNodes": [
+    "branch-L3C4",
+    "ret-L4C8"
+  ],
+  "related": [
+    "SEARCH",
+    "ACCUMULATE"
+  ]
 }

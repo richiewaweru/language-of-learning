@@ -3,7 +3,7 @@
   "source": "def copy_all(values):\n    copied = []\n    for v in values:\n        copied.append(v)\n    return copied",
   "nodes": [
     {
-      "id": "fn-copy_all",
+      "id": "fn-L1C0",
       "kind": "function",
       "sourceRange": {
         "startLine": 1,
@@ -13,11 +13,11 @@
       },
       "name": "copy_all",
       "params": [
-        "bind-values"
+        "bind-L1C13"
       ]
     },
     {
-      "id": "bind-values",
+      "id": "bind-L1C13",
       "kind": "binding",
       "sourceRange": {
         "startLine": 1,
@@ -30,7 +30,7 @@
       "mutable": false
     },
     {
-      "id": "coll-copied",
+      "id": "coll-L2C4",
       "kind": "collection",
       "sourceRange": {
         "startLine": 2,
@@ -42,7 +42,7 @@
       "items": []
     },
     {
-      "id": "loop-1",
+      "id": "loop-L3C4",
       "kind": "loop",
       "sourceRange": {
         "startLine": 3,
@@ -51,11 +51,11 @@
         "endCol": 23
       },
       "iteratorName": "v",
-      "collectionRef": "bind-values",
-      "body": "mut-append"
+      "collectionRef": "bind-L1C13",
+      "body": "mut-L4C8"
     },
     {
-      "id": "bind-v",
+      "id": "bind-L3C8",
       "kind": "binding",
       "sourceRange": {
         "startLine": 3,
@@ -68,7 +68,7 @@
       "mutable": false
     },
     {
-      "id": "mut-append",
+      "id": "mut-L4C8",
       "kind": "mutation",
       "sourceRange": {
         "startLine": 4,
@@ -76,11 +76,11 @@
         "endLine": 4,
         "endCol": 24
       },
-      "targetRef": "coll-copied",
+      "targetRef": "coll-L2C4",
       "mutationType": "append"
     },
     {
-      "id": "ret-1",
+      "id": "ret-L5C4",
       "kind": "return",
       "sourceRange": {
         "startLine": 5,
@@ -88,44 +88,44 @@
         "endLine": 5,
         "endCol": 17
       },
-      "valueRef": "coll-copied"
+      "valueRef": "coll-L2C4"
     }
   ],
   "relations": [
     {
-      "from": "fn-copy_all",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "coll-copied"
+      "to": "coll-L2C4"
     },
     {
-      "from": "fn-copy_all",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "loop-1"
+      "to": "loop-L3C4"
     },
     {
-      "from": "loop-1",
+      "from": "loop-L3C4",
       "type": "iterates",
-      "to": "bind-values"
+      "to": "bind-L1C13"
     },
     {
-      "from": "loop-1",
+      "from": "loop-L3C4",
       "type": "contains",
-      "to": "mut-append"
+      "to": "mut-L4C8"
     },
     {
-      "from": "mut-append",
+      "from": "mut-L4C8",
       "type": "mutates",
-      "to": "coll-copied"
+      "to": "coll-L2C4"
     },
     {
-      "from": "fn-copy_all",
+      "from": "fn-L1C0",
       "type": "contains",
-      "to": "ret-1"
+      "to": "ret-L5C4"
     },
     {
-      "from": "ret-1",
+      "from": "ret-L5C4",
       "type": "returns",
-      "to": "coll-copied"
+      "to": "coll-L2C4"
     }
   ],
   "unsupported": []

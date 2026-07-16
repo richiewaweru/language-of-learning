@@ -129,3 +129,39 @@ External audit found: analyzer overfitting (fixture names/literals in IDs and em
 
 Merged `visit_stmt` into a single dispatcher (Assign/For/If/Return/Expr), added filter mutation guard test, and added GitHub Actions CI with README badge. Fresh suite outputs pasted in PROGRESS.md.
 
+### DECISION: position-only node ids (F1)
+
+All graph node ids are `<kind>-L#lineC#col` (+ ordinal on collision). Names/literals stay in contract fields. Cause of fixture churn: id scheme change (not “adjusted to pass”).
+
+### DECISION: variations use expect.json counts (F1)
+
+Anti-overfit suite under `fixtures/variations/` asserts structural counts + pattern, not golden graphs — so renamed identifiers cannot be memorized.
+
+## Phase F1 summary (gate-F1, 2026-07-16)
+
+Analyzer generalized to N2 position ids; fixture-shaped emission removed; tracer resolves nodes by source line (no `mutations[0]`); goldens regenerated; 13 variations (incl. two-append) in standing `pnpm test:variations`.
+
+## Phase F2 summary (gate-F2, 2026-07-16)
+
+`POST /analyses` recomputes graph/trace/pattern/scene from source; stamps `engineVersion: 0.1.1`; `pnpm content:rebuild` + CI drift check. Pre-0.1.1 `data/analyses` untrusted.
+
+## Phase F3 summary (gate-F3, 2026-07-16)
+
+ScenePlayer is controlled via `selection` + `onselectionchange`. Decode/slices/Learn share one Selection pathway; bidirectional resolveSelection tests green.
+
+## Phase F4 summary (gate-F4, 2026-07-16)
+
+Loop item count from trace; return port from `exit_return`/`result.repr`; no `[0]` node fallbacks; Learn preview badge; ADRs 0007/0008 + interpreter operator parity. Corrective run complete — P-motion remains deferred.
+
+### DECISION: server re-verifies every save from source truth (F2-01)
+
+`POST /analyses` now ignores client-supplied `graph/trace/pattern/scene` and recomputes all four from `source + argsRepr` via `tools/build_artifacts.py` (Python `analyze_source` + `run_trace`, then a `tsx` subprocess `tools/build_pattern_scene.ts` for the TS pattern detector + scene builder). A `SandboxViolation` or function-less graph returns HTTP 422 with a structured `{ violation: { construct, message } }` body and persists nothing. Rationale: the audit found saves persisting unverified client artifacts; a green save must be independently re-derived, not trusted. Tests: `tools/run_api_save_tests.py` (`pnpm test:api-save`) — tamper (TRANSFORM source posted as ACCUMULATE → stored TRANSFORM truth) + hostile (`eval` → 422, nothing persisted).
+
+### DECISION: engineVersion 0.1.1 stamped on saves; pre-0.1.1 analyses untrusted (F2-02)
+
+Saves now carry `engineVersion: "0.1.1"` and `packages/analyzer-python` is bumped to `0.1.1`. Any `data/analyses/*.json` written before 0.1.1 (i.e. without `engineVersion`, or from the pre-F1 id scheme) is UNTRUSTED — it may hold client-supplied or stale-id artifacts and must be re-saved through the re-verifying endpoint to be trusted.
+
+### DECISION: content:rebuild regenerates scenes from the live engine (F2-03)
+
+`pnpm content:rebuild` (`tools/rebuild_content_scenes.ts`) regenerates `content/scenes/*.json` from each lesson's `fixtures/<f>/source.py` + `call.json` by running the Python engine (graph + trace) and the TS `buildScene`. CI runs it then `git diff --exit-code content/` so pre-rendered scenes can never silently drift. Running it exposed two pre-existing drifts, now fixed: (1) checked-in scenes still used the pre-F1 id scheme (`bind-total`) instead of position ids (`bind-L2C4`); (2) the `call.enter` caption derived the function name by stripping the `fn-` id prefix, which after F1 produced `L1C0` instead of `calculate_total` — `scene-builder` now reads the real `name` from the graph function node. Rebuild is idempotent; `test:scenes`, `test:lessons`, `test:journey` remain green.
+

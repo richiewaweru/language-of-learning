@@ -132,14 +132,31 @@
   }
 
   function selectLine(line: number) {
-    selection = { ...selection, line, nodeId: undefined };
-    if (resolved?.stepIndex !== undefined) {
-      selection = { ...selection, line, stepIndex: resolved.stepIndex };
+    const next: Selection = { line, nodeId: undefined, stepIndex: selection.stepIndex };
+    if (graph && trace && scene) {
+      const r = resolveSelection(next, graph, trace, scene.layout);
+      selection = { line, stepIndex: r.stepIndex };
+    } else {
+      selection = next;
+    }
+  }
+
+  function selectNode(nodeId: string) {
+    const next: Selection = { nodeId };
+    if (graph && trace && scene) {
+      const r = resolveSelection(next, graph, trace, scene.layout);
+      selection = { nodeId, line: r.line, stepIndex: r.stepIndex };
+    } else {
+      selection = next;
     }
   }
 
   function onStepChange(index: number) {
     selection = { stepIndex: index, line: trace?.steps[index]?.line };
+  }
+
+  function onSelectionChange(next: Selection) {
+    selection = next;
   }
 </script>
 
@@ -225,7 +242,14 @@
           <p class="hint">Primary node: {resolved.primaryNodeId}</p>
         {/if}
       {:else if activeView === 'shape' && scene}
-        <ScenePlayer {scene} {graph} {trace} reducedMotion={false} />
+        <ScenePlayer
+          {scene}
+          {graph}
+          {trace}
+          {selection}
+          onselectionchange={onSelectionChange}
+          reducedMotion={false}
+        />
       {:else if activeView === 'trace'}
         <div class="trace-list">
           {#each trace.steps as step}
@@ -246,7 +270,19 @@
             <strong>{pattern.pattern}</strong>
             <span class="badge">{pattern.confidence}</span>
           </p>
-          <p>Members: {pattern.memberNodes.join(', ')}</p>
+          <p class="members">
+            Members:
+            {#each pattern.memberNodes as member}
+              <button
+                type="button"
+                class="member"
+                class:focus={resolved?.nodeIds.includes(member)}
+                onclick={() => selectNode(member)}
+              >
+                {member}
+              </button>
+            {/each}
+          </p>
           <p>Related: {pattern.related.join(', ')}</p>
         {:else}
           <p>No deterministic pattern matched.</p>
@@ -401,6 +437,22 @@
   }
   .pattern-hit {
     font-size: 1.25rem;
+  }
+  .members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  .member {
+    font: 12px/1.2 var(--font-mono);
+    border: var(--border-w) solid var(--line);
+    background: var(--paper);
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+  }
+  .member.focus {
+    outline: 2px solid var(--flow-teal);
   }
   .badge {
     font: 700 11px/1 var(--font-mono);
