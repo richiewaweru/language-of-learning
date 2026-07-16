@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.svelte-kit/
+.output/
+build/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+vendor/pyodide/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store

@@ -1,0 +1,10 @@
+---
+description: Contract compliance for engine code
+globs: ["packages/**"]
+---
+Emit and consume only the 12 node kinds, 5 binding roles, and 7 relation
+types in semantic-contract.md; anything else is an `unsupported` region,
+not a new kind, because the closed set is the product's honesty guarantee.
+Never place coordinates by hand anywhere; all positions come from the
+layout engine, because hand placement breaks artifact reuse (SC2).
+Keep node IDs deterministic from kind + source position + ordinal.

@@ -1,0 +1,12 @@
+---
+description: Long-run process discipline
+alwaysApply: true
+---
+Work only on tasks that exist in tasks.md with a testable done-condition;
+write the failing test before the implementation, because tests are the
+iteration target that prevents drift.
+Never weaken a test, gate, or done-condition to make it pass; shrink scope
+per docs and log it instead, because a green lie is worse than a red truth.
+At session start, read PROGRESS.md, tasks.md, and BUILD-LOG.md and re-run
+the last gate block before new work, because chat memory does not persist.
+Commit after every judged task as P<phase>/<task-id>: <summary>.

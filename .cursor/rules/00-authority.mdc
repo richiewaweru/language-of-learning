@@ -1,0 +1,10 @@
+---
+description: Document authority and conflict resolution
+alwaysApply: true
+---
+Resolve any design conflict by document precedence: semantic-contract.md,
+then visual-constitution.md + design-tokens.css, then foundation-plan.md,
+then the 20-doc foundation set, then the HTML PoCs (look/feel only).
+Do not invent semantics not present in these docs. When docs are silent,
+make the smallest compliant choice and log it in BUILD-LOG.md, because
+undocumented improvisation is how the grammar drifts.

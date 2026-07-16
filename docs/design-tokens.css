@@ -1,0 +1,70 @@
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Language of Learning v0.1
+   Source A: structural-code-lens-poc.html (product skin — adopted)
+   Source B: visual-constitution.md §2 (semantic palette — law)
+   Rule: skin tokens style chrome; semantic tokens carry meaning.
+   A semantic token may NEVER be used decoratively (constitution A4).
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── SKIN — surfaces & chrome (from PoC) ─────────────────── */
+  --bg:            #F6F4EF;   /* app background under grid       */
+  --grid-line:     #E8E5DD;   /* 28px graph-paper grid           */
+  --paper:         #FFFDF8;   /* panels, cards, editor           */
+  --ink:           #17191F;   /* text, borders, structure chrome */
+  --muted:         #6F7280;   /* secondary text                  */
+  --line:          #D9D7CF;   /* hairline dividers               */
+  --shadow-panel:  6px 6px 0 var(--ink);   /* neo-brutalist card */
+  --shadow-btn:    3px 3px 0 var(--ink);
+  --shadow-hover:  4px 4px 0 var(--ink);
+
+  /* ── SEMANTIC — one hue, one meaning (constitution §2) ───── */
+  --data-blue:      #3757D5;  /* values, collections, data movement */
+  --work-purple:    #7653D6;  /* function / reusable-work boundary  */
+  --flow-teal:      #0E8A8A;  /* sequence lines, loop frames        */
+  --branch-magenta: #B0388A;  /* conditions, forks                  */
+  --state-gold:     #B68428;  /* persistent state, mutation         */
+  --exit-green:     #2F7F58;  /* returns, successful output         */
+  --effect-amber:   #D98E1F;  /* outside-world actions              */
+  --alert-orange:   #D95F24;  /* errors, unsupported, interruption  */
+
+  /* ── DERIVED STATES (constitution C2/C3: same hue, changed weight) */
+  --dim-opacity:      0.35;   /* de-emphasis; grayscale forbidden  */
+  --focus-glow:       0 0 0 3px color-mix(in srgb, currentColor 25%, transparent);
+
+  /* ── TYPE ────────────────────────────────────────────────── */
+  --font-ui:   Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace; /* code, eyebrows, labels */
+  --eyebrow:   700 12px/1.2 var(--font-mono);  /* letter-spacing .15em, uppercase */
+
+  /* ── MOTION (constitution §4 timing law) ─────────────────── */
+  --move-token:   transform .7s cubic-bezier(.4,0,.2,1), opacity .35s ease;
+  --move-line:    transform .38s ease, opacity .25s ease;   /* line highlight */
+  --move-focus:   opacity .25s, filter .25s;                /* primitive focus */
+  --t-min: 150ms;  --t-max: 900ms;  --t-autoplay: 1600ms;
+
+  /* ── LAYOUT ──────────────────────────────────────────────── */
+  --grid-unit: 28px;          /* background grid AND spacing rhythm */
+  --radius-pill: 999px;       /* ONLY values are fully rounded (S-rule) */
+  --border-w: 1.5px;          /* standard */
+  --border-w-strong: 2.5px;   /* function boundary */
+}
+
+/* Reduced motion: instant state changes, ghost becomes two-beat static */
+@media (prefers-reduced-motion: reduce) {
+  :root { --move-token: none; --move-line: none; --move-focus: none; }
+}
+
+/* ═══ USAGE RULES (enforced by review, not just convention) ═══
+   1. Chrome (panels, tabs, buttons) uses ONLY skin tokens.
+   2. Canvas elements use ONLY semantic tokens per their node kind:
+      value/collection→data-blue · function/call→work-purple
+      sequence/loop→flow-teal · branch→branch-magenta
+      binding[role=state]/mutation→state-gold · return→exit-green
+      effect→effect-amber · unsupported/error→alert-orange
+   3. Never introduce a new color for emphasis: focus = weight+glow
+      of the element's own hue; dimming = --dim-opacity.
+   4. The PoC rendered only 5 semantic hues because its examples
+      didn't yet draw loop-vs-branch distinctly. The full 8 are law;
+      the filter example (loop + branch on one canvas) is the test.
+   ═══════════════════════════════════════════════════════════ */

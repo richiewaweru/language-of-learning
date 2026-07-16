@@ -1,0 +1,11 @@
+---
+description: The determinism boundary
+alwaysApply: true
+---
+Do not call any LLM, external API, or network resource at build time or
+runtime; use the deterministic template system for all captions, because
+everything on screen must be deterministically true or explicitly labeled.
+Do not hand-write traces, graphs, or expected fixture values from
+imagination — derive expected values by hand-analysis written into
+fixture comments, and generate actual values only from the analyzer and
+trace runtime, because fabricated evidence corrupts the golden suite.

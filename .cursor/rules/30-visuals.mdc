@@ -1,0 +1,12 @@
+---
+description: Visual constitution compliance
+globs: ["packages/visual-grammar/**", "apps/web/**"]
+---
+Use design-tokens.css tokens only: semantic hues per node kind on canvas,
+skin tokens on chrome; never introduce a new color or use a semantic hue
+decoratively, because one hue must keep one meaning.
+Values travel, structures stand still; loops keep a fixed frame with an
+advancing marker; untaken branches dim to 0.35 opacity but never vanish;
+state changes ghost the old value for one beat, because motion is proof.
+Every animated surface ships back/step/play/scrub/reset and honors
+prefers-reduced-motion, because the learner controls time.
