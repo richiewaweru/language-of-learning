@@ -15,6 +15,7 @@
     "test:scenes": "pnpm --filter @lol/lens-scenes test",
     "test:journey": "python tools/run_journey_tests.py",
     "test:lessons": "pnpm exec tsx tools/run_lesson_checks.ts",
+    "test:all": "pnpm test:analyzer && pnpm test:trace && pnpm test:patterns && pnpm test:scenes && pnpm test:fixtures && pnpm test:journey && pnpm test:lessons && pnpm typecheck && pnpm lint",
     "api": "uvicorn apps.api.main:app --reload --host 127.0.0.1 --port 8000",
     "pyodide-parity": "node tools/run_pyodide_parity.mjs",
     "trace-pyodide-parity": "node tools/run_trace_pyodide_parity.mjs",

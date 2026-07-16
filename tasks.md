@@ -420,3 +420,38 @@
 5. `pnpm --filter web build`     → exit 0 with /learn pathway + 4 lessons
 
 **Phase P6 complete.** Tag: `gate-P6`
+
+## Phase P7 — Hardening & handoff [gate: full test + pnpm build + README + smoke script]
+
+- [x] P7-01 Full regression suite green
+      done-when: analyzer, patterns, scenes, fixtures, journey, lessons, typecheck, lint all pass
+      status: ✓ judged
+      evidence: `pnpm test:all` green; also pyodide + trace-pyodide 6/6
+      judge: 2026-07-16 accepted
+
+- [x] P7-02 Production `pnpm build` succeeds
+      done-when: `pnpm build` exit 0
+      status: ✓ judged
+      evidence: `pnpm build` exit 0 (workspace + web SSR/client)
+      judge: 2026-07-16 accepted
+
+- [x] P7-03 README quickstart (≤10 commands clone → running)
+      done-when: README.md exists with ≤10 numbered setup commands
+      status: ✓ judged
+      evidence: README.md numbered 1–10 (install → URLs → verify)
+      judge: 2026-07-16 accepted
+
+- [x] P7-04 Smoke-test script (10 items) + finalize BUILD-LOG + DEFERRED-ONLINE
+      done-when: `tools/smoke-test.md` has 10 checks; DEFERRED-ONLINE marked finalized; BUILD-LOG has P7 summary
+      status: ✓ judged
+      evidence: tools/smoke-test.md (10 checks); DEFERRED-ONLINE finalized; BUILD-LOG P7 summary
+      judge: 2026-07-16 accepted
+
+## Gate block P7 (run all; paste outputs to PROGRESS.md)
+
+1. Full suite (test:analyzer, test:trace, test:patterns, test:scenes, test:fixtures, test:journey, test:lessons, typecheck, lint)
+2. `pnpm build` → exit 0
+3. README.md quickstart ≤10 commands
+4. tools/smoke-test.md present (10 items)
+
+**Phase P7 complete.** Tag: `gate-P7`

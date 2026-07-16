@@ -109,3 +109,15 @@ Static-first pages render step-0 layout without JS animation. Interactive steppi
 
 Authored the “How loops build results” pathway, pre-rendered scenes, Learn routes with static-first lessons, and a machine-check gate reporting 4/4 with PENDING-RICHIE verification placeholders.
 
+### DECISION: root README counts install + verify as one quickstart (P7)
+
+Brief asks ≤10 commands clone→running. README numbers 1–5 for install/run, 6–7 as browser URLs, 8–10 as optional verify (`test:lessons`, `test:journey`, `build`). Running app is available after step 5.
+
+### DECISION: `pnpm test:all` aggregates local gates (P7)
+
+Added a single root script chaining analyzer/trace/patterns/scenes/fixtures/journey/lessons/typecheck/lint so handoff and CI share one command. Pyodide parity scripts remain separate (slower; still run at gate).
+
+## Phase P7 summary (gate-P7, 2026-07-16)
+
+Hardening complete: full regression green, production `pnpm build` exit 0, root README quickstart, 10-item smoke checklist, DEFERRED-ONLINE finalized. Local v0.1 handoff ready; human lesson verification (`PENDING-RICHIE`) remains Richie’s sign-off.
+

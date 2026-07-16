@@ -2,60 +2,48 @@
 
 ## Current phase
 
-**P6 — complete.** Next: **P7 — Hardening & handoff**
+**P7 — complete.** Local v0.1 handoff ready (`gate-P7`).
 
 ## Last gate
 
-**gate-P6** — 2026-07-16
+**gate-P7** — 2026-07-16
 
-## Gate report — P5
-
-### Gate commands + outputs
-
-```
-1. pnpm test:journey → 3/3 fresh snippets complete
-2. pnpm test:scenes → 12/12 pass
-3. pnpm test:patterns → 11/11 pass
-4. pnpm typecheck → exit 0
-5. pnpm lint → exit 0
-6. pnpm --filter web build → /decode present
-```
-
-## Gate report — P6
+## Gate report — P7
 
 ### Gate commands + outputs
 
 ```
-1. pnpm test:lessons
-   - 4/4 lessons machine-checked
-   - accumulate / count / filter / transform
+1. pnpm test:all
+   - analyzer: 4 OK
+   - trace: 5 OK (incl. hostile)
+   - patterns: 11/11
+   - scenes: 12/12
+   - fixtures: 9/9 (6/6 shape-valid)
+   - journey: 3/3 fresh snippets complete
+   - lessons: 4/4 lessons machine-checked
+   - typecheck: exit 0
+   - lint: exit 0
 
-2. pnpm test:journey (regression)
-   - 3/3 fresh snippets complete
+2. pnpm pyodide-parity → 6/6 fixtures byte-identical
+3. pnpm trace-pyodide-parity → 6/6 fixture traces byte-identical
+4. pnpm build → exit 0 (workspace + web SSR/client)
 
-3. pnpm typecheck
-   - exit 0
-
-4. pnpm lint
-   - exit 0
-
-5. pnpm --filter web build
-   - exit 0 with /learn, /learn/how-loops-build-results, and 4 lesson routes
+5. README.md → numbered quickstart ≤10 commands
+6. tools/smoke-test.md → 10-item checklist
+7. DEFERRED-ONLINE.md → finalized for v0.1-local
 ```
 
 ### What shipped
 
-- `content/pathways/how-loops-build-results.json` + four lesson JSON files
-- `content/scenes/` pre-rendered scenes (static initial state)
-- `PathwaySchema` in lens-contracts + JSON Schema export
-- Learn routes: index → pathway → lessons with prev/next nav
-- Static-first pages + “Run it yourself” interactive ScenePlayer
-- `pnpm test:lessons` machine-check script; `verified_by: PENDING-RICHIE`
+- Root `README.md` quickstart (clone → Decode/Learn)
+- `pnpm test:all` aggregator
+- `tools/smoke-test.md` first-open checklist for Richie
+- Finalized `DEFERRED-ONLINE.md` + BUILD-LOG P7 summary
 
 ### Decisions logged
 
-See BUILD-LOG.md (four lessons = accumulate/count/filter/transform; Pyodide on demand deferred to Decode link).
+See BUILD-LOG.md (README command counting; `test:all` aggregation).
 
-### Next phase preview — P7
+### Handoff note
 
-Full test run, production build, README quickstart, smoke-test script, finalize DEFERRED-ONLINE.
+Human verification: replace `PENDING-RICHIE` on lesson records after inspecting each lesson (`DEFERRED-ONLINE.md` §10). Use `tools/smoke-test.md` on a fresh machine.
