@@ -219,3 +219,46 @@
       judge: 2026-07-16 accepted
 
 **Phase P1 complete.** Tag: `gate-P1`
+
+## Phase P2 — trace-runtime [gate: pnpm test:trace && pnpm trace-pyodide-parity && pnpm test:analyzer && pnpm pyodide-parity && pnpm typecheck && pnpm lint]
+
+- [x] P2-01 Trace package skeleton + failing fixture trace tests
+      done-when: `pnpm test:trace` fails on trace mismatches before implementation
+      status: ✓ judged
+      evidence: trace tests initially failed on P0 trace scaffolds, then passed after runtime + rewrite
+      judge: 2026-07-16 accepted
+
+- [x] P2-02 Instrumented execution with full binding snapshots and closed event set
+      done-when: `python tools/run_trace_tests.py call loop state` keyword tests pass
+      status: ✓ judged
+      evidence: call_enter/return, loop_advance, state_change, condition_eval, collection_append events emitted
+      judge: 2026-07-16 accepted
+
+- [x] P2-03 Sandbox per contract T4 (caps, literal-only args, forbidden constructs)
+      done-when: hostile fixture suite reports all contained
+      status: ✓ judged
+      evidence: `pnpm test:trace` hostile tests pass for infinite_loop, huge_allocation, eval, import, dunder
+      judge: 2026-07-16 accepted
+
+- [x] P2-04 Match all six fixture traces in CPython
+      done-when: `pnpm test:trace` passes with 6/6 fixture traces byte-identical
+      status: ✓ judged
+      evidence: `pnpm test:trace` → all 5 tests pass including exact trace match over 6 fixtures
+      judge: 2026-07-16 accepted
+
+- [x] P2-05 Match all six fixture traces in Pyodide
+      done-when: `pnpm trace-pyodide-parity` reports `6/6 fixture traces byte-identical`
+      status: ✓ judged
+      evidence: `pnpm trace-pyodide-parity` → `6/6 fixture traces byte-identical`
+      judge: 2026-07-16 accepted
+
+## Gate block P2 (run all; paste outputs to PROGRESS.md)
+
+1. `pnpm test:trace`              → expect: all pass (6 fixtures + 5 hostile)
+2. `pnpm trace-pyodide-parity`    → expect: 6/6 fixture traces byte-identical
+3. `pnpm test:analyzer`           → expect: all pass (regression)
+4. `pnpm pyodide-parity`          → expect: 6/6 byte-identical (regression)
+5. `pnpm typecheck`               → exit 0
+6. `pnpm lint`                    → exit 0
+
+**Phase P2 complete.** Tag: `gate-P2`

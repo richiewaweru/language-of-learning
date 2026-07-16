@@ -45,15 +45,10 @@ The P0 graph fixtures were shape-valid scaffolds only. For P1, after the analyze
 
 Implemented the shared Python analyzer in `packages/analyzer-python`, verified 6/6 fixture graphs in both CPython and Pyodide, added a fixture-backed `/debug/graph` inspector page, and completed a 10-snippet unseen review logged above.
 
-## P1 unseen review
+### DECISION: canonicalize P0 trace scaffolds with runtime output (P2-04)
 
-- accumulate_budget: reviewed
-- count_evens: reviewed
-- filter_winners: reviewed
-- transform_double: reviewed
-- search_first_match: reviewed
-- guard_tax_rate: reviewed
-- unsupported_while: reviewed
-- unsupported_import: reviewed
-- unsupported_nested_function: reviewed
-- local_binding_not_constant: reviewed
+The P0 trace fixtures were shape-valid abbreviated scaffolds. For P2, after the tracer produced deterministic full-fidelity traces (e.g. accumulate `0 → 3 → 8 → 10`), the six `expected.trace.json` files were rewritten to canonical runtime JSON. Binding snapshots use sorted keys for byte-identical parity across CPython and Pyodide.
+
+## Phase P2 summary (gate-P2, 2026-07-16)
+
+Implemented graph-guided instrumented execution in `packages/trace-runtime`, verified 6/6 fixture traces in CPython and Pyodide, added a five-case hostile sandbox suite under `fixtures/hostile/`, and logged trace canonicalization above.

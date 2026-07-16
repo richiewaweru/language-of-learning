@@ -1,32 +1,120 @@
 {
-  "call": { "functionId": "fn-count_positive", "argsRepr": ["[-1, 2, 0, 3]"] },
+  "call": {
+    "functionId": "fn-count_positive",
+    "argsRepr": [
+      "[-1, 2, 0, 3]"
+    ]
+  },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": ["fn-count_positive"],
+      "focus": [
+        "fn-count_positive"
+      ],
       "bindings": {},
-      "event": { "type": "call_enter", "functionId": "fn-count_positive" }
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-count_positive"
+      }
     },
     {
       "index": 1,
       "line": 2,
-      "focus": ["bind-count"],
-      "bindings": { "count": "0" },
-      "event": { "type": "state_init", "binding": "bind-count", "repr": "0" }
+      "focus": [
+        "bind-count"
+      ],
+      "bindings": {
+        "count": "0",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "state_init",
+        "binding": "bind-count",
+        "repr": "0"
+      }
     },
     {
       "index": 2,
-      "line": 4,
-      "focus": ["branch-1"],
-      "bindings": { "count": "0", "n": "2" },
-      "event": { "type": "condition_eval", "branch": "branch-1", "result": true }
+      "line": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "count": "0",
+        "n": "-1",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 0,
+        "itemRepr": "-1"
+      }
     },
     {
       "index": 3,
+      "line": 4,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "count": "0",
+        "n": "-1",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": false
+      }
+    },
+    {
+      "index": 4,
+      "line": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "count": "0",
+        "n": "2",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 1,
+        "itemRepr": "2"
+      }
+    },
+    {
+      "index": 5,
+      "line": 4,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "count": "0",
+        "n": "2",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": true
+      }
+    },
+    {
+      "index": 6,
       "line": 5,
-      "focus": ["op-inc"],
-      "bindings": { "count": "1", "n": "2" },
+      "focus": [
+        "op-add"
+      ],
+      "bindings": {
+        "count": "1",
+        "n": "2",
+        "numbers": "[-1, 2, 0, 3]"
+      },
       "event": {
         "type": "state_change",
         "binding": "bind-count",
@@ -35,13 +123,112 @@
       }
     },
     {
-      "index": 4,
+      "index": 7,
+      "line": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "count": "1",
+        "n": "0",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 2,
+        "itemRepr": "0"
+      }
+    },
+    {
+      "index": 8,
+      "line": 4,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "count": "1",
+        "n": "0",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": false
+      }
+    },
+    {
+      "index": 9,
+      "line": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "count": "1",
+        "n": "3",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 3,
+        "itemRepr": "3"
+      }
+    },
+    {
+      "index": 10,
+      "line": 4,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "count": "1",
+        "n": "3",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": true
+      }
+    },
+    {
+      "index": 11,
+      "line": 5,
+      "focus": [
+        "op-add"
+      ],
+      "bindings": {
+        "count": "2",
+        "n": "3",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "state_change",
+        "binding": "bind-count",
+        "oldRepr": "1",
+        "newRepr": "2"
+      }
+    },
+    {
+      "index": 12,
       "line": 6,
-      "focus": ["ret-1"],
-      "bindings": { "count": "2" },
-      "event": { "type": "return_exit", "repr": "2" }
+      "focus": [
+        "ret-1"
+      ],
+      "bindings": {
+        "count": "2",
+        "n": "3",
+        "numbers": "[-1, 2, 0, 3]"
+      },
+      "event": {
+        "type": "return_exit",
+        "repr": "2"
+      }
     }
   ],
-  "result": { "repr": "2" },
-  "truncated": false
+  "truncated": false,
+  "result": {
+    "repr": "2"
+  }
 }

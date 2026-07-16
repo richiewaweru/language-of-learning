@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:fixtures": "vitest run tests/fixtures",
     "test:analyzer": "python tools/run_analyzer_tests.py",
+    "test:trace": "python tools/run_trace_tests.py",
     "pyodide-parity": "node tools/run_pyodide_parity.mjs",
+    "trace-pyodide-parity": "node tools/run_trace_pyodide_parity.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --build",
     "export-schemas": "pnpm --filter @lol/lens-contracts export-schemas"

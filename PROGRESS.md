@@ -2,11 +2,11 @@
 
 ## Current phase
 
-**P1 — complete.** Next: **P2 — trace-runtime**
+**P2 — complete.** Next: **P3 — lens-patterns**
 
 ## Last gate
 
-**gate-P1** — 2026-07-16
+**gate-P2** — 2026-07-16
 
 ## Gate report — P0
 
@@ -82,6 +82,45 @@ See BUILD-LOG.md (docs layout, reference gap, package naming).
 
 See BUILD-LOG.md (fixture canonicalization decision added for P1).
 
-### Next phase preview — P2
+## Gate report — P2
 
-Instrumented execution and honest sandboxing: canonical traces, hostile fixtures, caps, and calm failure banners.
+### Gate commands + outputs
+
+```
+1. pnpm test:trace
+   - 5/5 tests pass
+   - 6/6 fixture traces byte-identical
+   - 5/5 hostile fixtures contained
+
+2. pnpm trace-pyodide-parity
+   - 6/6 fixture traces byte-identical
+
+3. pnpm test:analyzer (regression)
+   - 4/4 pass
+
+4. pnpm pyodide-parity (regression)
+   - 6/6 fixtures byte-identical
+
+5. pnpm typecheck
+   - exit 0
+
+6. pnpm lint
+   - exit 0
+```
+
+### What shipped
+
+- `packages/trace-runtime/src/lol_trace/` instrumented tracer + sandbox guard
+- `tools/run_trace_tests.py` CPython trace + hostile tests
+- `tools/run_trace_pyodide_parity.mjs` Pyodide trace parity runner
+- `tools/rewrite_fixture_traces.py` canonical trace rewriter
+- refined `fixtures/*/expected.trace.json` to canonical runtime output (full fidelity: 0→3→8→10 on accumulate)
+- `fixtures/hostile/` suite (infinite loop, huge allocation, eval, import, dunder escape)
+
+### Decisions logged
+
+See BUILD-LOG.md (trace canonicalization + binding snapshot ordering).
+
+### Next phase preview — P3
+
+Pattern rule engine over semantic graphs: six deterministic rules, positive and negative fixtures, 100% precision gate.

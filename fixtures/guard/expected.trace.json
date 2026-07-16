@@ -1,35 +1,73 @@
 {
-  "call": { "functionId": "fn-apply_tax", "argsRepr": ["100"] },
+  "call": {
+    "functionId": "fn-apply_tax",
+    "argsRepr": [
+      "100"
+    ]
+  },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": ["fn-apply_tax"],
+      "focus": [
+        "fn-apply_tax"
+      ],
       "bindings": {},
-      "event": { "type": "call_enter", "functionId": "fn-apply_tax" }
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-apply_tax"
+      }
     },
     {
       "index": 1,
       "line": 2,
-      "focus": ["bind-rate"],
-      "bindings": { "rate": "0.16", "amount": "100" },
-      "event": { "type": "state_init", "binding": "bind-rate", "repr": "0.16" }
+      "focus": [
+        "bind-rate"
+      ],
+      "bindings": {
+        "amount": "100",
+        "rate": "0.16"
+      },
+      "event": {
+        "type": "state_init",
+        "binding": "bind-rate",
+        "repr": "0.16"
+      }
     },
     {
       "index": 2,
       "line": 3,
-      "focus": ["branch-guard"],
-      "bindings": { "rate": "0.16", "amount": "100" },
-      "event": { "type": "condition_eval", "branch": "branch-guard", "result": false }
+      "focus": [
+        "branch-guard"
+      ],
+      "bindings": {
+        "amount": "100",
+        "rate": "0.16"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-guard",
+        "result": false
+      }
     },
     {
       "index": 3,
       "line": 5,
-      "focus": ["ret-main"],
-      "bindings": { "rate": "0.16", "amount": "100" },
-      "event": { "type": "return_exit", "repr": "16.0" }
+      "focus": [
+        "ret-main"
+      ],
+      "bindings": {
+        "amount": "100",
+        "rate": "0.16"
+      },
+      "event": {
+        "type": "return_exit",
+        "repr": "16.0"
+      }
     }
   ],
-  "result": { "repr": "16.0" },
-  "truncated": false
+  "truncated": false,
+  "result": {
+    "repr": "16.0"
+  }
 }

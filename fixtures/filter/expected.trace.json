@@ -1,25 +1,104 @@
 {
-  "call": { "functionId": "fn-positive_prices", "argsRepr": ["[-2, 3, 0, 5]"] },
+  "call": {
+    "functionId": "fn-positive_prices",
+    "argsRepr": [
+      "[-2, 3, 0, 5]"
+    ]
+  },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": ["fn-positive_prices"],
+      "focus": [
+        "fn-positive_prices"
+      ],
       "bindings": {},
-      "event": { "type": "call_enter", "functionId": "fn-positive_prices" }
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-positive_prices"
+      }
     },
     {
       "index": 1,
-      "line": 5,
-      "focus": ["branch-1"],
-      "bindings": { "price": "3", "results": "[]" },
-      "event": { "type": "condition_eval", "branch": "branch-1", "result": true }
+      "line": 4,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "price": "-2",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 0,
+        "itemRepr": "-2"
+      }
     },
     {
       "index": 2,
+      "line": 5,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "price": "-2",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": false
+      }
+    },
+    {
+      "index": 3,
+      "line": 4,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "price": "3",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 1,
+        "itemRepr": "3"
+      }
+    },
+    {
+      "index": 4,
+      "line": 5,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "price": "3",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": true
+      }
+    },
+    {
+      "index": 5,
       "line": 6,
-      "focus": ["mut-append"],
-      "bindings": { "price": "3", "results": "[3]" },
+      "focus": [
+        "mut-append"
+      ],
+      "bindings": {
+        "price": "3",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[3]"
+      },
       "event": {
         "type": "collection_append",
         "collection": "coll-results",
@@ -27,13 +106,111 @@
       }
     },
     {
-      "index": 3,
+      "index": 6,
+      "line": 4,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "price": "0",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[3]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 2,
+        "itemRepr": "0"
+      }
+    },
+    {
+      "index": 7,
+      "line": 5,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "price": "0",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[3]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": false
+      }
+    },
+    {
+      "index": 8,
+      "line": 4,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "price": "5",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[3]"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 3,
+        "itemRepr": "5"
+      }
+    },
+    {
+      "index": 9,
+      "line": 5,
+      "focus": [
+        "branch-1"
+      ],
+      "bindings": {
+        "price": "5",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[3]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-1",
+        "result": true
+      }
+    },
+    {
+      "index": 10,
+      "line": 6,
+      "focus": [
+        "mut-append"
+      ],
+      "bindings": {
+        "price": "5",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[3, 5]"
+      },
+      "event": {
+        "type": "collection_append",
+        "collection": "coll-results",
+        "valueRepr": "5"
+      }
+    },
+    {
+      "index": 11,
       "line": 8,
-      "focus": ["ret-1"],
-      "bindings": { "results": "[3, 5]" },
-      "event": { "type": "return_exit", "repr": "[3, 5]" }
+      "focus": [
+        "ret-1"
+      ],
+      "bindings": {
+        "price": "5",
+        "prices": "[-2, 3, 0, 5]",
+        "results": "[3, 5]"
+      },
+      "event": {
+        "type": "return_exit",
+        "repr": "[3, 5]"
+      }
     }
   ],
-  "result": { "repr": "[3, 5]" },
-  "truncated": false
+  "truncated": false,
+  "result": {
+    "repr": "[3, 5]"
+  }
 }

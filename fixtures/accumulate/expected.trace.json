@@ -1,32 +1,68 @@
 {
-  "call": { "functionId": "fn-calculate_total", "argsRepr": ["[3, 5, 2]"] },
+  "call": {
+    "functionId": "fn-calculate_total",
+    "argsRepr": [
+      "[3, 5, 2]"
+    ]
+  },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": ["fn-calculate_total"],
+      "focus": [
+        "fn-calculate_total"
+      ],
       "bindings": {},
-      "event": { "type": "call_enter", "functionId": "fn-calculate_total" }
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-calculate_total"
+      }
     },
     {
       "index": 1,
       "line": 2,
-      "focus": ["bind-total"],
-      "bindings": { "total": "0" },
-      "event": { "type": "state_init", "binding": "bind-total", "repr": "0" }
+      "focus": [
+        "bind-total"
+      ],
+      "bindings": {
+        "prices": "[3, 5, 2]",
+        "total": "0"
+      },
+      "event": {
+        "type": "state_init",
+        "binding": "bind-total",
+        "repr": "0"
+      }
     },
     {
       "index": 2,
       "line": 3,
-      "focus": ["loop-1"],
-      "bindings": { "total": "0", "price": "3" },
-      "event": { "type": "loop_advance", "loop": "loop-1", "itemIndex": 0, "itemRepr": "3" }
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "price": "3",
+        "prices": "[3, 5, 2]",
+        "total": "0"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 0,
+        "itemRepr": "3"
+      }
     },
     {
       "index": 3,
       "line": 4,
-      "focus": ["op-add"],
-      "bindings": { "total": "3", "price": "3" },
+      "focus": [
+        "op-add"
+      ],
+      "bindings": {
+        "price": "3",
+        "prices": "[3, 5, 2]",
+        "total": "3"
+      },
       "event": {
         "type": "state_change",
         "binding": "bind-total",
@@ -36,12 +72,95 @@
     },
     {
       "index": 4,
+      "line": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "price": "5",
+        "prices": "[3, 5, 2]",
+        "total": "3"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 1,
+        "itemRepr": "5"
+      }
+    },
+    {
+      "index": 5,
+      "line": 4,
+      "focus": [
+        "op-add"
+      ],
+      "bindings": {
+        "price": "5",
+        "prices": "[3, 5, 2]",
+        "total": "8"
+      },
+      "event": {
+        "type": "state_change",
+        "binding": "bind-total",
+        "oldRepr": "3",
+        "newRepr": "8"
+      }
+    },
+    {
+      "index": 6,
+      "line": 3,
+      "focus": [
+        "loop-1"
+      ],
+      "bindings": {
+        "price": "2",
+        "prices": "[3, 5, 2]",
+        "total": "8"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-1",
+        "itemIndex": 2,
+        "itemRepr": "2"
+      }
+    },
+    {
+      "index": 7,
+      "line": 4,
+      "focus": [
+        "op-add"
+      ],
+      "bindings": {
+        "price": "2",
+        "prices": "[3, 5, 2]",
+        "total": "10"
+      },
+      "event": {
+        "type": "state_change",
+        "binding": "bind-total",
+        "oldRepr": "8",
+        "newRepr": "10"
+      }
+    },
+    {
+      "index": 8,
       "line": 5,
-      "focus": ["ret-1"],
-      "bindings": { "total": "10" },
-      "event": { "type": "return_exit", "repr": "10" }
+      "focus": [
+        "ret-1"
+      ],
+      "bindings": {
+        "price": "2",
+        "prices": "[3, 5, 2]",
+        "total": "10"
+      },
+      "event": {
+        "type": "return_exit",
+        "repr": "10"
+      }
     }
   ],
-  "result": { "repr": "10" },
-  "truncated": false
+  "truncated": false,
+  "result": {
+    "repr": "10"
+  }
 }
