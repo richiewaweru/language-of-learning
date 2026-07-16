@@ -1,0 +1,4 @@
+{
+  "type": "restore_path",
+  "edgeIds": ["edge-false", "edge-true"]
+}

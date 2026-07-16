@@ -1,0 +1,8 @@
+{
+  "type": "exit_return",
+  "repr": "10",
+  "port": "ret-L5C4",
+  "tokenId": "tok-1",
+  "returnNode": "ret-L5C4",
+  "functionNode": "fn-L1C0"
+}

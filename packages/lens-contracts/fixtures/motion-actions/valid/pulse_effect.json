@@ -1,0 +1,6 @@
+{
+  "type": "pulse_effect",
+  "node": "eff-L6C4",
+  "effectType": "print",
+  "repr": "hello"
+}

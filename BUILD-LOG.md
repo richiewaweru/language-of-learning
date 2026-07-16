@@ -165,3 +165,7 @@ Saves now carry `engineVersion: "0.1.1"` and `packages/analyzer-python` is bumpe
 
 `pnpm content:rebuild` (`tools/rebuild_content_scenes.ts`) regenerates `content/scenes/*.json` from each lesson's `fixtures/<f>/source.py` + `call.json` by running the Python engine (graph + trace) and the TS `buildScene`. CI runs it then `git diff --exit-code content/` so pre-rendered scenes can never silently drift. Running it exposed two pre-existing drifts, now fixed: (1) checked-in scenes still used the pre-F1 id scheme (`bind-total`) instead of position ids (`bind-L2C4`); (2) the `call.enter` caption derived the function name by stripping the `fn-` id prefix, which after F1 produced `L1C0` instead of `calculate_total` — `scene-builder` now reads the real `name` from the graph function node. Rebuild is idempotent; `test:scenes`, `test:lessons`, `test:journey` remain green.
 
+## P-motion starts (after gate-F4)
+
+Recreated function-component-poc.html — original unavailable. PM0 contract phase.
+

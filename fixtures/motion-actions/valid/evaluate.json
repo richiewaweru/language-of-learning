@@ -1,0 +1,7 @@
+{
+  "type": "evaluate",
+  "branch": "branch-L4C4",
+  "result": true,
+  "activeEdge": "edge-true",
+  "inactiveEdge": "edge-false"
+}

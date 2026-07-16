@@ -1,0 +1,7 @@
+{
+  "type": "change_state",
+  "cell": "bind-L2C4",
+  "oldRepr": "0",
+  "newRepr": "3",
+  "inputTokenId": "tok-1"
+}

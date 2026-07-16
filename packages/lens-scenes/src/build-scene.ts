@@ -14,6 +14,7 @@ export function buildScene(
     id: options.sceneId ?? `scene-${trace.call.functionId}`,
     graphRef: options.graphRef ?? graph.version,
     layout,
+    edges: [],
     steps,
   };
 }

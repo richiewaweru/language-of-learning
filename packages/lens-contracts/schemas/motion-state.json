@@ -1,0 +1,116 @@
+{
+  "$ref": "#/definitions/motion-state",
+  "definitions": {
+    "motion-state": {
+      "type": "object",
+      "properties": {
+        "stepIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tokens": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "repr": {
+                "type": "string"
+              },
+              "nodeId": {
+                "type": "string"
+              },
+              "edgeId": {
+                "type": "string"
+              },
+              "visible": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "idle",
+                  "moving",
+                  "bound",
+                  "consumed",
+                  "returned",
+                  "ghost"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "repr",
+              "visible",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "collections": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "branchResults": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "activePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fadedPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "focusedNodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ghosts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "returnValue": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "stepIndex",
+        "tokens",
+        "bindings",
+        "collections",
+        "branchResults",
+        "activePaths",
+        "fadedPaths",
+        "focusedNodes",
+        "ghosts"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

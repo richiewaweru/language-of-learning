@@ -13,6 +13,7 @@ const exports = [
   ['pattern-hit', ContractSchemas.patternHit],
   ['scene', ContractSchemas.scene],
   ['scene-actions-fixture', ContractSchemas.sceneActionsFixture],
+  ['motion-state', ContractSchemas.motionState],
   ['selection', ContractSchemas.selection],
   ['lesson-revision', ContractSchemas.lessonRevision],
   ['pathway', ContractSchemas.pathway],

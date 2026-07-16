@@ -622,3 +622,120 @@ See CORRECTIVE-RUN-unified.md final 10-command block.
 
 **Phase F4 complete.** Tag: `gate-F4`
 
+## Phase PM0 — Motion contract and reference recovery [gate: contracts + PoCs, no tween code]
+
+- [x] PM0-01 Commit P-MOTION + motion-contract docs
+      done-when: docs/P-MOTION.md and docs/motion-contract.md exist
+      status: ✓ judged
+      evidence: docs present
+      judge: 2026-07-16 accepted
+
+- [x] PM0-02 Recreate function-component-poc + reference README
+      done-when: reference/function-component-poc.html + README classify PoCs
+      status: ✓ judged
+      evidence: recreated PoC; BUILD-LOG notes original unavailable
+      judge: 2026-07-16 accepted
+
+- [x] PM0-03 Extend SceneAction + LayoutEdge + MotionState schemas
+      done-when: contracts build; schemas export; old fixtures still parse
+      status: ✓ judged
+      evidence: lens-contracts 33 tests; motionVersion 0.2 support
+      judge: 2026-07-16 accepted
+
+- [x] PM0-04 Motion-actions valid/invalid fixtures
+      done-when: every action type has valid fixture; invalid fail Zod
+      status: ✓ judged
+      evidence: fixtures/motion-actions + motion-actions.test.ts
+      judge: 2026-07-16 accepted
+
+## Gate block PM0
+
+1. contracts build + export-schemas
+2. motion-actions tests green
+3. no RuntimeTokenLayer yet
+4. PoCs on disk
+
+**Phase PM0 complete.** Tag: `gate-PM0`
+
+## Phase PM1 — Motion state reducer [gate: deriveMotionState fold 0..N]
+
+- [ ] PM1-01 reduceSceneActions + deriveMotionState
+      done-when: jump/scrub tests green; reducedMotion same semantic state
+      status: todo
+      evidence:
+      judge:
+
+- [ ] PM1-02 Expand action-builder (spawn/bind/tokenIds) + regenerate goldens
+      done-when: call_enter/bind_param emit actions; suite green
+      status: todo
+      evidence:
+      judge:
+
+## Gate block PM1
+
+1. pnpm test:scenes incl. motion reducer tests
+2. No required CSS tweens
+
+**Phase PM1 complete.** Tag: `gate-PM1`
+
+## Phase PM2 — Arg binding motion [gate: call→param visible]
+
+- [ ] PM2-01 RuntimeTokenLayer + MotionPath
+      done-when: arg travels to parameter; multi-param; reduced-motion
+      status: todo
+      evidence:
+      judge:
+
+## Gate block PM2 — Tag: `gate-PM2`
+
+## Phase PM3 — Loop + state morph [gate: accumulate 0→3→8→10]
+
+- [ ] PM3-01 Loop advance + state morph for accumulate
+      done-when: ≥10 variations; canonical totals correct
+      status: todo
+      evidence:
+      judge:
+
+## Gate block PM3 — Tag: `gate-PM3`
+
+## Phase PM4 — Branch + append [gate: filter routes]
+
+- [ ] PM4-01 Branch fade/activate + append_value
+      done-when: mixed true/false visible
+      status: todo
+      evidence:
+      judge:
+
+## Gate block PM4 — Tag: `gate-PM4`
+
+## Phase PM5 — Return exit (+ effect if emitted)
+
+- [ ] PM5-01 Return crosses function boundary
+      done-when: return visible exit; effect if analyzer emits
+      status: todo
+      evidence:
+      judge:
+
+## Gate block PM5 — Tag: `gate-PM5`
+
+## Phase PM6 — Playback polish + a11y
+
+- [ ] PM6-01 Timing tokens, pause/scrub cancel, keyboard, SR
+      done-when: keyboard + reduced-motion convey every step
+      status: todo
+      evidence:
+      judge:
+
+## Gate block PM6 — Tag: `gate-PM6`
+
+## Phase PM7 — Visual regression + learner protocol
+
+- [ ] PM7-01 Screenshots + semantic asserts + learner protocol doc
+      done-when: assets under BUILD-LOG/assets/pm7; protocol filed
+      status: todo
+      evidence:
+      judge:
+
+## Gate block PM7 — Tag: `gate-PM7`
+
+

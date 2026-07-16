@@ -10,6 +10,7 @@ const expectedFiles = [
   'pattern-hit.json',
   'scene.json',
   'scene-actions-fixture.json',
+  'motion-state.json',
   'selection.json',
   'lesson-revision.json',
   'pathway.json',

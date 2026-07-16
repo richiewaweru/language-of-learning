@@ -32,6 +32,12 @@
                         },
                         "toNode": {
                           "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "viaEdge": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -55,6 +61,15 @@
                         "itemIndex": {
                           "type": "integer",
                           "minimum": 0
+                        },
+                        "collection": {
+                          "type": "string"
+                        },
+                        "itemRepr": {
+                          "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -76,6 +91,12 @@
                         },
                         "result": {
                           "type": "boolean"
+                        },
+                        "activeEdge": {
+                          "type": "string"
+                        },
+                        "inactiveEdge": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -100,6 +121,9 @@
                         },
                         "newRepr": {
                           "type": "string"
+                        },
+                        "inputTokenId": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -122,6 +146,15 @@
                         },
                         "port": {
                           "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "returnNode": {
+                          "type": "string"
+                        },
+                        "functionNode": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -140,11 +173,162 @@
                         },
                         "node": {
                           "type": "string"
+                        },
+                        "effectType": {
+                          "type": "string"
+                        },
+                        "repr": {
+                          "type": "string"
                         }
                       },
                       "required": [
                         "type",
                         "node"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "spawn_value"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "repr": {
+                          "type": "string"
+                        },
+                        "atNode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "tokenId",
+                        "repr",
+                        "atNode"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "bind_value"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "bindingNode": {
+                          "type": "string"
+                        },
+                        "repr": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "tokenId",
+                        "bindingNode",
+                        "repr"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "append_value"
+                        },
+                        "collection": {
+                          "type": "string"
+                        },
+                        "valueRepr": {
+                          "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "newIndex": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "collection",
+                        "valueRepr",
+                        "tokenId",
+                        "newIndex"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "focus_nodes"
+                        },
+                        "primary": {
+                          "type": "string"
+                        },
+                        "secondary": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "primary"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "fade_path"
+                        },
+                        "edgeIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "edgeIds"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "restore_path"
+                        },
+                        "edgeIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "edgeIds"
                       ],
                       "additionalProperties": false
                     }

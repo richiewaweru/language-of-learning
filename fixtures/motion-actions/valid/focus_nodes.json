@@ -1,0 +1,5 @@
+{
+  "type": "focus_nodes",
+  "primary": "loop-L3C4",
+  "secondary": ["bind-L2C4", "col-L1C4"]
+}

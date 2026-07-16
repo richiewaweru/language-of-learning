@@ -10,6 +10,9 @@
         "graphRef": {
           "type": "string"
         },
+        "motionVersion": {
+          "type": "string"
+        },
         "layout": {
           "type": "array",
           "items": {
@@ -44,6 +47,83 @@
             ],
             "additionalProperties": false
           }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "fromNode": {
+                "type": "string"
+              },
+              "toNode": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "data",
+                  "control",
+                  "repeat",
+                  "true_path",
+                  "false_path",
+                  "return"
+                ]
+              },
+              "path": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "d": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "d"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "x1": {
+                        "type": "number"
+                      },
+                      "y1": {
+                        "type": "number"
+                      },
+                      "x2": {
+                        "type": "number"
+                      },
+                      "y2": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "x1",
+                      "y1",
+                      "x2",
+                      "y2"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "fromNode",
+              "toNode",
+              "kind",
+              "path"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
         },
         "steps": {
           "type": "array",
@@ -83,6 +163,12 @@
                         },
                         "toNode": {
                           "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "viaEdge": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -106,6 +192,15 @@
                         "itemIndex": {
                           "type": "integer",
                           "minimum": 0
+                        },
+                        "collection": {
+                          "type": "string"
+                        },
+                        "itemRepr": {
+                          "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -127,6 +222,12 @@
                         },
                         "result": {
                           "type": "boolean"
+                        },
+                        "activeEdge": {
+                          "type": "string"
+                        },
+                        "inactiveEdge": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -151,6 +252,9 @@
                         },
                         "newRepr": {
                           "type": "string"
+                        },
+                        "inputTokenId": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -173,6 +277,15 @@
                         },
                         "port": {
                           "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "returnNode": {
+                          "type": "string"
+                        },
+                        "functionNode": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -191,11 +304,162 @@
                         },
                         "node": {
                           "type": "string"
+                        },
+                        "effectType": {
+                          "type": "string"
+                        },
+                        "repr": {
+                          "type": "string"
                         }
                       },
                       "required": [
                         "type",
                         "node"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "spawn_value"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "repr": {
+                          "type": "string"
+                        },
+                        "atNode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "tokenId",
+                        "repr",
+                        "atNode"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "bind_value"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "bindingNode": {
+                          "type": "string"
+                        },
+                        "repr": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "tokenId",
+                        "bindingNode",
+                        "repr"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "append_value"
+                        },
+                        "collection": {
+                          "type": "string"
+                        },
+                        "valueRepr": {
+                          "type": "string"
+                        },
+                        "tokenId": {
+                          "type": "string"
+                        },
+                        "newIndex": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "collection",
+                        "valueRepr",
+                        "tokenId",
+                        "newIndex"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "focus_nodes"
+                        },
+                        "primary": {
+                          "type": "string"
+                        },
+                        "secondary": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "primary"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "fade_path"
+                        },
+                        "edgeIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "edgeIds"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "restore_path"
+                        },
+                        "edgeIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 1
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "edgeIds"
                       ],
                       "additionalProperties": false
                     }

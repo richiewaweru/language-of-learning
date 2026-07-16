@@ -169,7 +169,7 @@ describe('scene schema', () => {
         },
       ],
     };
-    expect(SceneSchema.parse(scene)).toEqual(scene);
+    expect(SceneSchema.parse(scene)).toEqual({ ...scene, edges: [] });
   });
 });
 
