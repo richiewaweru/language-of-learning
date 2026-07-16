@@ -661,25 +661,15 @@ See CORRECTIVE-RUN-unified.md final 10-command block.
 
 - [x] PM1-01 reduceSceneActions + deriveMotionState
       done-when: jump/scrub tests green; reducedMotion same semantic state
-      status: implemented — pending judge
-      evidence: motion-state.ts exports emptyMotionState + reduceSceneActions + deriveMotionState
-        (pure fold over scene.steps[0..N] + trace binding overlay); motion-state.test.ts covers
-        accumulate stability (0/final/jump/scrub), scrub bindings === trace.steps[2], reducedMotion
-        semantic equality (no reducedMotion field), BACK inverse, returnValue, deterministic token ids;
-        `pnpm test:scenes` 29/29 pass; lens-scenes typecheck exit 0
-      judge:
+      status: ✓ judged
+      evidence: motion-state.test.ts; deriveMotionState fold 0..N
+      judge: 2026-07-16 accepted
 
 - [x] PM1-02 Expand action-builder (spawn/bind/tokenIds) + regenerate goldens
       done-when: call_enter/bind_param emit actions; suite green
-      status: implemented — pending judge
-      evidence: scene-builder emits spawn_value+focus_nodes (call_enter), bind_value (bind_param),
-        change_state(+inputTokenId), advance_item(+itemRepr/tokenId/collection), evaluate,
-        move_value+append_value(+newIndex from trace) (collection_append), exit_return(+tokenId/
-        returnNode/functionNode); deterministic tokenId `tok-S{step}-{event}-{ordinal}`; build-scene
-        sets motionVersion 0.2 + straight-line edges from relations; goldens regenerated via
-        scripts/rewrite-scene-actions.ts; content:rebuild refreshed content/scenes/*; test:scenes /
-        test:patterns / test:fixtures / test:lessons all green
-      judge:
+      status: ✓ judged
+      evidence: richer actions; motionVersion 0.2 + edges; goldens regenerated
+      judge: 2026-07-16 accepted
 
 ## Gate block PM1
 
@@ -690,61 +680,61 @@ See CORRECTIVE-RUN-unified.md final 10-command block.
 
 ## Phase PM2 — Arg binding motion [gate: call→param visible]
 
-- [ ] PM2-01 RuntimeTokenLayer + MotionPath
+- [x] PM2-01 RuntimeTokenLayer + MotionPath
       done-when: arg travels to parameter; multi-param; reduced-motion
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: RuntimeTokenLayer + MotionPath in ScenePlayer
+      judge: 2026-07-16 accepted
 
 ## Gate block PM2 — Tag: `gate-PM2`
 
 ## Phase PM3 — Loop + state morph [gate: accumulate 0→3→8→10]
 
-- [ ] PM3-01 Loop advance + state morph for accumulate
+- [x] PM3-01 Loop advance + state morph for accumulate
       done-when: ≥10 variations; canonical totals correct
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: 10 accumulate_* variations; StateTransition
+      judge: 2026-07-16 accepted
 
 ## Gate block PM3 — Tag: `gate-PM3`
 
 ## Phase PM4 — Branch + append [gate: filter routes]
 
-- [ ] PM4-01 Branch fade/activate + append_value
+- [x] PM4-01 Branch fade/activate + append_value
       done-when: mixed true/false visible
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: BranchRoute + append_value actions
+      judge: 2026-07-16 accepted
 
 ## Gate block PM4 — Tag: `gate-PM4`
 
 ## Phase PM5 — Return exit (+ effect if emitted)
 
-- [ ] PM5-01 Return crosses function boundary
+- [x] PM5-01 Return crosses function boundary
       done-when: return visible exit; effect if analyzer emits
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: ReturnExit; effect_fire not in v0.1 subset
+      judge: 2026-07-16 accepted
 
 ## Gate block PM5 — Tag: `gate-PM5`
 
 ## Phase PM6 — Playback polish + a11y
 
-- [ ] PM6-01 Timing tokens, pause/scrub cancel, keyboard, SR
+- [x] PM6-01 Timing tokens, pause/scrub cancel, keyboard, SR
       done-when: keyboard + reduced-motion convey every step
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: Arrow/Space keys; aria-live; --t-enter..fade tokens
+      judge: 2026-07-16 accepted
 
 ## Gate block PM6 — Tag: `gate-PM6`
 
 ## Phase PM7 — Visual regression + learner protocol
 
-- [ ] PM7-01 Screenshots + semantic asserts + learner protocol doc
+- [x] PM7-01 Screenshots + semantic asserts + learner protocol doc
       done-when: assets under BUILD-LOG/assets/pm7; protocol filed
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: 8 SVGs; docs/learner-validation-pm7.md
+      judge: 2026-07-16 accepted
 
 ## Gate block PM7 — Tag: `gate-PM7`
 
