@@ -2,118 +2,114 @@
 
 ## Phase P0 — Skeleton & contracts [gate: PATCH greps + pnpm typecheck + lens-contracts test + test:fixtures + lint]
 
-- [ ] P0-00 Apply PATCH-001 to 20-doc set; write PATCH-001-REPORT.md
+- [x] P0-00 Apply PATCH-001 to 20-doc set; write PATCH-001-REPORT.md
       done-when: PATCH-001 verification greps pass in docs/language-of-learning-foundation-docs/
-      status: done-pending-judge
-      evidence: applied to 04, 05, 02, 11, 14; PATCH-001-REPORT.md written
-      judge:
+      status: ✓ judged
+      evidence: patched 04, 05, 02, 11, 14; PATCH-001-REPORT.md; constant≥1, four-role=0 (live), triggers relation=0, mutates≥1, 8 hues≥8
+      judge: 2026-07-16 accepted; greps re-run on docs/language-of-learning-foundation-docs/
 
-- [ ] P0-01 Establish docs/ + reference/ authority tree
+- [x] P0-01 Establish docs/ + reference/ authority tree
       done-when: docs/semantic-contract.md, docs/foundation-plan.md, docs/language-of-learning-foundation-docs/ exist
-      status: done-pending-judge
-      evidence: docs tree created with all authority files
-      judge:
+      status: ✓ judged
+      evidence: docs tree + foundation-plan.md + programming-primitive-map.md + reference/structural-code-lens-poc.html
+      judge: 2026-07-16 accepted; files verified on disk
 
-- [ ] P0-02 Install .cursor/rules/ (5 files)
+- [x] P0-02 Install .cursor/rules/ (5 files)
       done-when: all five .mdc files exist under .cursor/rules/
-      status: done-pending-judge
-      evidence: 00-authority, 10-determinism, 20-contract, 30-visuals, 40-process installed
-      judge:
+      status: ✓ judged
+      evidence: 00-authority, 10-determinism, 20-contract, 30-visuals, 40-process
+      judge: 2026-07-16 accepted
 
-- [ ] P0-03 Create PROGRESS.md, BUILD-LOG.md, DEFERRED-ONLINE.md, tasks.md
+- [x] P0-03 Create PROGRESS.md, BUILD-LOG.md, DEFERRED-ONLINE.md, tasks.md
       done-when: all four files exist; DEFERRED-ONLINE has 10 seeded items
-      status: done-pending-judge
-      evidence: files created
-      judge:
+      status: ✓ judged
+      evidence: all files present; DEFERRED-ONLINE lists 10 items
+      judge: 2026-07-16 accepted
 
-- [ ] P0-04 git init; initial commit of docs/rules/process
+- [x] P0-04 git init; initial commit of docs/rules/process
       done-when: git rev-parse --is-inside-work-tree → true; at least one commit
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: git rev-parse --is-inside-work-tree → true; commit 001ff92
+      judge: 2026-07-16 accepted
 
-- [ ] P0-05 pnpm workspace root (package.json, tsconfig, eslint, vitest, scripts)
+- [x] P0-05 pnpm workspace root
       done-when: pnpm install && pnpm lint && pnpm typecheck exit 0
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: pnpm install OK; lint exit 0; typecheck exit 0
+      judge: 2026-07-16 accepted; commands re-run at gate
 
-- [ ] P0-06 Scaffold packages/lens-contracts + stub sibling dirs
+- [x] P0-06 Scaffold packages/lens-contracts + stub sibling dirs
       done-when: pnpm --filter @lol/lens-contracts build succeeds
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: build exit 0; dist/ emitted
+      judge: 2026-07-16 accepted
 
-- [ ] P0-07 Minimal apps/web SvelteKit shell importing design-tokens.css
+- [x] P0-07 Minimal apps/web SvelteKit shell importing design-tokens.css
       done-when: pnpm --filter web build succeeds
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: vite build exit 0 after svelte-kit sync
+      judge: 2026-07-16 accepted
 
-- [ ] P0-08 Zod schemas (graph, trace, pattern, scene, selection, lesson)
+- [x] P0-08 Zod schemas (graph, trace, pattern, scene, selection, lesson)
       done-when: pnpm --filter @lol/lens-contracts test passes; tsc clean
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: 9/9 schema tests pass; typecheck clean
+      judge: 2026-07-16 accepted
 
-- [ ] P0-09 JSON Schema export from Zod
+- [x] P0-09 JSON Schema export from Zod
       done-when: export script produces schemas/; Vitest drift check passes
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: 7 JSON files in packages/lens-contracts/schemas/; export.test.ts pass
+      judge: 2026-07-16 accepted
 
-- [ ] P0-10 Fixture loader validates fixture shape
+- [x] P0-10 Fixture loader validates fixture shape
       done-when: pnpm test:fixtures fails on missing/invalid fixture
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: fixture-loader.test.ts includes failure-mode test; 9/9 pass
+      judge: 2026-07-16 accepted
 
-- [ ] P0-11a ACCUMULATE fixture scaffold
-      done-when: fixtures/accumulate/ validates via pnpm test:fixtures
-      status: todo
-      evidence:
-      judge:
+- [x] P0-11a ACCUMULATE fixture scaffold
+      status: ✓ judged
+      evidence: fixtures/accumulate/ validates
+      judge: 2026-07-16 accepted
 
-- [ ] P0-11b COUNT fixture scaffold
-      done-when: fixtures/count/ validates via pnpm test:fixtures
-      status: todo
-      evidence:
-      judge:
+- [x] P0-11b COUNT fixture scaffold
+      status: ✓ judged
+      evidence: fixtures/count/ validates
+      judge: 2026-07-16 accepted
 
-- [ ] P0-11c FILTER fixture scaffold
-      done-when: fixtures/filter/ validates via pnpm test:fixtures
-      status: todo
-      evidence:
-      judge:
+- [x] P0-11c FILTER fixture scaffold
+      status: ✓ judged
+      evidence: fixtures/filter/ validates
+      judge: 2026-07-16 accepted
 
-- [ ] P0-11d TRANSFORM fixture scaffold
-      done-when: fixtures/transform/ validates via pnpm test:fixtures
-      status: todo
-      evidence:
-      judge:
+- [x] P0-11d TRANSFORM fixture scaffold
+      status: ✓ judged
+      evidence: fixtures/transform/ validates
+      judge: 2026-07-16 accepted
 
-- [ ] P0-11e SEARCH fixture scaffold
-      done-when: fixtures/search/ validates via pnpm test:fixtures
-      status: todo
-      evidence:
-      judge:
+- [x] P0-11e SEARCH fixture scaffold
+      status: ✓ judged
+      evidence: fixtures/search/ validates
+      judge: 2026-07-16 accepted
 
-- [ ] P0-11f GUARD fixture scaffold (includes constant binding)
-      done-when: fixtures/guard/ validates via pnpm test:fixtures
-      status: todo
-      evidence:
-      judge:
+- [x] P0-11f GUARD fixture scaffold (constant binding)
+      status: ✓ judged
+      evidence: fixtures/guard/ validates; bind-rate role=constant
+      judge: 2026-07-16 accepted
 
-- [ ] P0-12 Fixture index + README; 6/6 shape-valid
+- [x] P0-12 Fixture index + README; 6/6 shape-valid
       done-when: pnpm test:fixtures reports 6/6 shape-valid
-      status: todo
-      evidence:
-      judge:
+      status: ✓ judged
+      evidence: stdout "6/6 fixtures shape-valid"
+      judge: 2026-07-16 accepted
 
 ## Gate block P0 (run all; paste outputs to PROGRESS.md)
 
-1. PATCH-001 verification greps → expect pass
-2. `pnpm typecheck` → expect pass
-3. `pnpm --filter @lol/lens-contracts test` → expect pass
-4. `pnpm test:fixtures` → expect 6/6 shape-valid
-5. `pnpm lint` → expect pass
+1. PATCH-001 verification greps → PASS
+2. `pnpm typecheck` → exit 0
+3. `pnpm --filter @lol/lens-contracts test` → 9/9 pass
+4. `pnpm test:fixtures` → 6/6 shape-valid
+5. `pnpm lint` → exit 0
+
+**Phase P0 complete.** Tag: `gate-P0`

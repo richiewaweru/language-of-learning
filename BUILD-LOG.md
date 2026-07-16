@@ -19,3 +19,7 @@ Created `docs/` + `reference/` per Phase 0 plan. Promoted `semantic-contract (3)
 ### DECISION: package naming (P0-05)
 
 Using brief §4 names (`analyzer-python`, `trace-runtime`, `visual-grammar`) over legacy architecture doc names (`lens-parser-python`, `lens-render-svelte`).
+
+## Phase P0 summary (gate-P0, 2026-07-16)
+
+All P0 tasks judged. Monorepo skeleton, Zod contracts, JSON Schema export, six fixture scaffolds, and minimal web shell delivered. Fixture expected payloads are schema-valid hand analysis; runtime byte parity deferred to P1–P4.

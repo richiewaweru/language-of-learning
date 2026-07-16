@@ -1,0 +1,12 @@
+{
+  "steps": [
+    {
+      "index": 2,
+      "actions": [{ "type": "evaluate", "branch": "branch-guard", "result": false }]
+    },
+    {
+      "index": 3,
+      "actions": [{ "type": "exit_return", "repr": "16.0", "port": "ret-main" }]
+    }
+  ]
+}

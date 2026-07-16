@@ -1,0 +1,39 @@
+{
+  "call": { "functionId": "fn-double_all", "argsRepr": ["[1, 2, 3]"] },
+  "steps": [
+    {
+      "index": 0,
+      "line": 1,
+      "focus": ["fn-double_all"],
+      "bindings": {},
+      "event": { "type": "call_enter", "functionId": "fn-double_all" }
+    },
+    {
+      "index": 1,
+      "line": 3,
+      "focus": ["loop-1"],
+      "bindings": { "v": "1", "doubled": "[]" },
+      "event": { "type": "loop_advance", "loop": "loop-1", "itemIndex": 0, "itemRepr": "1" }
+    },
+    {
+      "index": 2,
+      "line": 4,
+      "focus": ["mut-append"],
+      "bindings": { "v": "1", "doubled": "[2]" },
+      "event": {
+        "type": "collection_append",
+        "collection": "coll-doubled",
+        "valueRepr": "2"
+      }
+    },
+    {
+      "index": 3,
+      "line": 5,
+      "focus": ["ret-1"],
+      "bindings": { "doubled": "[2, 4, 6]" },
+      "event": { "type": "return_exit", "repr": "[2, 4, 6]" }
+    }
+  ],
+  "result": { "repr": "[2, 4, 6]" },
+  "truncated": false
+}

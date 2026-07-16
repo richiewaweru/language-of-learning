@@ -1,0 +1,14 @@
+{
+  "steps": [
+    {
+      "index": 2,
+      "actions": [{ "type": "evaluate", "branch": "branch-1", "result": true }]
+    },
+    {
+      "index": 3,
+      "actions": [
+        { "type": "change_state", "cell": "bind-count", "oldRepr": "0", "newRepr": "1" }
+      ]
+    }
+  ]
+}

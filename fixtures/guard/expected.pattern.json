@@ -1,0 +1,6 @@
+{
+  "pattern": "GUARD",
+  "confidence": "deterministic",
+  "memberNodes": ["branch-guard", "ret-zero"],
+  "related": ["SEARCH", "ACCUMULATE"]
+}

@@ -1,0 +1,6 @@
+{
+  "pattern": "SEARCH",
+  "confidence": "deterministic",
+  "memberNodes": ["loop-1", "branch-1", "ret-early"],
+  "related": ["FILTER", "GUARD"]
+}

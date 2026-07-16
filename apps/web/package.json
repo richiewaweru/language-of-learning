@@ -1,0 +1,23 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@lol/lens-contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^3.3.1",
+    "@sveltejs/kit": "^2.15.5",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "svelte": "^5.17.3",
+    "svelte-check": "^4.1.1",
+    "vite": "^6.0.7"
+  }
+}

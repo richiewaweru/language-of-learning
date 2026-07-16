@@ -1,0 +1,39 @@
+{
+  "call": { "functionId": "fn-positive_prices", "argsRepr": ["[-2, 3, 0, 5]"] },
+  "steps": [
+    {
+      "index": 0,
+      "line": 1,
+      "focus": ["fn-positive_prices"],
+      "bindings": {},
+      "event": { "type": "call_enter", "functionId": "fn-positive_prices" }
+    },
+    {
+      "index": 1,
+      "line": 5,
+      "focus": ["branch-1"],
+      "bindings": { "price": "3", "results": "[]" },
+      "event": { "type": "condition_eval", "branch": "branch-1", "result": true }
+    },
+    {
+      "index": 2,
+      "line": 6,
+      "focus": ["mut-append"],
+      "bindings": { "price": "3", "results": "[3]" },
+      "event": {
+        "type": "collection_append",
+        "collection": "coll-results",
+        "valueRepr": "3"
+      }
+    },
+    {
+      "index": 3,
+      "line": 8,
+      "focus": ["ret-1"],
+      "bindings": { "results": "[3, 5]" },
+      "event": { "type": "return_exit", "repr": "[3, 5]" }
+    }
+  ],
+  "result": { "repr": "[3, 5]" },
+  "truncated": false
+}

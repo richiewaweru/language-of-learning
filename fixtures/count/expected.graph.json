@@ -1,0 +1,75 @@
+{
+  "version": "0.1",
+  "source": "def count_positive(numbers):\n    count = 0\n    for n in numbers:\n        if n > 0:\n            count = count + 1\n    return count",
+  "nodes": [
+    {
+      "id": "fn-count_positive",
+      "kind": "function",
+      "sourceRange": { "startLine": 1, "startCol": 0, "endLine": 6, "endCol": 16 },
+      "name": "count_positive",
+      "params": ["bind-numbers"]
+    },
+    {
+      "id": "bind-numbers",
+      "kind": "binding",
+      "sourceRange": { "startLine": 1, "startCol": 19, "endLine": 1, "endCol": 26 },
+      "name": "numbers",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-count",
+      "kind": "binding",
+      "sourceRange": { "startLine": 2, "startCol": 4, "endLine": 2, "endCol": 13 },
+      "name": "count",
+      "role": "state",
+      "mutable": true,
+      "initialRepr": "0"
+    },
+    {
+      "id": "loop-1",
+      "kind": "loop",
+      "sourceRange": { "startLine": 3, "startCol": 4, "endLine": 5, "endCol": 26 },
+      "iteratorName": "n",
+      "collectionRef": "bind-numbers",
+      "body": "branch-1"
+    },
+    {
+      "id": "bind-n",
+      "kind": "binding",
+      "sourceRange": { "startLine": 3, "startCol": 8, "endLine": 3, "endCol": 9 },
+      "name": "n",
+      "role": "iterator",
+      "mutable": false
+    },
+    {
+      "id": "branch-1",
+      "kind": "branch",
+      "sourceRange": { "startLine": 4, "startCol": 8, "endLine": 5, "endCol": 26 },
+      "conditionExpr": "n > 0",
+      "trueBody": "op-inc"
+    },
+    {
+      "id": "op-inc",
+      "kind": "operation",
+      "sourceRange": { "startLine": 5, "startCol": 20, "endLine": 5, "endCol": 26 },
+      "expr": "count + 1"
+    },
+    {
+      "id": "ret-1",
+      "kind": "return",
+      "sourceRange": { "startLine": 6, "startCol": 4, "endLine": 6, "endCol": 16 },
+      "valueRef": "bind-count"
+    }
+  ],
+  "relations": [
+    { "from": "fn-count_positive", "type": "contains", "to": "bind-count" },
+    { "from": "fn-count_positive", "type": "contains", "to": "loop-1" },
+    { "from": "loop-1", "type": "contains", "to": "branch-1" },
+    { "from": "branch-1", "type": "contains", "to": "op-inc" },
+    { "from": "op-inc", "type": "reads", "to": "bind-count" },
+    { "from": "op-inc", "type": "writes", "to": "bind-count" },
+    { "from": "ret-1", "type": "returns", "to": "bind-count" }
+  ],
+  "unsupported": []
+}

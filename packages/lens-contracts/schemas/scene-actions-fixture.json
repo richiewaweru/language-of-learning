@@ -1,0 +1,170 @@
+{
+  "$ref": "#/definitions/scene-actions-fixture",
+  "definitions": {
+    "scene-actions-fixture": {
+      "type": "object",
+      "properties": {
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "move_value"
+                        },
+                        "repr": {
+                          "type": "string"
+                        },
+                        "fromNode": {
+                          "type": "string"
+                        },
+                        "toNode": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "repr",
+                        "fromNode",
+                        "toNode"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "advance_item"
+                        },
+                        "loop": {
+                          "type": "string"
+                        },
+                        "itemIndex": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "loop",
+                        "itemIndex"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "evaluate"
+                        },
+                        "branch": {
+                          "type": "string"
+                        },
+                        "result": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "branch",
+                        "result"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "change_state"
+                        },
+                        "cell": {
+                          "type": "string"
+                        },
+                        "oldRepr": {
+                          "type": "string"
+                        },
+                        "newRepr": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "cell",
+                        "oldRepr",
+                        "newRepr"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "exit_return"
+                        },
+                        "repr": {
+                          "type": "string"
+                        },
+                        "port": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "repr",
+                        "port"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "const": "pulse_effect"
+                        },
+                        "node": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "node"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "index",
+              "actions"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "steps"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

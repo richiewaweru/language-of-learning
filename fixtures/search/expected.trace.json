@@ -1,0 +1,35 @@
+{
+  "call": { "functionId": "fn-find_first_positive", "argsRepr": ["[-3, -1, 4, 2]"] },
+  "steps": [
+    {
+      "index": 0,
+      "line": 1,
+      "focus": ["fn-find_first_positive"],
+      "bindings": {},
+      "event": { "type": "call_enter", "functionId": "fn-find_first_positive" }
+    },
+    {
+      "index": 1,
+      "line": 2,
+      "focus": ["loop-1"],
+      "bindings": { "n": "-3" },
+      "event": { "type": "loop_advance", "loop": "loop-1", "itemIndex": 0, "itemRepr": "-3" }
+    },
+    {
+      "index": 2,
+      "line": 3,
+      "focus": ["branch-1"],
+      "bindings": { "n": "4" },
+      "event": { "type": "condition_eval", "branch": "branch-1", "result": true }
+    },
+    {
+      "index": 3,
+      "line": 4,
+      "focus": ["ret-early"],
+      "bindings": { "n": "4" },
+      "event": { "type": "return_exit", "repr": "4" }
+    }
+  ],
+  "result": { "repr": "4" },
+  "truncated": false
+}

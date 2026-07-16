@@ -1,0 +1,80 @@
+{
+  "version": "0.1",
+  "source": "def apply_tax(amount):\n    rate = 0.16\n    if amount <= 0:\n        return 0\n    return amount * rate",
+  "nodes": [
+    {
+      "id": "fn-apply_tax",
+      "kind": "function",
+      "sourceRange": { "startLine": 1, "startCol": 0, "endLine": 5, "endCol": 24 },
+      "name": "apply_tax",
+      "params": ["bind-amount"]
+    },
+    {
+      "id": "bind-amount",
+      "kind": "binding",
+      "sourceRange": { "startLine": 1, "startCol": 14, "endLine": 1, "endCol": 20 },
+      "name": "amount",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-rate",
+      "kind": "binding",
+      "sourceRange": { "startLine": 2, "startCol": 4, "endLine": 2, "endCol": 16 },
+      "name": "rate",
+      "role": "constant",
+      "mutable": false,
+      "initialRepr": "0.16"
+    },
+    {
+      "id": "val-rate",
+      "kind": "value",
+      "sourceRange": { "startLine": 2, "startCol": 11, "endLine": 2, "endCol": 16 },
+      "repr": "0.16",
+      "pyType": "float"
+    },
+    {
+      "id": "branch-guard",
+      "kind": "branch",
+      "sourceRange": { "startLine": 3, "startCol": 4, "endLine": 4, "endCol": 15 },
+      "conditionExpr": "amount <= 0",
+      "trueBody": "ret-zero"
+    },
+    {
+      "id": "ret-zero",
+      "kind": "return",
+      "sourceRange": { "startLine": 4, "startCol": 8, "endLine": 4, "endCol": 15 },
+      "valueRef": "val-zero"
+    },
+    {
+      "id": "val-zero",
+      "kind": "value",
+      "sourceRange": { "startLine": 4, "startCol": 15, "endLine": 4, "endCol": 16 },
+      "repr": "0",
+      "pyType": "int"
+    },
+    {
+      "id": "op-mul",
+      "kind": "operation",
+      "sourceRange": { "startLine": 5, "startCol": 11, "endLine": 5, "endCol": 24 },
+      "expr": "amount * rate"
+    },
+    {
+      "id": "ret-main",
+      "kind": "return",
+      "sourceRange": { "startLine": 5, "startCol": 4, "endLine": 5, "endCol": 24 },
+      "valueRef": "op-mul"
+    }
+  ],
+  "relations": [
+    { "from": "fn-apply_tax", "type": "contains", "to": "bind-rate" },
+    { "from": "fn-apply_tax", "type": "contains", "to": "branch-guard" },
+    { "from": "branch-guard", "type": "contains", "to": "ret-zero" },
+    { "from": "fn-apply_tax", "type": "contains", "to": "ret-main" },
+    { "from": "op-mul", "type": "reads", "to": "bind-amount" },
+    { "from": "op-mul", "type": "reads", "to": "bind-rate" },
+    { "from": "ret-zero", "type": "returns", "to": "val-zero" },
+    { "from": "ret-main", "type": "returns", "to": "op-mul" }
+  ],
+  "unsupported": []
+}

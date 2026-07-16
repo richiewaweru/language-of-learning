@@ -1,0 +1,788 @@
+{
+  "$ref": "#/definitions/semantic-graph",
+  "definitions": {
+    "semantic-graph": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "value"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "repr": {
+                    "type": "string"
+                  },
+                  "pyType": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "repr",
+                  "pyType"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "binding"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "constant",
+                      "parameter",
+                      "local",
+                      "iterator",
+                      "state"
+                    ]
+                  },
+                  "mutable": {
+                    "type": "boolean"
+                  },
+                  "initialRepr": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "name",
+                  "role",
+                  "mutable"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "collection"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "items"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "function"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "params": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "name",
+                  "params"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "call"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "callee": {
+                    "type": "string"
+                  },
+                  "args": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "callee",
+                  "args"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "operation"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "expr": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "expr"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "sequence"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "children": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "children"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "branch"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "conditionExpr": {
+                    "type": "string"
+                  },
+                  "trueBody": {
+                    "type": "string"
+                  },
+                  "falseBody": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "conditionExpr",
+                  "trueBody"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "loop"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "iteratorName": {
+                    "type": "string"
+                  },
+                  "collectionRef": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "iteratorName",
+                  "collectionRef",
+                  "body"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "return"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "valueRef": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "valueRef"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "mutation"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "targetRef": {
+                    "type": "string"
+                  },
+                  "mutationType": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "targetRef",
+                  "mutationType"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "const": "effect"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "effectType": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "effectType"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "contains",
+                  "reads",
+                  "writes",
+                  "feeds",
+                  "returns",
+                  "iterates",
+                  "mutates"
+                ]
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "from",
+              "type",
+              "to"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "unsupported": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sourceRange": {
+                "type": "object",
+                "properties": {
+                  "startLine": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "startCol": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "endLine": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "endCol": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "startLine",
+                  "startCol",
+                  "endLine",
+                  "endCol"
+                ],
+                "additionalProperties": false
+              },
+              "construct": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "sourceRange",
+              "construct",
+              "message"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "version",
+        "source",
+        "nodes",
+        "relations"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

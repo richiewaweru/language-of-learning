@@ -1,0 +1,26 @@
+{
+  "name": "language-of-learning",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "vitest run",
+    "test:fixtures": "vitest run tests/fixtures",
+    "lint": "eslint .",
+    "typecheck": "tsc --build",
+    "export-schemas": "pnpm --filter @lol/lens-contracts export-schemas"
+  },
+  "devDependencies": {
+    "@lol/lens-contracts": "workspace:*",
+    "@eslint/js": "^9.18.0",
+    "@types/node": "^22.10.5",
+    "eslint": "^9.18.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0",
+    "vitest": "^3.0.4"
+  }
+}

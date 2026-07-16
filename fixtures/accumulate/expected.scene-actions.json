@@ -1,0 +1,27 @@
+{
+  "steps": [
+    {
+      "index": 1,
+      "actions": [{ "type": "change_state", "cell": "bind-total", "oldRepr": "—", "newRepr": "0" }]
+    },
+    {
+      "index": 2,
+      "actions": [{ "type": "advance_item", "loop": "loop-1", "itemIndex": 0 }]
+    },
+    {
+      "index": 3,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-total",
+          "oldRepr": "0",
+          "newRepr": "3"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "actions": [{ "type": "exit_return", "repr": "10", "port": "ret-1" }]
+    }
+  ]
+}

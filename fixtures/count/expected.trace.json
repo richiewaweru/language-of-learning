@@ -1,0 +1,47 @@
+{
+  "call": { "functionId": "fn-count_positive", "argsRepr": ["[-1, 2, 0, 3]"] },
+  "steps": [
+    {
+      "index": 0,
+      "line": 1,
+      "focus": ["fn-count_positive"],
+      "bindings": {},
+      "event": { "type": "call_enter", "functionId": "fn-count_positive" }
+    },
+    {
+      "index": 1,
+      "line": 2,
+      "focus": ["bind-count"],
+      "bindings": { "count": "0" },
+      "event": { "type": "state_init", "binding": "bind-count", "repr": "0" }
+    },
+    {
+      "index": 2,
+      "line": 4,
+      "focus": ["branch-1"],
+      "bindings": { "count": "0", "n": "2" },
+      "event": { "type": "condition_eval", "branch": "branch-1", "result": true }
+    },
+    {
+      "index": 3,
+      "line": 5,
+      "focus": ["op-inc"],
+      "bindings": { "count": "1", "n": "2" },
+      "event": {
+        "type": "state_change",
+        "binding": "bind-count",
+        "oldRepr": "0",
+        "newRepr": "1"
+      }
+    },
+    {
+      "index": 4,
+      "line": 6,
+      "focus": ["ret-1"],
+      "bindings": { "count": "2" },
+      "event": { "type": "return_exit", "repr": "2" }
+    }
+  ],
+  "result": { "repr": "2" },
+  "truncated": false
+}

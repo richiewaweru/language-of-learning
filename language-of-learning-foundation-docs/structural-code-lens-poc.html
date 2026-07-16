@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Structural Code Lens — Interactive PoC</title>
+<style>
+  :root{
+    --bg:#f6f4ef;
+    --paper:#fffdf8;
+    --ink:#17191f;
+    --muted:#6f7280;
+    --line:#d9d7cf;
+    --blue:#3757d5;
+    --purple:#7653d6;
+    --green:#2f7f58;
+    --gold:#b68428;
+    --orange:#d95f24;
+    --shadow:6px 6px 0 #17191f;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    color:var(--ink);
+    background:
+      linear-gradient(#e8e5dd 1px,transparent 1px),
+      linear-gradient(90deg,#e8e5dd 1px,transparent 1px),
+      var(--bg);
+    background-size:28px 28px;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  button,textarea{font:inherit}
+  .app{max-width:1440px;margin:auto;padding:24px}
+  .eyebrow{
+    font:700 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.15em;text-transform:uppercase;color:var(--blue)
+  }
+  h1{font-size:38px;line-height:1.05;margin:7px 0 6px}
+  .lead{margin:0;color:var(--muted);max-width:820px;font-size:16px}
+  .topbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0 14px}
+  .btn{
+    border:1.5px solid var(--ink);background:var(--paper);padding:10px 14px;
+    cursor:pointer;font-weight:700;box-shadow:3px 3px 0 var(--ink)
+  }
+  .btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:3px 3px 0 var(--ink)}
+  .btn:disabled{opacity:.35;cursor:default;transform:none}
+  .status{
+    margin-left:auto;font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace;
+    color:var(--muted);letter-spacing:.08em;text-transform:uppercase
+  }
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .tab{
+    border:1.5px solid var(--line);background:#fff;padding:8px 12px;cursor:pointer;
+    font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace
+  }
+  .tab.active{border-color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+  .workspace{
+    display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:start
+  }
+  .panel{
+    background:var(--paper);border:1.5px solid var(--ink);box-shadow:var(--shadow)
+  }
+  .panel-head{
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1.5px solid var(--ink);padding:12px 14px
+  }
+  .panel-title{
+    font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.12em;text-transform:uppercase
+  }
+  .badge{
+    font:700 11px ui-monospace,SFMono-Regular,Menlo,monospace;
+    border:1px solid currentColor;padding:3px 8px;color:var(--purple)
+  }
+  .code-wrap{position:relative}
+  textarea{
+    width:100%;min-height:376px;border:0;resize:vertical;outline:none;
+    padding:18px 18px 18px 58px;background:#11131a;color:#f8f8f4;
+    font:14px/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    tab-size:4
+  }
+  .line-highlight{
+    position:absolute;left:0;right:0;top:18px;height:24.5px;
+    background:rgba(55,87,213,.3);pointer-events:none;
+    border-left:5px solid #89a0ff;transition:transform .38s ease,opacity .25s ease
+  }
+  .line-nos{
+    position:absolute;left:0;top:18px;width:48px;color:#777d91;text-align:right;
+    padding-right:10px;pointer-events:none;
+    font:14px/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace
+  }
+  .visual{padding:18px;min-height:430px}
+  .scene{
+    position:relative;border:1.5px solid var(--line);background:#fff;min-height:345px;
+    overflow:hidden
+  }
+  .scene svg{width:100%;height:auto;display:block}
+  .scene text{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .primitive{cursor:pointer;transition:opacity .25s,filter .25s}
+  .primitive.dim{opacity:.22}
+  .primitive.active{filter:drop-shadow(0 0 7px rgba(55,87,213,.55))}
+  .token{transition:transform .7s cubic-bezier(.4,0,.2,1),opacity .35s}
+  .caption{padding:14px 2px 0;color:var(--muted);min-height:58px}
+  .caption strong{color:var(--ink)}
+  .controls{
+    display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+    padding:14px;border-top:1.5px solid var(--ink)
+  }
+  .dots{display:flex;gap:6px;margin-left:auto}
+  .dot{width:10px;height:10px;border:1.5px solid var(--ink);background:#fff}
+  .dot.done{background:var(--ink)}
+  .dot.now{background:var(--blue);border-color:var(--blue)}
+  .bottom-grid{
+    display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:18px
+  }
+  .timeline{padding:16px}
+  .state-row{
+    display:grid;grid-template-columns:84px 1fr 80px;gap:12px;align-items:center;
+    padding:11px 0;border-bottom:1px solid var(--line)
+  }
+  .state-row:last-child{border-bottom:0}
+  .state-name{font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace}
+  .state-value{
+    font:700 16px ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:#f1f2f8;padding:8px 10px;border-left:3px solid var(--blue)
+  }
+  .state-note{color:var(--muted);font-size:13px}
+  .pattern-card{padding:16px}
+  .pattern-title{font-size:25px;font-weight:800;margin:4px 0}
+  .pattern-sub{color:var(--muted);margin:0 0 14px}
+  .chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+  .pill{
+    border:1.5px solid currentColor;padding:7px 10px;
+    font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace
+  }
+  .arrow{color:var(--muted);font-weight:900}
+  .relatives{display:grid;gap:8px;margin-top:12px}
+  .relative{padding:10px;border:1px solid var(--line);background:#fff}
+  .explain{
+    padding:14px;border-top:1px solid var(--line);background:#faf9f5;
+    color:var(--muted);font-size:14px
+  }
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px}
+  .legend i{display:inline-block;width:11px;height:11px;margin-right:5px;vertical-align:-1px}
+  @media(max-width:960px){
+    .workspace,.bottom-grid{grid-template-columns:1fr}
+    .status{margin-left:0;width:100%}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto!important}
+    .token,.line-highlight,.primitive{transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="eyebrow">Language of Learning · Standalone Exploration PoC</div>
+  <h1>Structural Code Lens</h1>
+  <p class="lead">Paste code, expose its recurring structures, and step through how values move and state changes. This prototype uses a fixed accumulator example so the visual grammar can be judged before building a full parser.</p>
+
+  <div class="topbar">
+    <button class="btn" id="sampleAccumulator">Accumulator sample</button>
+    <button class="btn" id="sampleFilter">Filter sample</button>
+    <button class="btn primary" id="analyzeBtn">Analyze structure</button>
+    <span class="status" id="status">Ready</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-view="shape">Shape</button>
+    <button class="tab" data-view="trace">Trace</button>
+    <button class="tab" data-view="pattern">Pattern</button>
+  </div>
+
+  <section class="workspace">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Real code</div>
+        <div class="badge" id="codeBadge">Python · demo parser</div>
+      </div>
+      <div class="code-wrap">
+        <div class="line-highlight" id="lineHighlight"></div>
+        <div class="line-nos" id="lineNos"></div>
+        <textarea id="codeEditor" spellcheck="false"></textarea>
+      </div>
+      <div class="explain">The proof of concept recognizes two approved examples. A production version would replace this demo detector with Python AST parsing.</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Structural map</div>
+        <div class="badge" id="sceneBadge">ACCUMULATOR</div>
+      </div>
+      <div class="visual">
+        <div class="scene">
+          <svg viewBox="0 0 720 430" aria-label="Animated structural map of an accumulator function">
+            <defs>
+              <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" fill="#3757d5"/>
+              </marker>
+              <marker id="arrowDark" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" fill="#17191f"/>
+              </marker>
+            </defs>
+
+            <g class="primitive" id="p-function">
+              <rect x="80" y="40" width="560" height="330" rx="12" fill="#fbfaff" stroke="#7653d6" stroke-width="3"/>
+              <rect x="80" y="40" width="560" height="42" rx="12" fill="#7653d6"/>
+              <text x="104" y="67" font-size="15" font-weight="700" fill="#fff">FUNCTION · calculate_total(prices)</text>
+            </g>
+
+            <g class="primitive" id="p-input">
+              <rect x="112" y="112" width="132" height="62" rx="8" fill="#fff" stroke="#3757d5" stroke-width="2.5"/>
+              <text x="178" y="136" text-anchor="middle" font-size="11" fill="#6f7280">INPUT</text>
+              <text x="178" y="159" text-anchor="middle" font-size="15" font-weight="700" fill="#3757d5">prices</text>
+            </g>
+
+            <g class="primitive" id="p-state">
+              <rect x="300" y="112" width="132" height="62" rx="8" fill="#fffdf5" stroke="#b68428" stroke-width="3"/>
+              <text x="366" y="136" text-anchor="middle" font-size="11" fill="#6f7280">STATE</text>
+              <text x="366" y="159" text-anchor="middle" font-size="15" font-weight="700" fill="#b68428">total = 0</text>
+            </g>
+
+            <g class="primitive" id="p-loop">
+              <rect x="112" y="210" width="410" height="112" rx="10" fill="#f8fbff" stroke="#3757d5" stroke-width="2.5"/>
+              <text x="132" y="236" font-size="13" font-weight="700" fill="#3757d5">LOOP · for each price</text>
+              <path d="M150 270 C180 245, 210 245, 240 270 C270 295, 300 295, 330 270" fill="none" stroke="#3757d5" stroke-width="2" stroke-dasharray="6 5"/>
+            </g>
+
+            <g class="primitive" id="p-operation">
+              <rect x="330" y="248" width="160" height="52" rx="8" fill="#fff" stroke="#2f7f58" stroke-width="2.5"/>
+              <text x="410" y="269" text-anchor="middle" font-size="11" fill="#6f7280">UPDATE</text>
+              <text x="410" y="289" text-anchor="middle" font-size="14" font-weight="700" fill="#2f7f58">total + price</text>
+            </g>
+
+            <g class="primitive" id="p-return">
+              <rect x="540" y="245" width="72" height="58" rx="8" fill="#f6fff9" stroke="#2f7f58" stroke-width="2.5"/>
+              <text x="576" y="268" text-anchor="middle" font-size="10" fill="#6f7280">RETURN</text>
+              <text x="576" y="289" text-anchor="middle" font-size="13" font-weight="700" fill="#2f7f58">total</text>
+            </g>
+
+            <line x1="244" y1="143" x2="292" y2="143" stroke="#17191f" stroke-width="2" marker-end="url(#arrowDark)"/>
+            <line x1="366" y1="174" x2="366" y2="205" stroke="#17191f" stroke-width="2" marker-end="url(#arrowDark)"/>
+            <line x1="522" y1="274" x2="533" y2="274" stroke="#17191f" stroke-width="2" marker-end="url(#arrowDark)"/>
+
+            <g id="token" class="token" style="opacity:0">
+              <circle r="24" fill="#3757d5"/>
+              <text y="5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" id="tokenText">3</text>
+            </g>
+          </svg>
+        </div>
+        <div class="caption" id="caption">Press <strong>Analyze structure</strong>, then step through the execution.</div>
+        <div class="legend">
+          <span><i style="background:#3757d5"></i>data and repetition</span>
+          <span><i style="background:#7653d6"></i>function boundary</span>
+          <span><i style="background:#b68428"></i>remembered state</span>
+          <span><i style="background:#2f7f58"></i>transformation and output</span>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="backBtn">◀ Back</button>
+        <button class="btn" id="stepBtn">Step ▶</button>
+        <button class="btn primary" id="playBtn">▶ Play</button>
+        <button class="btn" id="resetBtn">Reset</button>
+        <div class="dots" id="dots"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bottom-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Execution and state</div>
+        <div class="badge" id="stepBadge">STEP 0</div>
+      </div>
+      <div class="timeline">
+        <div class="state-row">
+          <div class="state-name">prices</div>
+          <div class="state-value" id="pricesValue">[3, 5, 2]</div>
+          <div class="state-note">input collection</div>
+        </div>
+        <div class="state-row">
+          <div class="state-name">price</div>
+          <div class="state-value" id="priceValue">—</div>
+          <div class="state-note">current item</div>
+        </div>
+        <div class="state-row">
+          <div class="state-name">total</div>
+          <div class="state-value" id="totalValue">—</div>
+          <div class="state-note">accumulated state</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Pattern lens</div>
+        <div class="badge">REUSABLE SHAPE</div>
+      </div>
+      <div class="pattern-card">
+        <div class="eyebrow">Detected composition</div>
+        <div class="pattern-title" id="patternTitle">Accumulator</div>
+        <p class="pattern-sub" id="patternSub">Start with a state value, repeat over items, and update the state each time.</p>
+        <div class="chain" id="patternChain">
+          <span class="pill" style="color:#7653d6">FUNCTION</span>
+          <span class="arrow">→</span>
+          <span class="pill" style="color:#b68428">STATE</span>
+          <span class="arrow">→</span>
+          <span class="pill" style="color:#3757d5">LOOP</span>
+          <span class="arrow">→</span>
+          <span class="pill" style="color:#2f7f58">UPDATE</span>
+        </div>
+        <div class="relatives">
+          <div class="relative"><strong>Count</strong><br><span class="state-note">Update by +1 instead of adding the item.</span></div>
+          <div class="relative"><strong>Product</strong><br><span class="state-note">Multiply into the running state.</span></div>
+          <div class="relative"><strong>Collect</strong><br><span class="state-note">Append matching values into a list.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const samples = {
+    accumulator: `def calculate_total(prices):
+    total = 0
+
+    for price in prices:
+        total = total + price
+
+    return total`,
+    filter: `def positive_prices(prices):
+    results = []
+
+    for price in prices:
+        if price > 0:
+            results.append(price)
+
+    return results`
+  };
+
+  const accumulatorSteps = [
+    {line:1, focus:"p-function", price:"—", total:"—", token:null, pos:[178,143], caption:"The program defines a <strong>function boundary</strong>. Everything inside belongs to one reusable unit of work."},
+    {line:1, focus:"p-input", price:"—", total:"—", token:"[3,5,2]", pos:[178,143], caption:"The argument <strong>[3, 5, 2]</strong> enters and binds to the parameter <strong>prices</strong>."},
+    {line:2, focus:"p-state", price:"—", total:"0", token:"0", pos:[366,143], caption:"A state cell is initialized. <strong>total</strong> begins at <strong>0</strong>."},
+    {line:4, focus:"p-loop", price:"3", total:"0", token:"3", pos:[205,274], caption:"The loop selects the first item. The current <strong>price</strong> is now <strong>3</strong>."},
+    {line:5, focus:"p-operation", price:"3", total:"3", token:"3", pos:[410,274], caption:"The update runs: <strong>0 + 3 = 3</strong>. The state changes, but the loop structure stays fixed."},
+    {line:4, focus:"p-loop", price:"5", total:"3", token:"5", pos:[250,274], caption:"The same loop body receives the next item: <strong>5</strong>."},
+    {line:5, focus:"p-operation", price:"5", total:"8", token:"8", pos:[410,274], caption:"The state changes again: <strong>3 + 5 = 8</strong>."},
+    {line:4, focus:"p-loop", price:"2", total:"8", token:"2", pos:[295,274], caption:"The loop advances to the final item: <strong>2</strong>."},
+    {line:5, focus:"p-operation", price:"2", total:"10", token:"10", pos:[410,274], caption:"The final update gives <strong>8 + 2 = 10</strong>."},
+    {line:7, focus:"p-return", price:"—", total:"10", token:"10", pos:[576,274], caption:"The function sends the accumulated state back through the <strong>return port</strong>."}
+  ];
+
+  let currentSample = "accumulator";
+  let step = 0;
+  let timer = null;
+
+  const $ = id => document.getElementById(id);
+  const editor = $("codeEditor");
+  const token = $("token");
+  const tokenText = $("tokenText");
+  const primitives = [...document.querySelectorAll(".primitive")];
+
+  function renderLineNumbers(){
+    const n = editor.value.split("\n").length;
+    $("lineNos").innerHTML = Array.from({length:n},(_,i)=>i+1).join("<br>");
+  }
+
+  function setSample(name){
+    stop();
+    currentSample = name;
+    step = 0;
+    editor.value = samples[name];
+    renderLineNumbers();
+    $("status").textContent = name === "accumulator" ? "Sample loaded" : "Filter sample loaded";
+    if(name==="filter"){
+      $("sceneBadge").textContent="FILTER";
+      $("patternTitle").textContent="Filter";
+      $("patternSub").textContent="Repeat over values, test a condition, and collect only matching items.";
+      $("patternChain").innerHTML=
+        '<span class="pill" style="color:#7653d6">FUNCTION</span><span class="arrow">→</span>'+
+        '<span class="pill" style="color:#3757d5">LOOP</span><span class="arrow">→</span>'+
+        '<span class="pill" style="color:#d95f24">BRANCH</span><span class="arrow">→</span>'+
+        '<span class="pill" style="color:#2f7f58">COLLECT</span>';
+      $("caption").innerHTML='This second sample is included to show the future direction. The animation engine in this PoC is fully implemented for the accumulator slice.';
+    } else {
+      $("sceneBadge").textContent="ACCUMULATOR";
+      $("patternTitle").textContent="Accumulator";
+      $("patternSub").textContent="Start with a state value, repeat over items, and update the state each time.";
+      $("patternChain").innerHTML=
+        '<span class="pill" style="color:#7653d6">FUNCTION</span><span class="arrow">→</span>'+
+        '<span class="pill" style="color:#b68428">STATE</span><span class="arrow">→</span>'+
+        '<span class="pill" style="color:#3757d5">LOOP</span><span class="arrow">→</span>'+
+        '<span class="pill" style="color:#2f7f58">UPDATE</span>';
+      render();
+    }
+  }
+
+  function analyze(){
+    stop();
+    const code = editor.value;
+    if(code.includes("positive_prices")){
+      setSample("filter");
+      $("status").textContent="Detected: function + loop + branch + collection";
+      return;
+    }
+    setSample("accumulator");
+    $("status").textContent="Detected: function + state + loop + return";
+    render();
+  }
+
+  function render(){
+    if(currentSample !== "accumulator") return;
+    const s = accumulatorSteps[step];
+    $("stepBadge").textContent=`STEP ${step}`;
+    $("priceValue").textContent=s.price;
+    $("totalValue").textContent=s.total;
+    $("caption").innerHTML=s.caption;
+    $("lineHighlight").style.transform=`translateY(${(s.line-1)*24.5}px)`;
+
+    primitives.forEach(p=>{
+      p.classList.toggle("active",p.id===s.focus);
+      p.classList.toggle("dim",p.id!==s.focus);
+    });
+
+    if(s.token===null){
+      token.style.opacity=0;
+    }else{
+      token.style.opacity=1;
+      token.style.transform=`translate(${s.pos[0]}px,${s.pos[1]}px)`;
+      tokenText.textContent=s.token;
+    }
+
+    $("backBtn").disabled=step===0;
+    $("stepBtn").disabled=step===accumulatorSteps.length-1;
+
+    const dots=$("dots");
+    dots.innerHTML="";
+    accumulatorSteps.forEach((_,i)=>{
+      const d=document.createElement("span");
+      d.className="dot"+(i<step?" done":"")+(i===step?" now":"");
+      dots.appendChild(d);
+    });
+  }
+
+  function stop(){
+    if(timer){clearInterval(timer);timer=null;$("playBtn").textContent="▶ Play";}
+  }
+
+  $("sampleAccumulator").onclick=()=>setSample("accumulator");
+  $("sampleFilter").onclick=()=>setSample("filter");
+  $("analyzeBtn").onclick=analyze;
+  $("backBtn").onclick=()=>{stop();if(step>0){step--;render();}};
+  $("stepBtn").onclick=()=>{stop();if(step<accumulatorSteps.length-1){step++;render();}};
+  $("resetBtn").onclick=()=>{stop();step=0;render();};
+  $("playBtn").onclick=()=>{
+    if(currentSample!=="accumulator"){setSample("accumulator");}
+    if(timer){stop();return;}
+    if(step===accumulatorSteps.length-1){step=0;render();}
+    $("playBtn").textContent="⏸ Pause";
+    timer=setInterval(()=>{
+      if(step<accumulatorSteps.length-1){step++;render();}
+      else stop();
+    },1300);
+  };
+
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.onclick=()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+      const view=t.dataset.view;
+      if(view==="shape"){
+        step=0;render();
+        $("status").textContent="Shape lens";
+      }else if(view==="trace"){
+        step=Math.min(3,accumulatorSteps.length-1);render();
+        $("status").textContent="Trace lens";
+      }else{
+        step=4;render();
+        $("status").textContent="Pattern lens";
+        document.querySelector(".bottom-grid").scrollIntoView({behavior:"smooth",block:"start"});
+      }
+    };
+  });
+
+  editor.addEventListener("input",renderLineNumbers);
+
+  editor.value=samples.accumulator;
+  renderLineNumbers();
+  render();
+})();
+</script>
+</body>
+</html>

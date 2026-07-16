@@ -1,0 +1,144 @@
+{
+  "$ref": "#/definitions/lesson-revision",
+  "definitions": {
+    "lesson-revision": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "objectives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "text"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "content"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "scene"
+                  },
+                  "sceneId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "sceneId"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "check"
+                  },
+                  "checkId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "checkId"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "answerKey": {
+                "type": "string"
+              },
+              "rubric": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "prompt",
+              "answerKey"
+            ],
+            "additionalProperties": false
+          },
+          "default": []
+        },
+        "verification": {
+          "type": "object",
+          "properties": {
+            "verified_by": {
+              "type": "string"
+            },
+            "verified_at": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "verified_by"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "version",
+        "slug",
+        "title",
+        "objectives",
+        "blocks"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

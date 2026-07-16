@@ -1,0 +1,6 @@
+{
+  "pattern": "ACCUMULATE",
+  "confidence": "deterministic",
+  "memberNodes": ["loop-1", "bind-total", "op-add"],
+  "related": ["COUNT", "FILTER", "SEARCH"]
+}

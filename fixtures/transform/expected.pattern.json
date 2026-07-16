@@ -1,0 +1,6 @@
+{
+  "pattern": "TRANSFORM",
+  "confidence": "deterministic",
+  "memberNodes": ["loop-1", "op-mul", "mut-append", "coll-doubled"],
+  "related": ["FILTER", "ACCUMULATE"]
+}

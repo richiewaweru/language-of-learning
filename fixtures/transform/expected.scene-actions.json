@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "index": 1,
+      "actions": [{ "type": "advance_item", "loop": "loop-1", "itemIndex": 0 }]
+    },
+    {
+      "index": 2,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "2",
+          "fromNode": "op-mul",
+          "toNode": "coll-doubled"
+        }
+      ]
+    }
+  ]
+}

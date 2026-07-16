@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "index": 1,
+      "actions": [{ "type": "evaluate", "branch": "branch-1", "result": true }]
+    },
+    {
+      "index": 2,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "3",
+          "fromNode": "bind-price",
+          "toNode": "coll-results"
+        }
+      ]
+    }
+  ]
+}
