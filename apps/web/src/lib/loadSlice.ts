@@ -42,21 +42,11 @@ async function loadBundle(
 export async function loadAccumulateVariants(root: string): Promise<SliceVariant[]> {
   return [
     await loadBundle(path.join(root, 'fixtures', 'accumulate'), 'canonical', 'Canonical [3, 5, 2]'),
-    await loadBundle(
-      path.join(root, 'fixtures', 'variations', 'accumulate_small'),
-      'small',
-      'Variation [10, 20]',
-    ),
   ];
 }
 
 export async function loadFilterVariants(root: string): Promise<SliceVariant[]> {
   return [
     await loadBundle(path.join(root, 'fixtures', 'filter'), 'canonical', 'Canonical [-2, 3, 0, 5]'),
-    await loadBundle(
-      path.join(root, 'fixtures', 'variations', 'filter_alt'),
-      'alt',
-      'Variation [-1, 4, 7]',
-    ),
   ];
 }
