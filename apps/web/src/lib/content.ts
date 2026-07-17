@@ -2,8 +2,9 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { ContractSchemas, type LessonRevision, type Pathway } from '@lol/lens-contracts';
 import type { Scene } from '@lol/lens-contracts';
+import { assertRepoRoot, repoRoot } from '$lib/repoRoot';
 
-const root = () => path.resolve(process.cwd(), '..', '..');
+const root = () => assertRepoRoot(repoRoot);
 
 export async function loadPathway(slug: string): Promise<Pathway> {
   const raw = await readFile(

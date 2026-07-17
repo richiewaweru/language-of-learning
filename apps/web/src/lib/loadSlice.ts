@@ -1,5 +1,6 @@
 import { buildScene } from '@lol/lens-scenes';
 import type { SemanticGraph, Trace } from '@lol/lens-scenes';
+import { assertRepoRoot, repoRoot } from '$lib/repoRoot';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -39,13 +40,17 @@ async function loadBundle(
   };
 }
 
-export async function loadAccumulateVariants(root: string): Promise<SliceVariant[]> {
+export async function loadAccumulateVariants(
+  root: string = assertRepoRoot(repoRoot),
+): Promise<SliceVariant[]> {
   return [
     await loadBundle(path.join(root, 'fixtures', 'accumulate'), 'canonical', 'Canonical [3, 5, 2]'),
   ];
 }
 
-export async function loadFilterVariants(root: string): Promise<SliceVariant[]> {
+export async function loadFilterVariants(
+  root: string = assertRepoRoot(repoRoot),
+): Promise<SliceVariant[]> {
   return [
     await loadBundle(path.join(root, 'fixtures', 'filter'), 'canonical', 'Canonical [-2, 3, 0, 5]'),
   ];

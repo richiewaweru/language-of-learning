@@ -1,10 +1,11 @@
+import { assertRepoRoot, repoRoot } from '$lib/repoRoot';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const FIXTURES = ['accumulate', 'count', 'filter', 'transform', 'search', 'guard'] as const;
 
 export async function load() {
-  const root = path.resolve(process.cwd(), '..', '..');
+  const root = assertRepoRoot(repoRoot);
   const fixtures = await Promise.all(
     FIXTURES.map(async (name) => {
       const base = path.join(root, 'fixtures', name);
