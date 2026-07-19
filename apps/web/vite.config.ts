@@ -7,6 +7,8 @@ export default defineConfig({
     noExternal: ['@lol/visual-grammar', '@lol/lens-scenes', '@lol/lens-contracts'],
   },
   optimizeDeps: {
-    include: ['@lol/lens-scenes', '@lol/lens-contracts'],
+    // These linked ESM packages change in-place during workspace development.
+    // Prebundling them can preserve an obsolete export surface across restarts.
+    exclude: ['@lol/lens-contracts', '@lol/lens-patterns', '@lol/lens-scenes'],
   },
 });

@@ -232,3 +232,35 @@ exclusion list as `hostile/negative/variations`; the "exactly six pattern fixtur
 required golden files" guarantee is preserved (not weakened). Canonical motion-action
 fixtures used by tests live under `packages/lens-contracts/fixtures/motion-actions/`.
 
+## Phase R1 summary — web runtime reliability (2026-07-18)
+
+### DECISION: linked ESM workspace packages are not Vite prebundle inputs (R1-01)
+
+`apps/web/vite.config.ts` previously forced `@lol/lens-scenes` and
+`@lol/lens-contracts` into `optimizeDeps.include`. That converted changing linked ESM
+workspace packages into persistent files under `apps/web/node_modules/.vite/deps/`.
+When a package export changed without a Vite cache-key change, the browser could load an
+obsolete prebundle that omitted `deriveMotionState`; hydration then replaced valid SSR
+HTML with SvelteKit's fallback 500 page. The config now explicitly excludes
+`@lol/lens-contracts`, `@lol/lens-patterns`, and `@lol/lens-scenes` from dependency
+prebundling. `tests/web/vite-config.test.ts` locks this policy. `dev:clean` remains an
+explicit cold-start diagnostic command, but normal `dev` no longer depends on clearing
+the workspace-package prebundle.
+
+### DECISION: repo root is discovered by marker walk (R1-01)
+
+`repoRoot.ts` now walks upward from both `import.meta.url` and `process.cwd()` until it
+finds `fixtures/accumulate/source.py`. This works from source modules, monorepo-root or
+`apps/web` working directories, and generated `.svelte-kit/output/server/chunks/`
+modules. The resolver fails loudly when no checkout marker exists. Focused tests cover
+the bundled-chunk and `apps/web` starting points.
+
+### R1 verification evidence
+
+- `pnpm exec vitest run tests/web/repo-root.test.ts tests/web/vite-config.test.ts` — 2 files, 4 tests passed.
+- Cold `dev:clean` start — Vite cache recreated; `@lol_lens-scenes.js` was absent from `.vite/deps`.
+- Browser sweep — `/`, `/decode`, `/learn`, `/slices/accumulate`, `/slices/filter`, and `/debug/graph` all reached `document.readyState = complete`, showed real route content, showed no visible `500`/`Internal Error`, and logged zero browser errors.
+- `pnpm --filter web build` — exit 0; bundled `chunks/repoRoot.js` emitted.
+- Production preview `/slices/accumulate` — HTTP 200 with `Accumulator`; hydrated browser body showed the interactive scene and logged zero browser errors.
+- `pnpm test:all` — exit 0 after the fixes.
+

@@ -738,4 +738,19 @@ See CORRECTIVE-RUN-unified.md final 10-command block.
 
 ## Gate block PM7 — Tag: `gate-PM7`
 
+## Phase R1 — Web runtime reliability [gate: fresh dev browser + production preview]
 
+- [x] R1-01 Eliminate hydration-time fallback 500s from repo-root and stale workspace dependency resolution
+      done-when: a fresh single-server start renders real UI on `/`, `/decode`, `/learn`, `/slices/accumulate`, `/slices/filter`, and `/debug/graph` in a browser with no page errors; `tests/web/repo-root.test.ts` passes; `pnpm --filter web build` plus preview renders `/slices/accumulate` from the bundled server
+      status: ✓ judged
+      evidence: 4/4 focused Vitest assertions; cold-cache browser sweep rendered all six routes with zero browser errors and no `@lol_lens-scenes` prebundle; web build exit 0; preview `/slices/accumulate` rendered Accumulator with zero browser errors; full `pnpm test:all` exit 0
+      judge: 2026-07-18 accepted from fresh dev + production-preview browser evidence
+
+## Gate block R1
+
+1. `pnpm exec vitest run tests/web/repo-root.test.ts` → all pass
+2. Fresh dev browser sweep → six routes show real UI; zero page/console errors
+3. `pnpm --filter web build` → exit 0
+4. Fresh preview browser check on `/slices/accumulate` → real UI; zero page/console errors
+
+**Phase R1 complete.**
