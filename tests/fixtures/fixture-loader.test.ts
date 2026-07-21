@@ -21,10 +21,7 @@ describe('golden fixture loader', () => {
       .filter(
         (d) =>
           d.isDirectory() &&
-          d.name !== 'hostile' &&
-          d.name !== 'negative' &&
-          d.name !== 'variations' &&
-          d.name !== 'motion-actions',
+          REQUIRED_FILES.every((file) => existsSync(join(FIXTURES_ROOT, d.name, file))),
       )
       .map((d) => d.name)
       .sort();

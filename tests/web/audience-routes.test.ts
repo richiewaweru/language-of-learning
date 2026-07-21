@@ -3,8 +3,9 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildScene } from '../../packages/lens-scenes/src/build-scene.ts';
+import { normalizeSemanticScene } from '../../packages/lens-scenes/src/normalize-semantic-scene.ts';
 import type { SemanticGraph, Trace } from '../../packages/lens-scenes/src/types.ts';
-import { deriveLearnerProjection } from '../../apps/web/src/lib/learner-ui/projection/deriveLearnerProjection.ts';
+import { deriveFlowProjection } from '../../apps/web/src/lib/learner-ui/projection/deriveSemanticProjections.ts';
 
 const repoRoot = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -33,12 +34,17 @@ describe('learner projection', () => {
     const trace = JSON.parse(
       readFileSync(path.join(base, 'expected.trace.json'), 'utf8'),
     ) as Trace;
-    const scene = buildScene(graph, trace, { sceneId: 'test' });
-    const projection = deriveLearnerProjection(graph, trace, scene, 3);
-    expect(projection.flowSteps.length).toBeGreaterThanOrEqual(4);
-    expect(projection.flowSteps.some((s) => s.kind === 'input')).toBe(true);
-    expect(projection.flowSteps.some((s) => s.kind === 'state')).toBe(true);
-    const labelText = projection.flowSteps.map((s) => s.label).join(' ');
+    const semanticScene = normalizeSemanticScene(graph, trace, { sceneId: 'test' });
+    const projection = deriveFlowProjection(semanticScene, 3);
+    expect(projection.collection.items).toEqual(['2', '4', '6', '8']);
+    expect(projection.state.label).toBe('Running total');
+    expect(projection.work.expression).toBe('total + number');
+    const labelText = [
+      projection.collection.label,
+      projection.cursor.label,
+      projection.state.label,
+      projection.work.label,
+    ].join(' ');
     expect(labelText).not.toMatch(/fn-|bind-|loop-L/);
   });
 });

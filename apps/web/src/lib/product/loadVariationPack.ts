@@ -1,4 +1,4 @@
-import { buildScene } from '@lol/lens-scenes';
+import { buildScene, normalizeSemanticScene } from '@lol/lens-scenes';
 import type { SemanticGraph, Trace } from '@lol/lens-scenes';
 import { assertRepoRoot, repoRoot } from '$lib/repoRoot';
 import { execFileSync } from 'node:child_process';
@@ -11,6 +11,7 @@ export type VariationPack = {
   graph: SemanticGraph;
   trace: Trace;
   scene: ReturnType<typeof buildScene>;
+  semanticScene: ReturnType<typeof normalizeSemanticScene>;
 };
 
 export function loadVariationPack(
@@ -31,5 +32,8 @@ export function loadVariationPack(
     trace: Trace;
   };
   const scene = buildScene(payload.graph, payload.trace, { sceneId: `var-${payload.id}` });
-  return { ...payload, scene };
+  const semanticScene = normalizeSemanticScene(payload.graph, payload.trace, {
+    sceneId: `semantic-var-${payload.id}`,
+  });
+  return { ...payload, scene, semanticScene };
 }

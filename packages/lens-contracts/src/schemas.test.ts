@@ -131,6 +131,29 @@ describe('trace schema', () => {
     };
     expect(TraceSchema.parse(trace)).toEqual(trace);
   });
+
+  it('accepts additive Structural Lens v1 factual events and violations', () => {
+    const events = [
+      { type: 'indexed_selection', collection: 'values', indexRepr: '0', valueRepr: '3' },
+      { type: 'indexed_mutation', collection: 'values', indexRepr: '0', oldRepr: '3', newRepr: '9' },
+      { type: 'supported_call', callee: 'len', argsRepr: ['[3]'], resultRepr: '1' },
+      { type: 'loop_test', loop: 'loop-1', iteration: 0, result: true },
+      { type: 'unsupported', construct: 'recursion', message: 'Deferred in v1.' },
+    ];
+    const trace = {
+      call: { functionId: 'f1', argsRepr: [] },
+      steps: events.map((event, index) => ({
+        index,
+        line: 1,
+        focus: [],
+        bindings: {},
+        event,
+      })),
+      violation: { construct: 'recursion', message: 'Deferred in v1.' },
+      truncated: false,
+    };
+    expect(TraceSchema.safeParse(trace).success).toBe(true);
+  });
 });
 
 describe('pattern schema', () => {

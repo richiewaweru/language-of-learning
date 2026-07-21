@@ -2,17 +2,15 @@
   import type { DemoPack } from './loadDemoPack';
   import type { Selection } from '@lol/lens-contracts';
   import {
-    deriveStepLabel,
-    deriveLearnerCaption,
     resolveSelection,
     resolveTruthDetail,
   } from '@lol/lens-scenes';
   import CodePanel from './CodePanel.svelte';
-  import StructuralCanvas from './StructuralCanvas.svelte';
   import ExplanationPanel from './ExplanationPanel.svelte';
   import StepProgress from './StepProgress.svelte';
-  import StaticSceneFallback from './StaticSceneFallback.svelte';
   import TruthDrawer from './TruthDrawer.svelte';
+  import VisualLearningStage from '$lib/learner-ui/lesson/VisualLearningStage.svelte';
+  import { semanticEventHeadline } from '$lib/learner-ui/projection/deriveSemanticProjections';
 
   let {
     pack,
@@ -36,17 +34,15 @@
   let mobileTab = $state<'code' | 'visual' | 'explain'>('visual');
   let drawerOpen = $state(false);
   let showTechnical = $state(false);
-  let useStatic = $state(false);
 
   const stepIndex = $derived(Math.min(Math.max(selection.stepIndex ?? 0, 0), pack.scene.steps.length - 1));
-  const currentStep = $derived(pack.trace.steps[stepIndex]);
-  const sceneStep = $derived(pack.scene.steps[stepIndex]);
+  const sceneStep = $derived(pack.semanticScene.steps[stepIndex]);
   const stepLabel = $derived(
-    currentStep ? deriveStepLabel(pack.graph, currentStep, pack.trace) : '',
+    sceneStep ? semanticEventHeadline(sceneStep, pack.semanticScene.steps.length) : '',
   );
   const learnerCaption = $derived(
-    currentStep
-      ? deriveLearnerCaption(pack.graph, currentStep, pack.trace, sceneStep)
+    sceneStep
+      ? sceneStep.activeEvent.type + ' — ' + Object.values(sceneStep.caption.variables).join(', ')
       : '',
   );
   const truthDetail = $derived(
@@ -79,7 +75,7 @@
   <StepProgress
     {stepLabel}
     stepIndex={stepIndex}
-    totalSteps={pack.scene.steps.length}
+    totalSteps={pack.semanticScene.steps.length}
   />
 
   {#if compact}
@@ -115,18 +111,17 @@
         />
       </div>
       <div class="panel visual" class:hidden={compact && mobileTab !== 'visual'}>
-        {#if useStatic || (reducedMotion && !autoplayAllowed)}
-          <StaticSceneFallback scene={pack.scene} stepIndex={stepIndex} />
-        {:else}
-          <StructuralCanvas
-            scene={pack.scene}
-            graph={pack.graph}
-            trace={pack.trace}
-            {selection}
-            onselectionchange={handleSelectionChange}
-            {reducedMotion}
-          />
-        {/if}
+        <VisualLearningStage
+          scene={pack.scene}
+          semanticScene={pack.semanticScene}
+          graph={pack.graph}
+          trace={pack.trace}
+          source={pack.source}
+          {selection}
+          onselectionchange={handleSelectionChange}
+          {reducedMotion}
+          technicalMode={showTechnical}
+        />
       </div>
       <div class="panel explain" class:hidden={compact && mobileTab !== 'explain'}>
         <ExplanationPanel caption={learnerCaption} />
@@ -136,10 +131,7 @@
 
   {#if reducedMotion}
     <p class="reduced-note">
-      Reduced motion: stepping shows state changes without travel animation.
-      <button type="button" class="link-btn" onclick={() => (useStatic = !useStatic)}>
-        {useStatic ? 'Show interactive' : 'Show static fallback'}
-      </button>
+      Reduced motion: stepping shows the same semantic states without travel animation.
     </p>
   {/if}
 
@@ -234,12 +226,4 @@
     margin: var(--space-3) 0 0;
   }
 
-  .link-btn {
-    background: none;
-    border: none;
-    color: var(--ink-strong);
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: inherit;
-  }
 </style>

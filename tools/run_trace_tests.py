@@ -45,11 +45,63 @@ class TraceFixtureTests(unittest.TestCase):
     def test_all_fixture_traces_match_expected(self) -> None:
         matched = 0
         for fixture in FIXTURES:
-            actual = canonical_json(load_trace(fixture))
-            expected = (fixture_dir(fixture) / "expected.trace.json").read_text(encoding="utf-8")
-            self.assertEqual(actual, expected, fixture)
+            first = load_trace(fixture)
+            second = load_trace(fixture)
+            expected = json.loads(
+                (fixture_dir(fixture) / "expected.trace.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(first, expected, fixture)
+            self.assertEqual(canonical_json(first), canonical_json(second), fixture)
             matched += 1
         self.assertEqual(matched, 6)
+
+    def test_alias_mutation_preserves_shared_object_identity(self) -> None:
+        source = (
+            "def alias_append():\n"
+            "    values = []\n"
+            "    alias = values\n"
+            "    alias.append(3)\n"
+            "    return values"
+        )
+        graph = analyze_source(source)
+        self.assertEqual(graph["unsupported"], [])
+        trace = run_trace(source, graph, [])
+        mutation = next(
+            step for step in trace["steps"] if step["event"]["type"] == "collection_append"
+        )
+        self.assertEqual(mutation["objectIds"]["alias"], mutation["objectIds"]["values"])
+        self.assertEqual(trace["result"]["repr"], "[3]")
+
+    def test_bounded_range_indexing_and_floor_division(self) -> None:
+        source = (
+            "def sample(values):\n"
+            "    total = 0\n"
+            "    for index in range(len(values)):\n"
+            "        total = total + values[index]\n"
+            "    middle = len(values) // 2\n"
+            "    return middle"
+        )
+        graph = analyze_source(source)
+        self.assertEqual(graph["unsupported"], [])
+        trace = run_trace(source, graph, ["[2, 4, 6, 8]"])
+        self.assertNotIn("violation", trace)
+        self.assertEqual(trace["result"]["repr"], "2")
+        events = [step["event"]["type"] for step in trace["steps"]]
+        self.assertIn("supported_call", events)
+        self.assertIn("indexed_selection", events)
+
+    def test_recursion_is_an_explicit_unsupported_event(self) -> None:
+        source = (
+            "def countdown(value):\n"
+            "    if value <= 0:\n"
+            "        return 0\n"
+            "    return countdown(value - 1)"
+        )
+        graph = analyze_source(source)
+        self.assertTrue(any(region["construct"] == "recursion" for region in graph["unsupported"]))
+        trace = run_trace(source, graph, ["2"])
+        self.assertEqual(trace["violation"]["construct"], "recursion")
+        self.assertEqual(trace["steps"][-1]["event"]["type"], "unsupported")
 
 
 class HostileFixtureTests(unittest.TestCase):

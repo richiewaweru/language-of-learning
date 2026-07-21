@@ -14,6 +14,8 @@ const expectedFiles = [
   'selection.json',
   'lesson-revision.json',
   'pathway.json',
+  'semantic-scene.json',
+  'symbol-manifest.json',
 ];
 
 describe('JSON Schema export', () => {

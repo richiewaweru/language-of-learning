@@ -45,7 +45,12 @@ export type TraceEvent =
   | { type: 'condition_eval'; branch: string; result: boolean }
   | { type: 'state_change'; binding: string; oldRepr: string; newRepr: string }
   | { type: 'collection_append'; collection: string; valueRepr: string }
+  | { type: 'indexed_selection'; collection: string; indexRepr: string; valueRepr: string }
+  | { type: 'indexed_mutation'; collection: string; indexRepr: string; oldRepr: string; newRepr: string }
+  | { type: 'supported_call'; callee: 'len' | 'range'; argsRepr: string[]; resultRepr: string }
+  | { type: 'loop_test'; loop: string; iteration: number; result: boolean }
   | { type: 'effect_fire'; effect: string; repr: string }
+  | { type: 'unsupported'; construct: string; message: string }
   | { type: 'return_exit'; repr: string };
 
 export type TraceStep = {
@@ -53,6 +58,8 @@ export type TraceStep = {
   line: number;
   focus: string[];
   bindings: Record<string, string>;
+  objectIds?: Record<string, string>;
+  frameId?: string;
   event: TraceEvent;
 };
 
@@ -60,6 +67,7 @@ export type Trace = {
   call: { functionId: string; argsRepr: string[] };
   steps: TraceStep[];
   result?: { repr: string };
+  violation?: { construct: string; message: string };
   truncated: boolean;
 };
 

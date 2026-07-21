@@ -16,6 +16,18 @@ export { default as MotionPath } from './MotionPath.svelte';
 export { default as StateTransition } from './StateTransition.svelte';
 export { default as BranchRoute } from './BranchRoute.svelte';
 export { default as ReturnExit } from './ReturnExit.svelte';
+export { default as SymbolBadge } from './SymbolBadge.svelte';
+export { default as CursorSymbol } from './CursorSymbol.svelte';
+export { default as ComparisonSymbol } from './ComparisonSymbol.svelte';
+export { default as MutationSymbol } from './MutationSymbol.svelte';
+export { default as RangeSymbol } from './RangeSymbol.svelte';
+export { default as GenericOperationSymbol } from './GenericOperationSymbol.svelte';
+export {
+  symbolManifest,
+  symbolRegistry,
+  resolveSymbol,
+  symbolIdForSemantic,
+} from './symbol-registry.js';
 export {
   msFromCssDuration,
   prefersReducedMotion,

@@ -1,0 +1,176 @@
+{
+  "grammarVersion": "1.0.0",
+  "semanticModelVersion": "1.0.0",
+  "defaultConcreteness": "semi-abstract",
+  "symbols": [
+    {
+      "id": "value",
+      "type": "entity",
+      "family": "data",
+      "views": [
+        "flow",
+        "state"
+      ],
+      "status": "existing"
+    },
+    {
+      "id": "binding",
+      "type": "entity",
+      "family": "data",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "existing"
+    },
+    {
+      "id": "collection",
+      "type": "entity",
+      "family": "data",
+      "views": [
+        "flow",
+        "state"
+      ],
+      "status": "existing"
+    },
+    {
+      "id": "state",
+      "type": "entity",
+      "family": "state",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "existing"
+    },
+    {
+      "id": "cursor",
+      "type": "entity",
+      "family": "state",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "next"
+    },
+    {
+      "id": "range",
+      "type": "entity",
+      "family": "state",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "next"
+    },
+    {
+      "id": "loop",
+      "type": "control",
+      "family": "flow",
+      "views": [
+        "flow",
+        "trace"
+      ],
+      "status": "existing"
+    },
+    {
+      "id": "comparison",
+      "type": "event",
+      "family": "decision",
+      "views": [
+        "flow",
+        "trace"
+      ],
+      "status": "next"
+    },
+    {
+      "id": "branch",
+      "type": "event",
+      "family": "decision",
+      "views": [
+        "flow",
+        "trace"
+      ],
+      "status": "existing"
+    },
+    {
+      "id": "mutation",
+      "type": "event",
+      "family": "work",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "next"
+    },
+    {
+      "id": "call-frame",
+      "type": "entity",
+      "family": "work",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "later"
+    },
+    {
+      "id": "reference",
+      "type": "entity",
+      "family": "work",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "later"
+    },
+    {
+      "id": "return",
+      "type": "event",
+      "family": "exit",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "existing"
+    },
+    {
+      "id": "effect",
+      "type": "event",
+      "family": "effect",
+      "views": [
+        "flow",
+        "trace"
+      ],
+      "status": "needs-wiring"
+    },
+    {
+      "id": "generic-operation",
+      "type": "fallback",
+      "family": "data",
+      "views": [
+        "flow",
+        "trace"
+      ],
+      "status": "required"
+    },
+    {
+      "id": "unsupported",
+      "type": "fallback",
+      "family": "limit",
+      "views": [
+        "flow",
+        "state",
+        "trace"
+      ],
+      "status": "existing"
+    }
+  ]
+}

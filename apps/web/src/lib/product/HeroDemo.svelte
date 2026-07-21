@@ -5,7 +5,7 @@
   import CodeLearningPanel from '$lib/learner-ui/lesson/CodeLearningPanel.svelte';
   import LearnerFlowView from '$lib/learner-ui/lesson/LearnerFlowView.svelte';
   import PlaybackTimeline from '$lib/learner-ui/lesson/PlaybackTimeline.svelte';
-  import { deriveLearnerProjection } from '$lib/learner-ui/projection/deriveLearnerProjection';
+  import { deriveFlowProjection } from '$lib/learner-ui/projection/deriveSemanticProjections';
 
   let { pack }: { pack: DemoPack } = $props();
 
@@ -18,9 +18,7 @@
 
   let selection = $state<Selection>({ stepIndex: findInitialStep() });
   const stepIndex = $derived(selection.stepIndex ?? 0);
-  const projection = $derived(
-    deriveLearnerProjection(pack.graph, pack.trace, pack.scene, stepIndex),
-  );
+  const projection = $derived(deriveFlowProjection(pack.semanticScene, stepIndex));
 
   function selectLine(line: number) {
     const resolved = resolveSelection(
@@ -45,11 +43,11 @@
     />
   </div>
   <div class="demo-flow surface-card">
-    <div class="demo-tabs"><strong>Flow</strong><span>State Table</span><span>Trace</span></div>
-    <LearnerFlowView steps={projection.flowSteps} />
+    <div class="demo-tabs"><strong>Flow</strong><span>State</span><span>Guided Trace</span></div>
+    <LearnerFlowView {projection} />
     <PlaybackTimeline
       {stepIndex}
-      totalSteps={pack.scene.steps.length}
+      totalSteps={pack.semanticScene.steps.length}
       {selection}
       onselectionchange={(next) => (selection = next)}
     />

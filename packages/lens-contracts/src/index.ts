@@ -6,6 +6,7 @@ export * from './motion.js';
 export * from './selection.js';
 export * from './lesson.js';
 export * from './pathway.js';
+export * from './semantic.js';
 
 export { z } from 'zod';
 
@@ -17,6 +18,7 @@ import { MotionStateSchema } from './motion.js';
 import { SelectionSchema } from './selection.js';
 import { LessonRevisionSchema } from './lesson.js';
 import { PathwaySchema } from './pathway.js';
+import { SemanticSceneSchema, SymbolManifestSchema } from './semantic.js';
 
 export const ContractSchemas = {
   semanticGraph: SemanticGraphSchema,
@@ -28,4 +30,6 @@ export const ContractSchemas = {
   selection: SelectionSchema,
   lessonRevision: LessonRevisionSchema,
   pathway: PathwaySchema,
+  semanticScene: SemanticSceneSchema,
+  symbolManifest: SymbolManifestSchema,
 } as const;

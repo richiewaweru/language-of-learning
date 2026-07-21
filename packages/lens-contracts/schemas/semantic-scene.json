@@ -1,0 +1,324 @@
+{
+  "$ref": "#/definitions/semantic-scene",
+  "definitions": {
+    "semantic-scene": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "graphRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semanticModelVersion": {
+          "type": "string",
+          "const": "1.0.0"
+        },
+        "grammarVersion": {
+          "type": "string",
+          "const": "1.0.0"
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "value",
+                  "binding",
+                  "collection",
+                  "state",
+                  "cursor",
+                  "range",
+                  "call-frame",
+                  "reference",
+                  "result",
+                  "generic",
+                  "unsupported"
+                ]
+              },
+              "label": {
+                "type": "string"
+              },
+              "sourceNodeId": {
+                "type": "string"
+              },
+              "sourceRange": {
+                "type": "object",
+                "properties": {
+                  "startLine": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "startColumn": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "endLine": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "endColumn": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "startLine",
+                  "startColumn",
+                  "endLine",
+                  "endColumn"
+                ],
+                "additionalProperties": false
+              },
+              "objectId": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string",
+                "enum": [
+                  "verified",
+                  "inferred",
+                  "generic",
+                  "unsupported"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "role",
+              "confidence",
+              "properties"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "activeSourceRange": {
+                "type": "object",
+                "properties": {
+                  "startLine": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "startColumn": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "endLine": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "endColumn": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "startLine",
+                  "startColumn",
+                  "endLine",
+                  "endColumn"
+                ],
+                "additionalProperties": false
+              },
+              "activeEntityIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "activeEvent": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "bind",
+                      "read",
+                      "select",
+                      "move",
+                      "calculate",
+                      "compare",
+                      "branch",
+                      "repeat",
+                      "update",
+                      "insert",
+                      "remove",
+                      "swap",
+                      "call",
+                      "return",
+                      "effect",
+                      "generic",
+                      "unsupported"
+                    ]
+                  },
+                  "entityIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      "startColumn": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      "endColumn": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startColumn",
+                      "endLine",
+                      "endColumn"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "stepIndex": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "confidence": {
+                    "type": "string",
+                    "enum": [
+                      "verified",
+                      "inferred",
+                      "generic",
+                      "unsupported"
+                    ]
+                  },
+                  "payload": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "entityIds",
+                  "stepIndex",
+                  "confidence",
+                  "payload"
+                ],
+                "additionalProperties": false
+              },
+              "snapshots": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "entityId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value": {},
+                    "previousValue": {},
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "idle",
+                        "active",
+                        "selected",
+                        "changing",
+                        "completed",
+                        "unsupported"
+                      ]
+                    },
+                    "properties": {
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  },
+                  "required": [
+                    "entityId",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "caption": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "variables": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "key",
+                  "variables"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "index",
+              "activeEntityIds",
+              "activeEvent",
+              "snapshots",
+              "caption"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "id",
+        "graphRef",
+        "semanticModelVersion",
+        "grammarVersion",
+        "entities",
+        "steps"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

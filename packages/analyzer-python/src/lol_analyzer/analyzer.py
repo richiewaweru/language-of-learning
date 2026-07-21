@@ -120,6 +120,8 @@ class Analyzer:
             self.visit_assign(stmt, parent_id)
         elif isinstance(stmt, ast.For):
             self.visit_for(stmt, parent_id)
+        elif isinstance(stmt, ast.While):
+            self.visit_while(stmt, parent_id)
         elif isinstance(stmt, ast.If):
             self.visit_if(stmt, parent_id)
         elif isinstance(stmt, ast.Return):
@@ -130,6 +132,9 @@ class Analyzer:
             self.add_unsupported(stmt, type(stmt).__name__)
 
     def visit_assign(self, stmt: ast.Assign, parent_id: str) -> None:
+        if len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Subscript):
+            self.visit_indexed_assign(stmt, parent_id)
+            return
         if len(stmt.targets) != 1 or not isinstance(stmt.targets[0], ast.Name):
             self.add_unsupported(stmt, "complex assignment")
             return
@@ -185,7 +190,7 @@ class Analyzer:
                 )
                 self.node_ids.add(value_id)
 
-        if isinstance(value, ast.BinOp):
+        if isinstance(value, (ast.BinOp, ast.Subscript)):
             op_id = self.alloc_id("op", value)
             if op_id not in self.node_ids:
                 self.nodes.append(
@@ -198,19 +203,59 @@ class Analyzer:
                 )
                 self.node_ids.add(op_id)
             self.rel(parent_id, "contains", op_id)
+            self.ensure_expression_facts(value, parent_id)
             for ref in self.read_refs(value):
                 self.rel(op_id, "reads", ref)
             self.rel(op_id, "writes", binding_id)
+        elif self.is_supported_call(value):
+            call_id = self.ensure_call_node(value, parent_id)
+            self.rel(call_id, "writes", binding_id)
+        elif isinstance(value, ast.Name):
+            source_id = self.binding_or_collection_id(value.id)
+            self.rel(binding_id, "reads", source_id)
         elif not self.is_literal(value):
             self.add_unsupported(value, type(value).__name__)
 
+    def visit_indexed_assign(self, stmt: ast.Assign, parent_id: str) -> None:
+        target = stmt.targets[0]
+        assert isinstance(target, ast.Subscript)
+        if not isinstance(target.value, ast.Name):
+            self.add_unsupported(target, "indexed assignment target")
+            return
+        mutation_id = self.alloc_id("mut", stmt)
+        target_ref = self.binding_or_collection_id(target.value.id)
+        self.nodes.append(
+            {
+                "id": mutation_id,
+                "kind": "mutation",
+                "sourceRange": self.range_for(stmt),
+                "targetRef": target_ref,
+                "mutationType": "indexed-assignment",
+            }
+        )
+        self.node_ids.add(mutation_id)
+        self.rel(parent_id, "contains", mutation_id)
+        self.rel(mutation_id, "mutates", target_ref)
+        for ref in self.read_refs(target.slice):
+            self.rel(mutation_id, "reads", ref)
+        for ref in self.read_refs(stmt.value):
+            self.rel(mutation_id, "reads", ref)
+        self.ensure_expression_facts(target.slice, parent_id)
+        self.ensure_expression_facts(stmt.value, parent_id)
+
     def visit_for(self, stmt: ast.For, parent_id: str) -> None:
-        if not isinstance(stmt.target, ast.Name) or not isinstance(stmt.iter, ast.Name):
+        if not isinstance(stmt.target, ast.Name) or not (
+            isinstance(stmt.iter, ast.Name) or self.is_range_call(stmt.iter)
+        ):
             self.add_unsupported(stmt, "for target")
             return
         loop_id = self.alloc_id("loop", stmt)
         body_target = self.body_reference(stmt.body)
-        collection_ref = self.binding_or_collection_id(stmt.iter.id)
+        if isinstance(stmt.iter, ast.Name):
+            collection_ref = self.binding_or_collection_id(stmt.iter.id)
+        else:
+            collection_ref = self.ensure_call_node(stmt.iter, parent_id)
+            self.ensure_expression_facts(stmt.iter, parent_id)
         self.nodes.append(
             {
                 "id": loop_id,
@@ -240,6 +285,44 @@ class Analyzer:
         for child in stmt.body:
             self.visit_stmt(child, parent_id=loop_id)
 
+    def visit_while(self, stmt: ast.While, parent_id: str) -> None:
+        if stmt.orelse:
+            self.add_unsupported(stmt, "while else")
+            return
+        condition_id = self.alloc_id("op", stmt.test)
+        self.nodes.append(
+            {
+                "id": condition_id,
+                "kind": "operation",
+                "sourceRange": self.range_for(stmt.test),
+                "expr": self.expr_text(stmt.test),
+            }
+        )
+        self.node_ids.add(condition_id)
+        for ref in self.read_refs(stmt.test):
+            self.rel(condition_id, "reads", ref)
+        self.ensure_expression_facts(stmt.test, condition_id)
+        loop_id = self.alloc_id("loop", stmt)
+        iterator_name = next(
+            (node.id for node in ast.walk(stmt.test) if isinstance(node, ast.Name)),
+            "condition",
+        )
+        self.nodes.append(
+            {
+                "id": loop_id,
+                "kind": "loop",
+                "sourceRange": self.range_for(stmt),
+                "iteratorName": iterator_name,
+                "collectionRef": condition_id,
+                "body": self.body_reference(stmt.body),
+            }
+        )
+        self.node_ids.add(loop_id)
+        self.rel(parent_id, "contains", loop_id)
+        self.rel(loop_id, "reads", condition_id)
+        for child in stmt.body:
+            self.visit_stmt(child, parent_id=loop_id)
+
     def visit_if(self, stmt: ast.If, parent_id: str) -> None:
         branch_id = self.alloc_id("branch", stmt)
         true_body = self.body_reference(stmt.body)
@@ -256,6 +339,7 @@ class Analyzer:
         self.nodes.append(branch)
         self.node_ids.add(branch_id)
         self.rel(parent_id, "contains", branch_id)
+        self.ensure_expression_facts(stmt.test, branch_id)
         for child in stmt.body:
             self.visit_stmt(child, parent_id=branch_id)
         for child in stmt.orelse:
@@ -318,6 +402,9 @@ class Analyzer:
                 self.node_ids.add(value_ref)
                 for ref in self.read_refs(value):
                     self.rel(value_ref, "reads", ref)
+            self.ensure_expression_facts(value, parent_id)
+        elif self.is_supported_call(value):
+            self.ensure_call_node(value, parent_id)
 
     def visit_expr_stmt(self, expr: ast.Expr, parent_id: str) -> None:
         if not self.is_append_call(expr.value):
@@ -355,6 +442,8 @@ class Analyzer:
             self.rel(op_id, "feeds", mutation_id)
         elif isinstance(arg, ast.Name):
             pass
+        elif self.is_literal(arg):
+            pass
         else:
             self.add_unsupported(arg, type(arg).__name__)
 
@@ -368,10 +457,14 @@ class Analyzer:
         first = body[0]
         if isinstance(first, ast.If):
             return self.alloc_id("branch", first)
+        if isinstance(first, ast.While):
+            return self.alloc_id("loop", first)
         if isinstance(first, ast.Return):
             return self.alloc_id("ret", first)
         if isinstance(first, ast.Assign) and isinstance(first.value, ast.BinOp):
             return self.alloc_id("op", first.value)
+        if isinstance(first, ast.Assign) and isinstance(first.targets[0], ast.Subscript):
+            return self.alloc_id("mut", first)
         if (
             isinstance(first, ast.Assign)
             and len(first.targets) == 1
@@ -398,6 +491,17 @@ class Analyzer:
             return self.alloc_id("val", value)
         if isinstance(value, ast.BinOp):
             return self.alloc_id("op", value)
+        if self.is_supported_call(value):
+            assert isinstance(value, ast.Call)
+            return self.ensure_call_node(value, self.alloc_id("fn", self.current_function))
+        if (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and self.current_function is not None
+            and value.func.id == self.current_function.name
+        ):
+            self.add_unsupported(value, "recursion")
+            return "unsupported-return"
         self.add_unsupported(value or self.current_function, "return value")
         return "unsupported-return"
 
@@ -405,6 +509,8 @@ class Analyzer:
         refs: list[str] = []
         for node in ast.walk(value):
             if isinstance(node, ast.Name):
+                if node.id in {"len", "range"}:
+                    continue
                 refs.append(self.binding_or_collection_id(node.id))
         return refs
 
@@ -485,6 +591,58 @@ class Analyzer:
             and isinstance(value.func.value, ast.Name)
             and len(value.args) == 1
         )
+
+    def is_supported_call(self, value: ast.AST | None) -> bool:
+        return (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id in {"len", "range"}
+            and not value.keywords
+        )
+
+    def is_range_call(self, value: ast.AST) -> bool:
+        return self.is_supported_call(value) and isinstance(value, ast.Call) and value.func.id == "range"
+
+    def ensure_call_node(self, call: ast.Call, parent_id: str) -> str:
+        call_id = self.alloc_id("call", call)
+        if call_id not in self.node_ids:
+            assert isinstance(call.func, ast.Name)
+            self.nodes.append(
+                {
+                    "id": call_id,
+                    "kind": "call",
+                    "sourceRange": self.range_for(call),
+                    "callee": call.func.id,
+                    "args": [self.expr_text(arg) for arg in call.args],
+                }
+            )
+            self.node_ids.add(call_id)
+            self.rel(parent_id, "contains", call_id)
+            for arg in call.args:
+                for ref in self.read_refs(arg):
+                    self.rel(call_id, "reads", ref)
+        return call_id
+
+    def ensure_expression_facts(self, expr: ast.AST, parent_id: str) -> None:
+        for node in ast.walk(expr):
+            if isinstance(node, ast.Subscript):
+                operation_id = self.alloc_id("op", node)
+                if operation_id not in self.node_ids:
+                    self.nodes.append(
+                        {
+                            "id": operation_id,
+                            "kind": "operation",
+                            "sourceRange": self.range_for(node),
+                            "expr": self.expr_text(node),
+                        }
+                    )
+                    self.node_ids.add(operation_id)
+                    self.rel(parent_id, "contains", operation_id)
+                    for ref in self.read_refs(node):
+                        self.rel(operation_id, "reads", ref)
+            elif self.is_supported_call(node):
+                assert isinstance(node, ast.Call)
+                self.ensure_call_node(node, parent_id)
 
     def expr_text(self, value: ast.AST) -> str:
         return ast.unparse(value)

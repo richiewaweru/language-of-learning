@@ -2,7 +2,7 @@ import { loadPathway, loadLesson } from '$lib/content';
 import { loadPathwayModules } from '$lib/pathwayModules';
 import { loadVariationPack } from '$lib/product/loadVariationPack';
 import { error } from '@sveltejs/kit';
-import { renderCaption } from '@lol/lens-scenes';
+import { normalizeSemanticScene, renderCaption } from '@lol/lens-scenes';
 import type { DemoPack } from '$lib/product/loadDemoPack';
 import type { VariationPack } from '$lib/product/loadVariationPack';
 import { loadScene, loadExample } from '$lib/content';
@@ -56,6 +56,7 @@ export async function load({
       }
       if (block.type === 'execution') {
         const example = await loadExample(block.sceneId);
+        const scene = await loadScene(block.sceneId);
         executionPacks[block.sceneId] = {
           id: block.sceneId,
           title: lesson.title,
@@ -63,7 +64,10 @@ export async function load({
           argsRepr: example.argsRepr,
           graph: example.graph,
           trace: example.trace,
-          scene: await loadScene(block.sceneId),
+          scene,
+          semanticScene: normalizeSemanticScene(example.graph, example.trace, {
+            sceneId: 'semantic-' + block.sceneId,
+          }),
         };
       }
       if (block.type === 'variation' || block.type === 'transferCheck') {

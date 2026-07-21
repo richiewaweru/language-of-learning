@@ -1,258 +1,154 @@
 <script lang="ts">
-  import type { LearnerFlowStep } from '../projection/deriveLearnerProjection';
+  import type { FlowProjection } from '../projection/deriveSemanticProjections';
+  import { SymbolBadge } from '@lol/visual-grammar';
 
   let {
-    steps,
+    projection,
     technicalMode = false,
   }: {
-    steps: LearnerFlowStep[];
+    projection: FlowProjection;
     technicalMode?: boolean;
   } = $props();
-
-  const input = $derived(steps.find((step) => step.kind === 'input'));
-  const current = $derived(steps.find((step) => step.kind === 'current'));
-  const work = $derived(steps.find((step) => step.kind === 'work'));
-  const state = $derived(steps.find((step) => step.kind === 'state'));
-  const returned = $derived(steps.find((step) => step.kind === 'return'));
-  const inputItems = $derived(
-    (input?.value ?? '')
-      .replace(/^\[|\]$/g, '')
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean),
-  );
 </script>
 
-<div class="learner-flow" data-testid="learner-flow-view">
-  <div class="flow-step collection" class:active={input?.active} data-kind="input">
-    <p class="step-label">{input?.label ?? 'Input collection'}</p>
+<div class="learner-flow" data-testid="learner-flow-view" data-event={projection.eventType}>
+  <section class="collection-zone" aria-label={projection.collection.label}>
+    <SymbolBadge semantic="collection" label={projection.collection.label} />
     <div class="collection-strip">
-      {#each inputItems as item}
-        <span>{item}</span>
+      {#each projection.collection.items as item, index}
+        <span
+          class:selected={projection.cursor.active && projection.cursor.index === index}
+          data-testid={projection.cursor.index === index ? 'selected-collection-cell' : undefined}
+        >{item}</span>
       {:else}
         <span class="placeholder">—</span>
       {/each}
     </div>
-  </div>
+    {#if projection.cursor.active && projection.cursor.index !== undefined}
+      <div class="origin-link" aria-label="Current item comes from the selected collection cell">
+        <span>selected cell</span><span aria-hidden="true">↘</span>
+      </div>
+    {/if}
+  </section>
 
-  <div class="arrow" aria-hidden="true">→</div>
+  <div class="flow-arrow" aria-hidden="true">→</div>
 
-  <div class="process-group">
-    <div class="current-card" class:active={current?.active}>
-      <p class="step-label">{current?.label ?? 'Current item'}</p>
-      <p class="current-value">{current?.value || '—'}</p>
+  <section class="work-zone" class:active={projection.work.active}>
+    <div class="cursor-token" class:active={projection.cursor.active} data-testid="current-item-token">
+      <SymbolBadge
+        semantic="cursor"
+        label={projection.cursor.label}
+        state={projection.cursor.active ? 'selected' : 'idle'}
+      />
+      <strong
+        data-testid="current-item-value"
+        aria-label={'Current item ' + (projection.cursor.value ?? 'unavailable')}
+      >{projection.cursor.value ?? '—'}</strong>
     </div>
-    <div class="loop-cycle" class:active={work?.active}>
-      <span class="cycle-arrow" aria-hidden="true">↻</span>
-      <span>Loop<br />body</span>
+    <div class="loop-frame">
+      <SymbolBadge semantic="loop" label="Loop body" state={projection.work.active ? 'active' : 'idle'} />
+      <code>{projection.work.expression}</code>
+      <span class="repeat-route" aria-label="Repeat with the next item">↻</span>
     </div>
-    <p class="operation">{work?.value || 'Combine values'}</p>
-  </div>
+  </section>
 
-  <div class="arrow" aria-hidden="true">→</div>
+  <div class="flow-arrow" aria-hidden="true">→</div>
 
-  <div class="flow-step state-card" class:active={state?.active} data-kind="state">
-    <p class="step-label">{state?.label ?? 'Running total'}</p>
-    <p class="step-value">{state?.value || '—'}</p>
-  </div>
+  <section class="state-zone" class:changing={projection.state.changing} data-testid="flow-state">
+    <SymbolBadge
+      semantic="state"
+      label={projection.state.label}
+      state={projection.state.changing ? 'changing' : 'idle'}
+    />
+    {#if projection.state.changing && projection.state.previousValue !== undefined}
+      <span class="old-value" data-testid="previous-state-value">{projection.state.previousValue}</span>
+      <span aria-hidden="true">→</span>
+    {/if}
+    <strong
+      data-testid="current-state-value"
+      aria-label={projection.state.label + ' current value ' + (projection.state.value ?? 'unavailable')}
+    >{projection.state.value ?? '—'}</strong>
+  </section>
 
-  <div class="arrow" aria-hidden="true">→</div>
+  <div class="flow-arrow" aria-hidden="true">→</div>
 
-  <div class="flow-step return-card" class:active={returned?.active} data-kind="return">
-    <p class="step-label">{returned?.label ?? 'Returned result'}</p>
-    <p class="step-value">{returned?.value || '—'}</p>
-    <span class="result-note">Final total</span>
-  </div>
-
-  <div class="loop-route" aria-hidden="true">
-    <span>Take next item, add it in, repeat.</span>
-  </div>
+  <section
+    class="result-zone"
+    class:visible={projection.result.visible}
+    data-testid="flow-result"
+    aria-label={projection.result.visible ? 'Returned result ' + projection.result.value : 'Result not returned yet'}
+  >
+    <SymbolBadge semantic="return" label="Result port" state={projection.result.active ? 'completed' : 'idle'} />
+    <strong>{projection.result.visible ? projection.result.value : 'Waiting for return'}</strong>
+  </section>
 
   {#if technicalMode}
-    <p class="tech-note">Technical graph available in advanced view.</p>
+    <p class="tech-note">Complete graph evidence is available in Graph Inspector.</p>
   {/if}
 </div>
 
 <style>
   .learner-flow {
     display: grid;
-    grid-template-columns: minmax(104px, 1.25fr) auto minmax(94px, .92fr) auto minmax(82px, .76fr) auto minmax(86px, .8fr);
+    grid-template-columns: minmax(120px, 1.2fr) auto minmax(120px, 1fr) auto minmax(96px, .8fr) auto minmax(105px, .85fr);
     align-items: center;
-    gap: clamp(4px, .65vw, 10px);
-    padding: var(--space-7) var(--space-3) var(--space-8);
+    gap: clamp(5px, .7vw, 12px);
     min-height: 330px;
-    justify-content: center;
-    position: relative;
+    padding: var(--space-6) var(--space-4);
+    overflow: hidden;
   }
-
-  .flow-step {
-    min-width: 0;
-    padding: var(--space-3);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--line-soft);
-    background: var(--surface-primary);
-    text-align: center;
-    transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
-  }
-
-  .flow-step.active {
-    border-color: var(--flow-teal);
-    box-shadow: 0 0 0 3px var(--flow-teal-soft);
-  }
-
-  .flow-step[data-kind='input'] { border-color: color-mix(in srgb, var(--data-blue) 38%, var(--line-soft)); }
-  .flow-step[data-kind='state'] { border-color: color-mix(in srgb, var(--state-gold) 58%, var(--line-soft)); }
-  .flow-step[data-kind='return'] {
-    border-color: color-mix(in srgb, var(--data-blue) 55%, var(--line-soft));
-    border-style: dashed;
-  }
-
-  .collection-strip {
-    display: flex;
-    justify-content: center;
-    margin-top: var(--space-2);
-  }
-
-  .collection-strip span {
-    min-width: 29px;
-    padding: 7px 5px;
-    background: var(--surface-primary);
-    border: 1px solid var(--line-medium);
-    color: var(--ink-primary);
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-  }
-
-  .collection-strip span + span { border-left: 0; }
-  .collection-strip span:first-child { border-radius: var(--radius-xs) 0 0 var(--radius-xs); }
-  .collection-strip span:last-child { border-radius: 0 var(--radius-xs) var(--radius-xs) 0; }
-
-  .process-group {
+  section { min-width: 0; }
+  .collection-zone, .work-zone, .state-zone, .result-zone {
     display: grid;
     justify-items: center;
-    gap: var(--space-2);
-  }
-
-  .current-card {
-    min-width: 66px;
-    padding: var(--space-2);
-    border: 1px solid color-mix(in srgb, var(--flow-teal) 55%, var(--line-soft));
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--line-soft);
     border-radius: var(--radius-sm);
-    background: var(--flow-teal-soft);
-    text-align: center;
-  }
-
-  .current-card.active,
-  .loop-cycle.active {
-    box-shadow: 0 0 0 3px var(--flow-teal-soft), var(--shadow-sm);
-  }
-
-  .current-value {
-    margin: 0;
-    font-family: var(--font-mono);
-    color: var(--flow-teal);
-    font-size: var(--heading-md);
-    font-weight: 600;
-  }
-
-  .loop-cycle {
-    width: 76px;
-    height: 76px;
-    border: 2px solid var(--flow-teal);
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    position: relative;
     background: var(--surface-primary);
-    color: var(--ink-secondary);
-    font-size: var(--text-xs);
-    line-height: 1.2;
+    transition: opacity var(--motion-fast), border-color var(--motion-fast), transform var(--motion-fast);
   }
-
-  .cycle-arrow {
-    position: absolute;
-    top: -14px;
-    right: -2px;
-    color: var(--flow-teal);
-    background: var(--surface-primary);
-    font-size: 24px;
-    line-height: 1;
+  .collection-strip { display:flex; max-width:100%; }
+  .collection-strip span {
+    min-width: 28px;
+    padding: 6px 4px;
+    text-align:center;
+    border:1px solid var(--line-medium);
+    font-family:var(--font-mono);
+    font-size:var(--text-sm);
   }
-
-  .operation {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--work-purple);
-    white-space: nowrap;
+  .collection-strip span + span { border-left:0; }
+  .collection-strip span.selected {
+    position:relative;
+    z-index:1;
+    border:2px solid var(--state-gold);
+    background:color-mix(in srgb,var(--state-gold) 12%,var(--surface-primary));
+    transform:translateY(-3px);
   }
-
-  .step-label {
-    margin: 0 0 var(--space-1);
-    font-size: var(--text-xs);
-    color: var(--ink-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  .origin-link { display:flex; gap:.35rem; color:var(--state-gold); font-size:10px; }
+  .work-zone { border-color:color-mix(in srgb,var(--flow-teal) 45%,var(--line-soft)); }
+  .work-zone.active { box-shadow:0 0 0 3px var(--flow-teal-soft); }
+  .cursor-token { display:flex; align-items:center; gap:.4rem; opacity:.45; transform:translateX(-8px); }
+  .cursor-token.active { opacity:1; transform:translateX(0); }
+  .cursor-token strong { color:var(--state-gold); font-family:var(--font-mono); }
+  .loop-frame { display:grid; justify-items:center; gap:.55rem; }
+  .loop-frame code { color:var(--work-purple); font:500 11px var(--font-mono); white-space:normal; text-align:center; }
+  .repeat-route { color:var(--flow-teal); font-size:24px; line-height:1; }
+  .state-zone { border-color:color-mix(in srgb,var(--state-gold) 58%,var(--line-soft)); }
+  .state-zone.changing { box-shadow:0 0 0 3px color-mix(in srgb,var(--state-gold) 16%,transparent); }
+  .state-zone strong, .result-zone strong { font:600 var(--text-lg) var(--font-mono); }
+  .old-value { opacity:.5; text-decoration:line-through; font-family:var(--font-mono); }
+  .result-zone { border-style:dashed; opacity:.42; }
+  .result-zone.visible { opacity:1; border-color:var(--exit-green); transform:translateX(0); }
+  .result-zone strong { font-size:var(--text-sm); text-align:center; }
+  .flow-arrow { color:var(--flow-teal); font-size:var(--heading-md); }
+  .tech-note { grid-column:1/-1; color:var(--ink-faint); font-size:var(--text-xs); }
+  @media (prefers-reduced-motion: reduce) {
+    .collection-zone, .work-zone, .state-zone, .result-zone, .cursor-token { transition:none; }
   }
-
-  .step-value {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: var(--text-lg);
-    font-weight: 500;
-    color: var(--ink-primary);
-  }
-
-  .arrow {
-    color: var(--flow-teal);
-    font-size: var(--heading-md);
-    line-height: 1;
-  }
-
-  .result-note {
-    display: block;
-    margin-top: var(--space-1);
-    color: var(--ink-muted);
-    font-size: 10px;
-  }
-
-  .loop-route {
-    position: absolute;
-    left: 17%;
-    right: 27%;
-    bottom: 24px;
-    border-bottom: 2px dashed color-mix(in srgb, var(--flow-teal) 60%, transparent);
-    text-align: center;
-    color: var(--ink-muted);
-    font-size: 10px;
-    padding-bottom: 6px;
-  }
-
-  .loop-route::before {
-    content: '↰';
-    position: absolute;
-    left: -5px;
-    bottom: -7px;
-    color: var(--flow-teal);
-    font-size: 21px;
-  }
-
-  .tech-note {
-    grid-column: 1 / -1;
-    margin-top: var(--space-4);
-    font-size: var(--text-xs);
-    color: var(--ink-faint);
-  }
-
   @media (max-width: 720px) {
-    .learner-flow {
-      grid-template-columns: 1fr;
-      padding: var(--space-5);
-    }
-
-    .flow-step,
-    .process-group { width: min(100%, 300px); }
-    .arrow { transform: rotate(90deg); }
-    .loop-route { display: none; }
+    .learner-flow { grid-template-columns:1fr; padding:var(--space-4); overflow:visible; }
+    .collection-zone,.work-zone,.state-zone,.result-zone { width:min(100%,300px); justify-self:center; box-sizing:border-box; }
+    .flow-arrow { transform:rotate(90deg); justify-self:center; }
   }
 </style>

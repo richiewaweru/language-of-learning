@@ -48,6 +48,15 @@
                   "type": "string"
                 }
               },
+              "objectIds": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "frameId": {
+                "type": "string"
+              },
               "event": {
                 "anyOf": [
                   {
@@ -207,6 +216,118 @@
                     "properties": {
                       "type": {
                         "type": "string",
+                        "const": "indexed_selection"
+                      },
+                      "collection": {
+                        "type": "string"
+                      },
+                      "indexRepr": {
+                        "type": "string"
+                      },
+                      "valueRepr": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "collection",
+                      "indexRepr",
+                      "valueRepr"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "indexed_mutation"
+                      },
+                      "collection": {
+                        "type": "string"
+                      },
+                      "indexRepr": {
+                        "type": "string"
+                      },
+                      "oldRepr": {
+                        "type": "string"
+                      },
+                      "newRepr": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "collection",
+                      "indexRepr",
+                      "oldRepr",
+                      "newRepr"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "supported_call"
+                      },
+                      "callee": {
+                        "type": "string",
+                        "enum": [
+                          "len",
+                          "range"
+                        ]
+                      },
+                      "argsRepr": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "resultRepr": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "callee",
+                      "argsRepr",
+                      "resultRepr"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "loop_test"
+                      },
+                      "loop": {
+                        "type": "string"
+                      },
+                      "iteration": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "result": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "loop",
+                      "iteration",
+                      "result"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
                         "const": "effect_fire"
                       },
                       "effect": {
@@ -220,6 +341,27 @@
                       "type",
                       "effect",
                       "repr"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "unsupported"
+                      },
+                      "construct": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "construct",
+                      "message"
                     ],
                     "additionalProperties": false
                   },
@@ -262,6 +404,22 @@
           },
           "required": [
             "repr"
+          ],
+          "additionalProperties": false
+        },
+        "violation": {
+          "type": "object",
+          "properties": {
+            "construct": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "construct",
+            "message"
           ],
           "additionalProperties": false
         },

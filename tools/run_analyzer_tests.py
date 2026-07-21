@@ -84,6 +84,24 @@ class AnalyzerFixtureTests(unittest.TestCase):
         text = analyzer_path.read_text(encoding="utf-8")
         self.assertEqual(text.count("def visit_stmt"), 1)
 
+    def test_structural_v1_nodes_are_factual_and_supported(self) -> None:
+        source = (
+            "def bounded(values):\n"
+            "    first = values[0]\n"
+            "    for index in range(len(values)):\n"
+            "        values[index] = first\n"
+            "    while first < len(values):\n"
+            "        first = first + 1\n"
+            "    return values"
+        )
+        graph = analyze_source(source)
+        self.assertEqual(graph["unsupported"], [])
+        kinds = {node["kind"] for node in graph["nodes"]}
+        self.assertTrue({"call", "operation", "loop", "mutation"} <= kinds)
+        calls = {node["callee"] for node in graph["nodes"] if node["kind"] == "call"}
+        self.assertEqual(calls, {"len", "range"})
+        self.assertTrue(any(node.get("mutationType") == "indexed-assignment" for node in graph["nodes"]))
+
     def test_all_fixture_graphs_match_expected(self) -> None:
         matched = 0
         for fixture in FIXTURES:

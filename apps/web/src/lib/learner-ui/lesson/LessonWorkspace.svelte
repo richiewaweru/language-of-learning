@@ -2,8 +2,6 @@
   import type { DemoPack } from '$lib/product/loadDemoPack';
   import type { Selection } from '@lol/lens-contracts';
   import {
-    deriveStepLabel,
-    deriveLearnerCaption,
     resolveSelection,
     resolveTruthDetail,
   } from '@lol/lens-scenes';
@@ -66,11 +64,10 @@
   const stepIndex = $derived(
     Math.min(Math.max(selection.stepIndex ?? 0, 0), pack.scene.steps.length - 1),
   );
-  const currentStep = $derived(pack.trace.steps[stepIndex]);
-  const sceneStep = $derived(pack.scene.steps[stepIndex]);
+  const sceneStep = $derived(pack.semanticScene.steps[stepIndex]);
   const learnerCaption = $derived(
-    currentStep
-      ? deriveLearnerCaption(pack.graph, currentStep, pack.trace, sceneStep)
+    sceneStep
+      ? sceneStep.activeEvent.type + ' — ' + Object.values(sceneStep.caption.variables).join(', ')
       : '',
   );
   const truthDetail = $derived(
@@ -154,8 +151,10 @@
     <div class="col visual" class:hidden={mobileTab !== 'visual'}>
       <VisualLearningStage
         scene={pack.scene}
+        semanticScene={pack.semanticScene}
         graph={pack.graph}
         trace={pack.trace}
+        source={pack.source}
         {selection}
         onselectionchange={handleSelectionChange}
         {reducedMotion}
@@ -163,7 +162,7 @@
       />
       <PlaybackTimeline
         {stepIndex}
-        totalSteps={pack.scene.steps.length}
+        totalSteps={pack.semanticScene.steps.length}
         {selection}
         onselectionchange={handleSelectionChange}
         {autoplayAllowed}

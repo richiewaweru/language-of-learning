@@ -19,6 +19,7 @@
     "test:api-save": "python tools/run_api_save_tests.py",
     "test:parity-ops": "python tools/run_interpreter_parity.py",
     "test:visual": "vitest run packages/visual-grammar/src",
+    "verify:structural-lens": "pnpm export-schemas && python tools/verify_structural_lens.py && python tools/run_analyzer_tests.py && python tools/run_trace_tests.py && vitest run packages/lens-contracts/src packages/lens-scenes/src packages/visual-grammar/src tests/fixtures && pnpm typecheck && pnpm lint && playwright test tests/e2e/flagship-lesson.spec.ts",
     "test:web": "vitest run tests/web",
     "test:e2e": "playwright test",
     "test:visual:update": "playwright test --update-snapshots",

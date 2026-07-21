@@ -17,6 +17,8 @@ const exports = [
   ['selection', ContractSchemas.selection],
   ['lesson-revision', ContractSchemas.lessonRevision],
   ['pathway', ContractSchemas.pathway],
+  ['semantic-scene', ContractSchemas.semanticScene],
+  ['symbol-manifest', ContractSchemas.symbolManifest],
 ] as const;
 
 mkdirSync(schemasDir, { recursive: true });

@@ -1,0 +1,93 @@
+{
+  "$ref": "#/definitions/symbol-manifest",
+  "definitions": {
+    "symbol-manifest": {
+      "type": "object",
+      "properties": {
+        "grammarVersion": {
+          "type": "string",
+          "const": "1.0.0"
+        },
+        "semanticModelVersion": {
+          "type": "string",
+          "const": "1.0.0"
+        },
+        "defaultConcreteness": {
+          "type": "string",
+          "const": "semi-abstract"
+        },
+        "symbols": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "entity",
+                  "event",
+                  "control",
+                  "fallback"
+                ]
+              },
+              "family": {
+                "type": "string",
+                "enum": [
+                  "data",
+                  "state",
+                  "flow",
+                  "decision",
+                  "work",
+                  "exit",
+                  "effect",
+                  "limit"
+                ]
+              },
+              "views": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "flow",
+                    "state",
+                    "trace"
+                  ]
+                }
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "existing",
+                  "next",
+                  "later",
+                  "needs-wiring",
+                  "required"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "family",
+              "views",
+              "status"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "grammarVersion",
+        "semanticModelVersion",
+        "defaultConcreteness",
+        "symbols"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

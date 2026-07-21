@@ -11,6 +11,10 @@
       $page.url.pathname.startsWith('/internal/debug/') ||
       $page.url.pathname.startsWith('/slices/'),
   );
+
+  $effect(() => {
+    document.documentElement.dataset.hydrated = 'true';
+  });
 </script>
 
 <div class="page-shell">

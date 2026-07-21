@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { ScenePlayer } from '@lol/visual-grammar';
   import '@lol/visual-grammar/styles.css';
   import {
     buildScene,
+    normalizeSemanticScene,
     buildTransferCheck,
     gradeTransferCheck,
     resolveSelection,
@@ -12,13 +12,16 @@
     type TransferCheck,
   } from '@lol/lens-scenes';
   import { detectPattern } from '@lol/lens-patterns';
-  import type { PatternHit, Selection } from '@lol/lens-contracts';
+  import type { PatternHit, Selection, SemanticScene } from '@lol/lens-contracts';
   import CodeEditor from '$lib/CodeEditor.svelte';
   import TruthDrawer from '$lib/product/TruthDrawer.svelte';
   import PageContainer from '$lib/learner-ui/shell/PageContainer.svelte';
   import Breadcrumbs from '$lib/learner-ui/shell/Breadcrumbs.svelte';
   import LearnerFlowView from '$lib/learner-ui/lesson/LearnerFlowView.svelte';
-  import { deriveLearnerProjection, eventToLearnerLabel } from '$lib/learner-ui/projection/deriveLearnerProjection';
+  import SemanticStateView from '$lib/learner-ui/lesson/SemanticStateView.svelte';
+  import GuidedTraceView from '$lib/learner-ui/lesson/GuidedTraceView.svelte';
+  import GraphInspector from '$lib/learner-ui/lesson/GraphInspector.svelte';
+  import { deriveFlowProjection } from '$lib/learner-ui/projection/deriveSemanticProjections';
   import { analyzeSource, loadAnalysis, recordEvent, saveAnalysis } from '$lib/api';
 
   let { data } = $props();
@@ -37,6 +40,7 @@
       trace: pack.trace,
       pattern: detectPattern(pack.graph),
       scene: pack.scene,
+      semanticScene: pack.semanticScene,
       selection: { stepIndex: initialStep } as Selection,
       transfer: buildTransferCheck(pack.graph),
     };
@@ -51,6 +55,7 @@
   let trace = $state<Trace | null>(initial.trace);
   let pattern = $state<PatternHit | null>(initial.pattern);
   let scene = $state<ReturnType<typeof buildScene> | null>(initial.scene);
+  let semanticScene = $state<SemanticScene | null>(initial.semanticScene);
   let violation = $state<{ construct: string; message: string } | null>(null);
   let selection = $state<Selection>(initial.selection);
   let savedId = $state('');
@@ -99,8 +104,10 @@
       pattern = detectPattern(result.graph);
       if (result.graph.nodes.some((n) => n.kind === 'function') && result.trace.steps?.length) {
         scene = buildScene(result.graph, result.trace as Trace);
+        semanticScene = normalizeSemanticScene(result.graph, result.trace as Trace);
       } else {
         scene = null;
+        semanticScene = null;
       }
       transfer = buildTransferCheck(result.graph);
       selection = { stepIndex: 0 };
@@ -147,6 +154,7 @@
       pattern = (data.pattern as PatternHit | null) ?? detectPattern(graph);
       scene = (data.scene as ReturnType<typeof buildScene> | null) ??
         (trace.steps?.length ? buildScene(graph, trace) : null);
+      semanticScene = trace.steps?.length ? normalizeSemanticScene(graph, trace) : null;
       transfer = buildTransferCheck(graph);
       savedId = String(data.id ?? loadId);
       selection = { stepIndex: 0 };
@@ -186,16 +194,12 @@
     drawerOpen = true;
   }
 
-  function onStepChange(index: number) {
-    selection = { stepIndex: index, line: trace?.steps[index]?.line };
-  }
-
   function onSelectionChange(next: Selection) {
     selection = next;
   }
   const projection = $derived(
-    graph && trace && scene
-      ? deriveLearnerProjection(graph, trace, scene, stepIndex)
+    semanticScene
+      ? deriveFlowProjection(semanticScene, stepIndex)
       : null,
   );
 </script>
@@ -264,10 +268,10 @@
       {#if graph && trace}
         <div class="view-tabs" role="tablist">
           {#each [
-            { id: 'structure', label: 'Structure' },
+            { id: 'structure', label: 'Graph Inspector' },
             { id: 'flow', label: 'Flow' },
             { id: 'state', label: 'State' },
-            { id: 'explain', label: 'Explain' },
+            { id: 'explain', label: 'Guided Trace' },
           ] as view}
             <button
               type="button"
@@ -280,46 +284,23 @@
         </div>
 
         <div class="workspace-main surface-card" data-testid="view-{activeView}">
-          {#if activeView === 'structure'}
-            <pre class="code-view">{#each source.split('\n') as line, i}
-<span
-  class="line"
-  class:focus={resolved?.line === i + 1}
-  role="button"
-  tabindex="0"
-  onclick={() => selectLine(i + 1)}
-  onkeydown={(e) => e.key === 'Enter' && selectLine(i + 1)}
-><span class="ln">{i + 1}</span>{line}</span>
-{/each}</pre>
-          {:else if activeView === 'flow' && scene && projection}
-            <LearnerFlowView steps={projection.flowSteps} />
-          {:else if activeView === 'state'}
-            <div class="state-list">
-              {#each trace.steps as step}
-                <button
-                  type="button"
-                  class="state-step"
-                  class:focus={selection.stepIndex === step.index}
-                  onclick={() => onStepChange(step.index)}
-                >
-                  <strong>Step {step.index + 1}</strong>
-                  <span>{eventToLearnerLabel(step.event.type)}</span>
-                </button>
-              {/each}
-            </div>
-          {:else if activeView === 'explain' && pattern}
-            <p class="explain-text">
-              This code {pattern.pattern === 'ACCUMULATE' ? 'builds one combined result by updating state on each loop pass.' : 'follows a recognizable loop pattern.'}
-            </p>
-          {:else if activeView === 'flow' && scene}
-            <ScenePlayer
+          {#if activeView === 'structure' && scene && semanticScene}
+            <GraphInspector
               {scene}
+              {semanticScene}
               {graph}
               {trace}
               {selection}
               onselectionchange={onSelectionChange}
-              reducedMotion={false}
+              width={Math.max(...scene.layout.map((node) => node.x + node.width), 400) + 28}
+              height={Math.max(...scene.layout.map((node) => node.y + node.height), 300) + 28}
             />
+          {:else if activeView === 'flow' && projection}
+            <LearnerFlowView {projection} />
+          {:else if activeView === 'state' && semanticScene}
+            <SemanticStateView {semanticScene} {stepIndex} />
+          {:else if activeView === 'explain' && semanticScene}
+            <GuidedTraceView {semanticScene} {source} {stepIndex} />
           {/if}
         </div>
       {:else}
@@ -522,64 +503,6 @@
     padding: var(--space-8);
     text-align: center;
     color: var(--ink-muted);
-  }
-
-  .code-view {
-    margin: 0;
-    font: 14px/1.6 var(--font-mono);
-    white-space: pre;
-  }
-
-  .line {
-    display: block;
-    cursor: pointer;
-    padding: 2px var(--space-2);
-    border-radius: var(--radius-xs);
-  }
-
-  .line.focus {
-    background: var(--brand-blue-soft);
-  }
-
-  .ln {
-    display: inline-block;
-    width: 2.5rem;
-    color: var(--ink-faint);
-  }
-
-  .state-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .state-step {
-    text-align: left;
-    padding: var(--space-3);
-    border: 1px solid var(--line-soft);
-    border-radius: var(--radius-sm);
-    background: var(--surface-primary);
-    cursor: pointer;
-    font-size: var(--text-sm);
-  }
-
-  .state-step.focus {
-    border-color: var(--flow-teal);
-    background: var(--flow-teal-soft);
-  }
-
-  .state-step span {
-    display: block;
-    color: var(--ink-secondary);
-    margin-top: var(--space-1);
-  }
-
-  .explain-text {
-    font-size: var(--text-md);
-    line-height: 1.6;
-    color: var(--ink-secondary);
-    margin: 0;
-    padding: var(--space-4);
   }
 
   .sidebar {

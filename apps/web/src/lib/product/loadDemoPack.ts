@@ -1,4 +1,4 @@
-import { buildScene } from '@lol/lens-scenes';
+import { buildScene, normalizeSemanticScene } from '@lol/lens-scenes';
 import type { SemanticGraph, Trace } from '@lol/lens-scenes';
 import { assertRepoRoot, repoRoot } from '$lib/repoRoot';
 import { readFile } from 'node:fs/promises';
@@ -12,6 +12,7 @@ export type DemoPack = {
   graph: SemanticGraph;
   trace: Trace;
   scene: ReturnType<typeof buildScene>;
+  semanticScene: ReturnType<typeof normalizeSemanticScene>;
 };
 
 export async function loadDemoPack(root: string = assertRepoRoot(repoRoot)): Promise<DemoPack> {
@@ -26,6 +27,7 @@ export async function loadDemoPack(root: string = assertRepoRoot(repoRoot)): Pro
   const trace = JSON.parse(traceText) as Trace;
   const call = JSON.parse(callText) as { argsRepr: string[] };
   const scene = buildScene(graph, trace, { sceneId: 'scene-flagship-demo' });
+  const semanticScene = normalizeSemanticScene(graph, trace, { sceneId: 'semantic-flagship-demo' });
   return {
     id: 'flagship-accumulate',
     title: 'How a loop builds a result',
@@ -34,5 +36,6 @@ export async function loadDemoPack(root: string = assertRepoRoot(repoRoot)): Pro
     graph,
     trace,
     scene,
+    semanticScene,
   };
 }
