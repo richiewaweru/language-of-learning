@@ -2,35 +2,35 @@
 
 ## Current phase
 
-**V — Audience Value Proof.** Technical implementation V0–V4 complete; human validation **PENDING-HUMAN**.
+**UI — Learner UI transformation.** Phase V technical complete; UI-0 through UI-5 shipped.
 
 ## Last gate
 
-**gate-V4 (technical)** — 2026-07-21
+**gate-UI (technical)** — 2026-07-21
 
-## Gate report — Audience Value Proof (technical handoff)
+## Gate report — Learner UI transformation
 
 ```
-1. pnpm test:all — green (incl. test:web, 56 lens-scenes tests)
-2. pnpm test:lessons — 4/4 machine-checked (44 checks each, full lesson anatomy)
-3. pnpm capture:v1 — 8 SVGs in BUILD-LOG/assets/v1
-4. pnpm --filter web build — exit 0
-5. Public routes: /, /demo, /learn/*, /decode, /how-it-works, /about
-6. docs/audience-value-*.md + ADRs 0009–0011 + learner-validation-v4.md filed
+1. pnpm test:all — green (incl. test:web 20 tests, audience-routes + projection)
+2. pnpm test:lessons — 4/4 machine-checked
+3. pnpm --filter web build — exit 0
+4. Canonical flagship URL: /learn/python-foundations/loops/accumulate
+5. Legacy redirects: how-loops-build-results/* → python-foundations/loops/*
+6. Style gallery: /internal/style-gallery
+7. ADR 0012 learner UI skin refresh filed
 ```
 
-### What shipped (V0–V4 technical)
+### What shipped (UI-0–UI-5)
 
-- Living Diagram Notebook shell: ProductHeader/Footer, extended design tokens
-- Audience homepage with engine-derived HeroDemo
-- `/demo` flagship LearningInstrument (accumulate [3,5,2] → 10)
-- Learner step labels + captions (`deriveStepLabel`, `deriveLearnerCaption`)
-- Four-lesson pathway with full 9-section anatomy
-- Connected Truth View: `resolveTruthDetail` + TruthDrawer (demo, lessons, decode)
-- Prediction, comparison, variation, transfer, summary components
-- Local lesson progress persistence
+- Design tokens v0.2: warm `#faf9f6`, brand cobalt, Source Serif 4 + Inter + JetBrains Mono
+- `learner-ui/` shell (AppHeader, Breadcrumbs, PageContainer) and lesson workspace
+- LessonWorkspace at `/learn/python-foundations/loops/accumulate` (engine-driven, `[3,5,2]`)
+- Learner projection: `deriveLearnerProjection` + LearnerFlowView
+- Decode restyle: Paste/Upload/Examples, Structure/Flow/State/Explain, pattern sidebar
+- Pathway browser, library stub, landing continue-learning panel
+- hooks.server.ts legacy route redirects
 
-### Human validation (not complete)
+### Human validation (unchanged)
 
 | Item | Status |
 |------|--------|
@@ -39,4 +39,4 @@
 | Richie lesson sign-off | PENDING-HUMAN |
 | PM7 A/B sign-off | PENDING-HUMAN |
 
-**Overall status: TECHNICALLY COMPLETE — HUMAN VALIDATION PENDING**
+**Overall status: UI TRANSFORMATION TECHNICALLY COMPLETE — HUMAN VALIDATION PENDING**

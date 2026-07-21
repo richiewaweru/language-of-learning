@@ -298,3 +298,25 @@ pnpm --filter web build — exit 0
 
 Human validation per `docs/learner-validation-v4.md` remains PENDING-HUMAN.
 
+## Phase UI summary — Learner UI transformation (2026-07-21)
+
+### DECISION: brand chrome vs semantic law (UI-0, ADR 0012)
+
+Learner chrome uses `--brand-blue` for CTAs and nav; semantic eight-hue palette remains law for canvas meaning. Semantic hex nudged toward approved mockups without changing roles.
+
+### DECISION: proposal URL shape with legacy redirects (UI-1)
+
+Canonical pathway: `/learn/python-foundations/loops/{lesson}`. `hooks.server.ts` 301-redirects `how-loops-build-results/*` and `/demo` to the new flagship lesson URL. Fixture call remains `[3, 5, 2]` → `10`.
+
+### DECISION: learner projection reads engine only (UI-3)
+
+`deriveLearnerProjection` in `apps/web/src/lib/learner-ui/projection/` derives flow steps from graph/trace/scene — no hand-authored frame values.
+
+### UI-phase evidence
+
+```
+pnpm test:all — exit 0
+pnpm --filter web build — exit 0
+tests/web/audience-routes.test.ts — 16 passed
+```
+

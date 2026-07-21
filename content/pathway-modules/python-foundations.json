@@ -1,0 +1,10 @@
+{
+  "pathwaySlug": "python-foundations",
+  "modules": {
+    "loops": {
+      "title": "Loops",
+      "summary": "Four patterns for building a result with a loop.",
+      "lessonSlugs": ["accumulate", "count", "filter", "transform"]
+    }
+  }
+}

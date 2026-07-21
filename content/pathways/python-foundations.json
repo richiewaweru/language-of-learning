@@ -1,0 +1,12 @@
+{
+  "version": "0.1",
+  "slug": "python-foundations",
+  "title": "Python Foundations",
+  "summary": "Build a mental model of how Python programs move values, remember state, and return results.",
+  "lessonSlugs": [
+    "accumulate",
+    "count",
+    "filter",
+    "transform"
+  ]
+}

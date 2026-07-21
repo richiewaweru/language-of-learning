@@ -15,6 +15,10 @@
   import type { PatternHit, Selection } from '@lol/lens-contracts';
   import CodeEditor from '$lib/CodeEditor.svelte';
   import TruthDrawer from '$lib/product/TruthDrawer.svelte';
+  import PageContainer from '$lib/learner-ui/shell/PageContainer.svelte';
+  import Breadcrumbs from '$lib/learner-ui/shell/Breadcrumbs.svelte';
+  import LearnerFlowView from '$lib/learner-ui/lesson/LearnerFlowView.svelte';
+  import { deriveLearnerProjection, eventToLearnerLabel } from '$lib/learner-ui/projection/deriveLearnerProjection';
   import { analyzeSource, loadAnalysis, recordEvent, saveAnalysis } from '$lib/api';
 
   const DEFAULT_SOURCE = `def calculate_total(numbers):
@@ -38,7 +42,8 @@
   let transfer = $state<TransferCheck | null>(null);
   let transferAnswer = $state('');
   let transferFeedback = $state('');
-  let activeView = $state<'code' | 'shape' | 'trace' | 'pattern'>('shape');
+  let activeView = $state<'structure' | 'flow' | 'state' | 'explain'>('flow');
+  let inputTab = $state<'paste' | 'upload' | 'examples'>('paste');
   let drawerOpen = $state(false);
   let showTechnical = $state(false);
 
@@ -172,77 +177,95 @@
   function onSelectionChange(next: Selection) {
     selection = next;
   }
+  const projection = $derived(
+    graph && trace && scene
+      ? deriveLearnerProjection(graph, trace, scene, stepIndex)
+      : null,
+  );
 </script>
 
 <svelte:head>
   <title>Decode — Language of Learning</title>
 </svelte:head>
 
-<main class="decode">
-  <header>
-    <p class="eyebrow">Decode</p>
-    <h1>Structural Code Lens</h1>
-    <p class="lede">Paste a supported Python function, analyze, and step through synchronized views.</p>
+<PageContainer wide>
+  <Breadcrumbs
+    items={[
+      { label: 'Python Foundations', href: '/learn/python-foundations' },
+      { label: 'Decode' },
+    ]}
+  />
+
+  <header class="decode-header">
+    <h1>Decode a concept</h1>
+    <p class="lede">Paste code or content and get a clear, visual explanation.</p>
   </header>
 
-  <section class="panel inputs">
-    <label class="field">
-      <span>Source</span>
-      <CodeEditor value={source} onchange={(v) => (source = v)} />
-    </label>
-    <label class="field">
-      <span>Sample call args (literal)</span>
-      <input class="args" bind:value={argsText} placeholder="[3, 5, 2]" />
-    </label>
-    <div class="actions">
-      <button type="button" class="btn primary" onclick={runAnalyze} disabled={analyzing}>
-        {analyzing ? 'Analyzing…' : 'Analyze'}
+  <div class="decode-layout">
+    <section class="input-panel surface-card">
+      <div class="input-tabs" role="tablist">
+        {#each ['paste', 'upload', 'examples'] as tab}
+          <button
+            type="button"
+            class:active={inputTab === tab}
+            onclick={() => (inputTab = tab as typeof inputTab)}
+          >
+            {tab === 'paste' ? 'Paste Code' : tab === 'upload' ? 'Upload' : 'Examples'}
+          </button>
+        {/each}
+      </div>
+
+      {#if inputTab === 'paste'}
+        <label class="field">
+          <span class="sr-only">Python source</span>
+          <CodeEditor value={source} onchange={(v) => (source = v)} />
+        </label>
+        <label class="field args-field">
+          <span>Sample input</span>
+          <input class="args" bind:value={argsText} placeholder="[3, 5, 2]" />
+        </label>
+      {:else if inputTab === 'examples'}
+        <p class="hint">Quick examples use the default accumulate function.</p>
+        <div class="example-pills">
+          {#each ['Functions', 'Loops', 'Lists', 'Conditionals'] as ex}
+            <button type="button" class="pill-tag" onclick={() => (inputTab = 'paste')}>{ex}</button>
+          {/each}
+        </div>
+      {:else}
+        <p class="hint">File upload is not yet available. Paste your code instead.</p>
+      {/if}
+
+      <button type="button" class="btn-primary visualize" onclick={runAnalyze} disabled={analyzing}>
+        {analyzing ? 'Visualizing…' : 'Visualize'}
       </button>
-      <button type="button" class="btn" onclick={onSave} disabled={!graph}>Save</button>
-      <input class="id" bind:value={loadId} placeholder="analysis id" />
-      <button type="button" class="btn" onclick={onLoad}>Load</button>
-      {#if savedId}
-        <span class="saved">saved: {savedId}</span>
-      {/if}
-    </div>
-    {#if error}
-      <p class="error" data-testid="error">{error}</p>
-    {/if}
-  </section>
 
-  {#if unsupported.length || violation}
-    <section class="panel unsupported" data-testid="unsupported-panel">
-      <h2>Unsupported / sandbox</h2>
-      {#if violation}
-        <p><strong>{violation.construct}</strong> — {violation.message}</p>
+      {#if error}
+        <p class="error" data-testid="error">{error}</p>
       {/if}
-      {#each unsupported as region}
-        <p>
-          Line {region.sourceRange.startLine}: <strong>{region.construct}</strong> — {region.message}
-        </p>
-      {/each}
     </section>
-  {/if}
 
-  {#if graph && trace}
-    <div class="tabs" role="tablist">
-      {#each ['code', 'shape', 'trace', 'pattern'] as view}
-        <button
-          type="button"
-          class="tab"
-          class:active={activeView === view}
-          role="tab"
-          aria-selected={activeView === view}
-          onclick={() => (activeView = view)}
-        >
-          {view}
-        </button>
-      {/each}
-    </div>
+    <section class="workspace">
+      {#if graph && trace}
+        <div class="view-tabs" role="tablist">
+          {#each [
+            { id: 'structure', label: 'Structure' },
+            { id: 'flow', label: 'Flow' },
+            { id: 'state', label: 'State' },
+            { id: 'explain', label: 'Explain' },
+          ] as view}
+            <button
+              type="button"
+              class:active={activeView === view.id}
+              onclick={() => (activeView = view.id as typeof activeView)}
+            >
+              {view.label}
+            </button>
+          {/each}
+        </div>
 
-    <section class="panel view" data-testid="view-{activeView}">
-      {#if activeView === 'code'}
-        <pre class="code-view">{#each source.split('\n') as line, i}
+        <div class="workspace-main surface-card" data-testid="view-{activeView}">
+          {#if activeView === 'structure'}
+            <pre class="code-view">{#each source.split('\n') as line, i}
 <span
   class="line"
   class:focus={resolved?.line === i + 1}
@@ -252,76 +275,97 @@
   onkeydown={(e) => e.key === 'Enter' && selectLine(i + 1)}
 ><span class="ln">{i + 1}</span>{line}</span>
 {/each}</pre>
-        {#if resolved?.primaryNodeId}
-          <p class="hint">Primary node: {resolved.primaryNodeId}</p>
-        {/if}
-      {:else if activeView === 'shape' && scene}
-        <ScenePlayer
-          {scene}
-          {graph}
-          {trace}
-          {selection}
-          onselectionchange={onSelectionChange}
-          reducedMotion={false}
-        />
-      {:else if activeView === 'trace'}
-        <div class="trace-list">
-          {#each trace.steps as step}
-            <button
-              type="button"
-              class="trace-step"
-              class:focus={selection.stepIndex === step.index}
-              onclick={() => onStepChange(step.index)}
-            >
-              <strong>#{step.index}</strong> line {step.line} · {step.event.type}
-              <code>{JSON.stringify(step.bindings)}</code>
-            </button>
-          {/each}
+          {:else if activeView === 'flow' && scene && projection}
+            <LearnerFlowView steps={projection.flowSteps} />
+          {:else if activeView === 'state'}
+            <div class="state-list">
+              {#each trace.steps as step}
+                <button
+                  type="button"
+                  class="state-step"
+                  class:focus={selection.stepIndex === step.index}
+                  onclick={() => onStepChange(step.index)}
+                >
+                  <strong>Step {step.index + 1}</strong>
+                  <span>{eventToLearnerLabel(step.event.type)}</span>
+                </button>
+              {/each}
+            </div>
+          {:else if activeView === 'explain' && pattern}
+            <p class="explain-text">
+              This code {pattern.pattern === 'ACCUMULATE' ? 'builds one combined result by updating state on each loop pass.' : 'follows a recognizable loop pattern.'}
+            </p>
+          {:else if activeView === 'flow' && scene}
+            <ScenePlayer
+              {scene}
+              {graph}
+              {trace}
+              {selection}
+              onselectionchange={onSelectionChange}
+              reducedMotion={false}
+            />
+          {/if}
         </div>
-      {:else if activeView === 'pattern'}
-        {#if pattern}
-          <p class="pattern-hit" data-testid="pattern-hit">
-            <strong>{pattern.pattern}</strong>
-            <span class="badge">{pattern.confidence}</span>
-          </p>
-          <p class="members">
-            Members:
-            {#each pattern.memberNodes as member}
-              <button
-                type="button"
-                class="member"
-                class:focus={resolved?.nodeIds.includes(member)}
-                onclick={() => selectNode(member)}
-              >
-                {member}
-              </button>
-            {/each}
-          </p>
-          <p>Related: {pattern.related.join(', ')}</p>
-        {:else}
-          <p>No deterministic pattern matched.</p>
-        {/if}
-      {:else if activeView === 'shape'}
-        <p>Shape view needs a successful scene build (function + steps).</p>
+      {:else}
+        <div class="workspace-empty surface-card">
+          <p>Paste supported Python and press Visualize to see structure, flow, and patterns.</p>
+        </div>
       {/if}
     </section>
 
-    {#if transfer}
-      <section class="panel transfer" data-testid="transfer-check">
-        <h2>Transfer check</h2>
-        <p>{transfer.prompt}</p>
-        <div class="actions">
-          <input type="number" min="1" bind:value={transferAnswer} aria-label="Line number" />
-          <button type="button" class="btn" onclick={submitTransfer}>Check</button>
+    <aside class="sidebar">
+      {#if pattern}
+        <div class="insight-card pattern-card surface-card" data-testid="pattern-hit">
+          <p class="card-label">Pattern detected</p>
+          <h2>{pattern.pattern}</h2>
+          <p class="confidence">{pattern.confidence} confidence</p>
+          <a href="/learn/python-foundations/loops/accumulate" class="link">Learn more →</a>
         </div>
-        {#if transferFeedback}
-          <p data-testid="transfer-feedback">{transferFeedback}</p>
-        {/if}
-      </section>
-    {/if}
-  {/if}
+      {/if}
 
-  <p class="nav"><a href="/">Home</a> · <a href="/demo">Demo</a></p>
+      <div class="insight-card surface-card">
+        <p class="card-label">Try this next</p>
+        <ul>
+          <li>Modify the code to return the sum of cubes</li>
+          <li>What if the list is empty? Add a guard.</li>
+        </ul>
+      </div>
+
+      {#if transfer}
+        <div class="insight-card surface-card" data-testid="transfer-check">
+          <p class="card-label">Challenge</p>
+          <p>{transfer.prompt}</p>
+          <div class="challenge-row">
+            <input type="number" min="1" bind:value={transferAnswer} aria-label="Line number" />
+            <button type="button" class="btn-secondary" onclick={submitTransfer}>Check</button>
+          </div>
+          {#if transferFeedback}
+            <p data-testid="transfer-feedback">{transferFeedback}</p>
+          {/if}
+        </div>
+      {/if}
+    </aside>
+  </div>
+
+  <footer class="scope-strip surface-card">
+    <p>
+      <strong>Scope:</strong> We currently support core Python loop patterns.
+      {#if unsupported.length}
+        {unsupported.length} unsupported region(s) detected.
+      {:else if graph}
+        All good for this snippet.
+      {/if}
+    </p>
+    <details class="admin">
+      <summary>Save / load analysis</summary>
+      <div class="admin-row">
+        <button type="button" class="btn-secondary" onclick={onSave} disabled={!graph}>Save</button>
+        <input class="id" bind:value={loadId} placeholder="analysis id" />
+        <button type="button" class="btn-secondary" onclick={onLoad}>Load</button>
+        {#if savedId}<span class="saved">saved: {savedId}</span>{/if}
+      </div>
+    </details>
+  </footer>
 
   <TruthDrawer
     detail={truthDetail}
@@ -330,170 +374,284 @@
     {showTechnical}
     onToggleTechnical={(v) => (showTechnical = v)}
   />
-</main>
+</PageContainer>
 
 <style>
-  .decode {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 1.25rem;
-    background: var(--paper);
-    min-height: 100vh;
+  .decode-header {
+    margin: var(--space-5) 0 var(--space-6);
   }
-  .eyebrow {
-    font: var(--eyebrow);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0;
-  }
+
   h1 {
-    margin: 0.2rem 0;
-    color: var(--work-purple);
+    font-family: var(--font-display);
+    font-size: var(--heading-xl);
+    margin: 0 0 var(--space-2);
+    color: var(--ink-primary);
   }
+
   .lede {
-    color: var(--muted);
+    color: var(--ink-secondary);
+    margin: 0;
+    max-width: 50ch;
   }
-  .panel {
-    border: var(--border-w) solid var(--ink);
-    box-shadow: var(--shadow-panel);
-    background: var(--paper);
-    padding: 1rem;
-    margin: 1rem 0;
+
+  .decode-layout {
+    display: grid;
+    gap: var(--space-5);
   }
-  .field {
-    display: block;
-    margin-bottom: 0.75rem;
+
+  @media (min-width: 1100px) {
+    .decode-layout {
+      grid-template-columns: 320px 1fr 280px;
+      align-items: start;
+    }
   }
+
+  .input-panel {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .input-tabs {
+    display: flex;
+    gap: var(--space-1);
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: var(--space-2);
+  }
+
+  .input-tabs button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: var(--text-xs);
+    padding: var(--space-2);
+    cursor: pointer;
+    color: var(--ink-muted);
+    border-radius: var(--radius-xs);
+  }
+
+  .input-tabs button.active {
+    background: var(--brand-blue-soft);
+    color: var(--brand-blue);
+    font-weight: 600;
+  }
+
   .field span {
     display: block;
-    font: 700 12px/1.2 var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.35rem;
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    margin-bottom: var(--space-2);
   }
-  .args,
-  .id,
-  input[type='number'] {
-    font: 13px/1.4 var(--font-mono);
-    border: var(--border-w) solid var(--ink);
-    padding: 0.45rem 0.55rem;
-    background: var(--paper);
-  }
+
   .args {
     width: 100%;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    padding: var(--space-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
   }
-  .actions {
+
+  .visualize {
+    width: 100%;
+  }
+
+  .hint {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    margin: 0;
+  }
+
+  .example-pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
+    gap: var(--space-2);
   }
-  .btn {
-    font: 700 12px/1 var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.55rem 0.75rem;
-    border: var(--border-w) solid var(--ink);
-    background: var(--paper);
-    box-shadow: var(--shadow-btn);
-    cursor: pointer;
-  }
-  .btn.primary {
-    background: color-mix(in srgb, var(--work-purple) 12%, var(--paper));
-  }
+
   .error {
     color: var(--alert-orange);
+    font-size: var(--text-sm);
+    margin: 0;
   }
-  .unsupported {
-    border-color: var(--alert-orange);
-  }
-  .tabs {
+
+  .view-tabs {
     display: flex;
-    gap: 0.35rem;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
   }
-  .tab {
-    font: 700 12px/1 var(--font-mono);
-    text-transform: uppercase;
-    padding: 0.5rem 0.75rem;
-    border: var(--border-w) solid var(--ink);
-    background: var(--paper);
+
+  .view-tabs button {
+    padding: var(--space-2) var(--space-4);
+    border: none;
+    background: transparent;
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
     cursor: pointer;
+    border-radius: var(--radius-sm);
   }
-  .tab.active {
-    background: color-mix(in srgb, var(--data-blue) 14%, var(--paper));
+
+  .view-tabs button.active {
+    background: var(--brand-blue-soft);
+    color: var(--brand-blue);
+    font-weight: 600;
   }
+
+  .workspace-main {
+    padding: var(--space-4);
+    min-height: 360px;
+  }
+
+  .workspace-empty {
+    padding: var(--space-8);
+    text-align: center;
+    color: var(--ink-muted);
+  }
+
   .code-view {
     margin: 0;
-    font: 13px/1.45 var(--font-mono);
+    font: 14px/1.6 var(--font-mono);
     white-space: pre;
   }
+
   .line {
     display: block;
     cursor: pointer;
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-xs);
   }
+
   .line.focus {
-    background: color-mix(in srgb, var(--data-blue) 16%, transparent);
+    background: var(--brand-blue-soft);
   }
+
   .ln {
     display: inline-block;
     width: 2.5rem;
-    color: var(--muted);
+    color: var(--ink-faint);
   }
-  .trace-list {
-    margin: 0;
+
+  .state-list {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: var(--space-2);
   }
-  .trace-step {
+
+  .state-step {
     text-align: left;
-    font: 12px/1.4 var(--font-mono);
-    border: var(--border-w) solid var(--line);
-    background: var(--paper);
-    padding: 0.4rem 0.5rem;
+    padding: var(--space-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+    background: var(--surface-primary);
     cursor: pointer;
+    font-size: var(--text-sm);
   }
-  .trace-step.focus {
-    outline: 2px solid var(--flow-teal);
+
+  .state-step.focus {
+    border-color: var(--flow-teal);
+    background: var(--flow-teal-soft);
   }
-  .pattern-hit {
-    font-size: 1.25rem;
+
+  .state-step span {
+    display: block;
+    color: var(--ink-secondary);
+    margin-top: var(--space-1);
   }
-  .members {
+
+  .explain-text {
+    font-size: var(--text-md);
+    line-height: 1.6;
+    color: var(--ink-secondary);
+    margin: 0;
+    padding: var(--space-4);
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .insight-card {
+    padding: var(--space-5);
+  }
+
+  .card-label {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    margin: 0 0 var(--space-2);
+  }
+
+  .pattern-card {
+    background: var(--flow-teal-soft);
+    border-color: color-mix(in srgb, var(--flow-teal) 25%, transparent);
+  }
+
+  .pattern-card h2 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--heading-md);
+    color: var(--ink-primary);
+  }
+
+  .confidence {
+    font-size: var(--text-sm);
+    color: var(--ink-secondary);
+    margin: 0 0 var(--space-3);
+  }
+
+  .link {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--brand-blue);
+    text-decoration: none;
+  }
+
+  .insight-card ul {
+    margin: 0;
+    padding-left: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+
+  .challenge-row {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .scope-strip {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--text-sm);
+    color: var(--ink-secondary);
+  }
+
+  .admin {
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .admin-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
     align-items: center;
   }
-  .member {
-    font: 12px/1.2 var(--font-mono);
-    border: var(--border-w) solid var(--line);
-    background: var(--paper);
-    padding: 0.2rem 0.4rem;
-    cursor: pointer;
+
+  .id {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    padding: var(--space-2);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-xs);
   }
-  .member.focus {
-    outline: 2px solid var(--flow-teal);
-  }
-  .badge {
-    font: 700 11px/1 var(--font-mono);
-    text-transform: uppercase;
-    margin-left: 0.5rem;
-    color: var(--exit-green);
-  }
+
   .saved {
-    font: 12px/1.2 var(--font-mono);
-    color: var(--muted);
-  }
-  .nav {
-    margin-top: 1.5rem;
-  }
-  a {
-    color: var(--data-blue);
-  }
-  .hint {
-    color: var(--muted);
-    font-size: 0.9rem;
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
   }
 </style>

@@ -755,6 +755,52 @@ See CORRECTIVE-RUN-unified.md final 10-command block.
 
 **Phase R1 complete.**
 
+## Phase UI — Learner UI transformation [gate: flagship lesson + routes + test:all]
+
+- [x] UI-0 Design foundation
+      done-when: design-tokens.css updated; style gallery at /internal/style-gallery; ADR 0012 filed
+      status: ✓ judged
+      evidence: docs/design-tokens.css v0.2; ADR 0012; /internal/style-gallery route
+      judge: 2026-07-21 gate-UI
+
+- [x] UI-1 Application shell + proposal routes
+      done-when: AppHeader Learn/Decode/Library; python-foundations routes; legacy redirects in hooks.server.ts
+      status: ✓ judged
+      evidence: AppHeader.svelte; hooks.server.ts redirects; python-foundations pathway JSON
+      judge: 2026-07-21 gate-UI
+
+- [x] UI-2 Flagship accumulate lesson
+      done-when: LessonWorkspace at /learn/python-foundations/loops/accumulate; engine-driven sync; route tests green
+      status: ✓ judged
+      evidence: LessonWorkspace.svelte; module lesson route; test:web 16/16
+      judge: 2026-07-21 gate-UI
+
+- [x] UI-3 Learner projection
+      done-when: deriveLearnerProjection tests pass; learner flow view without node IDs in default UI
+      status: ✓ judged
+      evidence: deriveLearnerProjection.ts; LearnerFlowView; audience-routes projection test
+      judge: 2026-07-21 gate-UI
+
+- [x] UI-4 Decode restyle
+      done-when: Decode uses Structure/Flow/State/Explain tabs; pattern sidebar; no raw JSON in default state view
+      status: ✓ judged
+      evidence: decode/+page.svelte three-column layout; eventToLearnerLabel in state view
+      judge: 2026-07-21 gate-UI
+
+- [x] UI-5 Pathway + landing
+      done-when: pathway roadmap; library stub; homepage continue-learning panel
+      status: ✓ judged
+      evidence: learn/[pathway]/+page.svelte roadmap; library route; homepage dashboard-row
+      judge: 2026-07-21 gate-UI
+
+- [x] UI-6 Run gate-UI
+      done-when: pnpm test:all exit 0; pnpm --filter web build exit 0
+      status: ✓ judged
+      evidence: pnpm test:all exit 0; web build exit 0
+      judge: 2026-07-21 gate-UI
+
+**Phase UI complete.** Tag: `gate-UI`
+
 ## Phase V0 — Product framing and design foundation [gate: audience homepage + nav + responsive + test:all]
 
 - [ ] V0-01 Audit current public and learner-facing routes

@@ -1,15 +1,18 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import ProductHeader from '$lib/product/ProductHeader.svelte';
+  import AppHeader from '$lib/learner-ui/shell/AppHeader.svelte';
   import ProductFooter from '$lib/product/ProductFooter.svelte';
 
-  /** Minimal chrome for debug routes */
-  const minimalChrome = $derived($page.url.pathname.startsWith('/debug/'));
+  const minimalChrome = $derived(
+    $page.url.pathname.startsWith('/debug/') ||
+      $page.url.pathname.startsWith('/internal/debug/') ||
+      $page.url.pathname.startsWith('/slices/'),
+  );
 </script>
 
-<div class="page-shell bg-grid">
+<div class="page-shell">
   {#if !minimalChrome}
-    <ProductHeader />
+    <AppHeader />
   {/if}
   <main class="page-main">
     <slot />

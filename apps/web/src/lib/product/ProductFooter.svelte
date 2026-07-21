@@ -8,20 +8,21 @@
       <div class="col">
         <p class="col-title">Learn</p>
         <a href="/learn">Pathways</a>
-        <a href="/demo">Flagship demo</a>
-        <a href="/learn/how-loops-build-results">How loops build results</a>
+        <a href="/learn/python-foundations/loops/accumulate">Flagship lesson</a>
+        <a href="/learn/python-foundations">Python Foundations</a>
       </div>
       <div class="col">
         <p class="col-title">Explore</p>
-        <a href="/decode">Try your code</a>
+        <a href="/decode">Decode</a>
+        <a href="/library">Library</a>
         <a href="/how-it-works">How it works</a>
         <a href="/about">About</a>
       </div>
       <div class="col">
         <p class="col-title">Developer tools</p>
         <a href="/debug/graph">Graph inspector</a>
+        <a href="/internal/style-gallery">Style gallery</a>
         <a href="/slices/accumulate">Accumulate slice</a>
-        <a href="/slices/filter">Filter slice</a>
       </div>
     </nav>
   </div>
@@ -31,7 +32,7 @@
 <style>
   .footer {
     margin-top: var(--space-10);
-    background: var(--surface-paper);
+    background: var(--surface-primary);
     border-top: 1px solid var(--line-soft);
     padding: var(--space-8) 0 var(--space-6);
   }
@@ -48,8 +49,9 @@
   }
 
   .name {
-    font-weight: 700;
-    color: var(--ink-strong);
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--ink-primary);
     margin: 0 0 var(--space-2);
   }
 
@@ -67,12 +69,12 @@
   }
 
   .col-title {
-    font: var(--eyebrow);
+    font-size: 11px;
+    font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-faint);
     margin: 0 0 var(--space-3);
-    font-size: 11px;
   }
 
   .col a {
@@ -84,7 +86,7 @@
   }
 
   .col a:hover {
-    color: var(--ink-strong);
+    color: var(--brand-blue);
   }
 
   .copyright {

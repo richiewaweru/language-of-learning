@@ -1,48 +1,72 @@
 /* ═══════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Language of Learning v0.1
-   Source A: structural-code-lens-poc.html (product skin — adopted)
+   DESIGN TOKENS — Language of Learning v0.2 (Learner UI refresh)
+   Source A: approved learner UI proposal (skin — adopted)
    Source B: visual-constitution.md §2 (semantic palette — law)
    Rule: skin tokens style chrome; semantic tokens carry meaning.
    A semantic token may NEVER be used decoratively (constitution A4).
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── SKIN — surfaces & chrome (from PoC) ─────────────────── */
-  --bg:            #F6F4EF;   /* app background under grid       */
-  --grid-line:     #E8E5DD;   /* 28px graph-paper grid           */
-  --paper:         #FFFDF8;   /* panels, cards, editor           */
-  --ink:           #17191F;   /* text, borders, structure chrome */
-  --muted:         #6F7280;   /* secondary text                  */
-  --line:          #D9D7CF;   /* hairline dividers               */
-  --shadow-panel:  6px 6px 0 var(--ink);   /* neo-brutalist card */
+  /* ── SKIN — surfaces & chrome ─────────────────────────────── */
+  --page-bg:         #faf9f6;
+  --bg:              #faf9f6;
+  --grid-line:       #e7e8ef;
+  --paper:           #ffffff;
+  --ink:             #111a38;
+  --muted:           #7d8394;
+  --line:            #e7e8ef;
+
+  /* Legacy neo-brutalist shadows — dev/slice only; learner chrome uses soft shadows */
+  --shadow-panel:  6px 6px 0 var(--ink);
   --shadow-btn:    3px 3px 0 var(--ink);
   --shadow-hover:  4px 4px 0 var(--ink);
 
-  /* ── SEMANTIC — one hue, one meaning (constitution §2) ───── */
-  --data-blue:      #3757D5;  /* values, collections, data movement */
-  --work-purple:    #7653D6;  /* function / reusable-work boundary  */
-  --flow-teal:      #0E8A8A;  /* sequence lines, loop frames        */
-  --branch-magenta: #B0388A;  /* conditions, forks                  */
-  --state-gold:     #B68428;  /* persistent state, mutation         */
-  --exit-green:     #2F7F58;  /* returns, successful output         */
-  --effect-amber:   #D98E1F;  /* outside-world actions              */
-  --alert-orange:   #D95F24;  /* errors, unsupported, interruption  */
+  /* ── BRAND CHROME (skin only — not semantic data-blue) ───── */
+  --brand-blue:       #3157e5;
+  --brand-blue-hover: #2345c8;
+  --brand-blue-soft:  #edf2ff;
 
-  /* ── DERIVED STATES (constitution C2/C3: same hue, changed weight) */
-  --dim-opacity:      0.35;   /* de-emphasis; grayscale forbidden  */
+  /* ── SEMANTIC — one hue, one meaning (constitution §2) ───── */
+  --data-blue:      #3157e5;
+  --work-purple:    #7958d8;
+  --flow-teal:      #0e9f9a;
+  --branch-magenta: #B0388A;
+  --state-gold:     #e7a326;
+  --exit-green:     #23956a;
+  --effect-amber:   #D98E1F;
+  --alert-orange:   #e77b36;
+
+  /* Semantic soft fills (learner cards — tied to meaning, not chrome) */
+  --flow-teal-soft:       #e9f9f7;
+  --state-gold-soft:      #fff5de;
+  --structure-purple-soft:#f2edff;
+  --success-soft:         #eaf8f1;
+  --warning-soft:         #fff1e8;
+
+  /* ── DERIVED STATES (constitution C2/C3) ─────────────────── */
+  --dim-opacity:      0.35;
   --focus-glow:       0 0 0 3px color-mix(in srgb, currentColor 25%, transparent);
 
   /* ── TYPE ────────────────────────────────────────────────── */
-  --font-ui:   Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace; /* code, eyebrows, labels */
-  --eyebrow:   700 12px/1.2 var(--font-mono);  /* letter-spacing .15em, uppercase */
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-ui:      Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --eyebrow:      700 12px/1.2 var(--font-mono);
 
-  /* ── MOTION (constitution §4 timing law) ─────────────────── */
+  --display-xl:  56px / 1.05;
+  --display-lg:  42px / 1.1;
+  --heading-xl:  32px / 1.2;
+  --heading-lg:  24px / 1.25;
+  --heading-md:  18px / 1.3;
+  --body-lg:     17px / 1.6;
+  --body-md:     15px / 1.55;
+  --body-sm:     13px / 1.5;
+
+  /* ── MOTION (constitution §4 + learner chrome) ───────────── */
   --move-token:   transform .7s cubic-bezier(.4,0,.2,1), opacity .35s ease;
-  --move-line:    transform .38s ease, opacity .25s ease;   /* line highlight */
-  --move-focus:   opacity .25s, filter .25s;                /* primitive focus */
+  --move-line:    transform .38s ease, opacity .25s ease;
+  --move-focus:   opacity .25s, filter .25s;
   --t-min: 150ms;  --t-max: 900ms;  --t-autoplay: 1600ms;
-  /* PM6 transition groups (timing only — no lesson overrides) */
   --t-enter: 200ms;
   --t-bind: 450ms;
   --t-move: 550ms;
@@ -50,57 +74,73 @@
   --t-return: 550ms;
   --t-fade: 300ms;
 
+  --motion-fast:   180ms;
+  --motion-medium: 360ms;
+  --motion-slow:   620ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter:    cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit:     cubic-bezier(0.4, 0, 1, 1);
+
   /* ── LAYOUT ──────────────────────────────────────────────── */
-  --grid-unit: 28px;          /* background grid AND spacing rhythm */
-  --radius-pill: 999px;       /* ONLY values are fully rounded (S-rule) */
-  --border-w: 1.5px;          /* standard */
-  --border-w-strong: 2.5px;   /* function boundary */
+  --grid-unit: 28px;
+  --radius-pill: 999px;
+  --border-w: 1px;
+  --border-w-strong: 2px;
 
-  /* ── LIVING DIAGRAM NOTEBOOK — extended skin (V0) ────────── */
-  /* Aliases preserve existing token consumers */
-  --bg-canvas:     #F4F1EA;
-  --bg-page:       var(--bg);
-  --surface-paper: var(--paper);
-  --surface-raised: #FFFFFF;
-  --surface-recessed: #EEEAE1;
-  --surface-code:  #F7F5EF;
-  --surface-dark:  #1E2027;
+  /* ── LEARNER UI — extended skin ──────────────────────────── */
+  --bg-canvas:       var(--page-bg);
+  --bg-page:         var(--page-bg);
+  --surface-primary: #ffffff;
+  --surface-soft:    #f7f8fc;
+  --surface-warm:    #fffaf1;
+  --surface-paper:   var(--surface-primary);
+  --surface-raised:  #ffffff;
+  --surface-recessed:#f7f8fc;
+  --surface-code:    #ffffff;
+  --surface-dark:    #111a38;
 
-  --ink-strong:    var(--ink);
-  --ink-body:      #30323A;
-  --ink-muted:     var(--muted);
-  --ink-faint:     #9799A3;
-  --ink-inverse:   #FAF9F6;
+  --ink-primary:   #111a38;
+  --ink-secondary: #4f566b;
+  --ink-muted:     #7d8394;
+  --ink-strong:    var(--ink-primary);
+  --ink-body:      var(--ink-secondary);
+  --ink-faint:     #a8adb8;
+  --ink-inverse:   #faf9f6;
 
-  --line-soft:     #E4E0D7;
-  --line-default:  var(--line);
-  --line-strong:   #A8A49B;
-  --grid-line-soft: rgba(23, 25, 31, 0.055);
-  --grid-line-emphasis: rgba(23, 25, 31, 0.085);
+  --line-soft:     #e7e8ef;
+  --line-medium:   #d9dce7;
+  --line-default:  var(--line-soft);
+  --line-strong:   #c5c9d4;
+  --grid-line-soft: rgba(17, 26, 56, 0.04);
+  --grid-line-emphasis: rgba(17, 26, 56, 0.07);
 
-  --shadow-xs:     0 1px 2px rgba(23, 25, 31, 0.06);
-  --shadow-sm:     0 3px 10px rgba(23, 25, 31, 0.07);
-  --shadow-md:     0 10px 30px rgba(23, 25, 31, 0.09);
-  --shadow-lg:     0 24px 60px rgba(23, 25, 31, 0.12);
-  --shadow-offset: 4px 4px 0 rgba(23, 25, 31, 0.92);
+  --shadow-sm:
+    0 1px 2px rgba(19, 29, 60, 0.04),
+    0 4px 14px rgba(19, 29, 60, 0.04);
+  --shadow-md:
+    0 3px 8px rgba(19, 29, 60, 0.04),
+    0 12px 32px rgba(19, 29, 60, 0.07);
+  --shadow-xs: var(--shadow-sm);
+  --shadow-lg: 0 24px 60px rgba(19, 29, 60, 0.1);
+  --shadow-offset: var(--shadow-sm);
 
-  --radius-xs: 6px;
-  --radius-sm: 10px;
+  --radius-xs: 8px;
+  --radius-sm: 12px;
   --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-panel: 18px;
+  --radius-lg: 22px;
+  --radius-panel: var(--radius-md);
 
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 28px;
-  --space-7: 36px;
-  --space-8: 48px;
-  --space-9: 64px;
-  --space-10: 88px;
-  --space-11: 120px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 88px;
+  --space-10: 120px;
+  --space-11: 160px;
 
   --content-narrow: 720px;
   --content-reading: 820px;
@@ -108,31 +148,22 @@
   --content-wide: 1360px;
   --content-canvas: 1520px;
 
-  --font-display: Georgia, "Times New Roman", serif;
   --text-xs: 12px;
-  --text-sm: 14px;
-  --text-md: 16px;
-  --text-lg: 19px;
+  --text-sm: 13px;
+  --text-md: 15px;
+  --text-lg: 17px;
   --text-xl: 24px;
   --text-2xl: 32px;
-  --text-3xl: clamp(42px, 6vw, 72px);
+  --text-3xl: clamp(42px, 5vw, 56px);
 }
 
-/* Reduced motion: instant state changes, ghost becomes two-beat static */
 @media (prefers-reduced-motion: reduce) {
   :root { --move-token: none; --move-line: none; --move-focus: none; }
 }
 
-/* ═══ USAGE RULES (enforced by review, not just convention) ═══
-   1. Chrome (panels, tabs, buttons) uses ONLY skin tokens.
-   2. Canvas elements use ONLY semantic tokens per their node kind:
-      value/collection→data-blue · function/call→work-purple
-      sequence/loop→flow-teal · branch→branch-magenta
-      binding[role=state]/mutation→state-gold · return→exit-green
-      effect→effect-amber · unsupported/error→alert-orange
-   3. Never introduce a new color for emphasis: focus = weight+glow
-      of the element's own hue; dimming = --dim-opacity.
-   4. The PoC rendered only 5 semantic hues because its examples
-      didn't yet draw loop-vs-branch distinctly. The full 8 are law;
-      the filter example (loop + branch on one canvas) is the test.
+/* ═══ USAGE RULES ═══
+   1. Chrome (panels, tabs, buttons, nav) uses skin + brand tokens.
+   2. Canvas elements use ONLY semantic tokens per node kind.
+   3. --brand-blue is for chrome CTAs; --data-blue is for data on canvas.
+   4. Never introduce a new color for emphasis: focus = weight+glow of own hue.
    ═══════════════════════════════════════════════════════════ */

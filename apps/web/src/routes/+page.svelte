@@ -15,7 +15,7 @@
 
 <section class="hero container-wide">
   <div class="hero-copy">
-    <h1>See what code is doing, not just what it says.</h1>
+    <h1 class="display-heading">Learn by seeing how ideas move</h1>
     <p class="lead">
       Language of Learning turns code into a synchronized visual model of values, decisions,
       state changes, and results.
@@ -25,8 +25,8 @@
       and returns.
     </p>
     <div class="actions">
-      <a href="/demo" class="btn-primary">Watch a loop build a result</a>
-      <a href="/decode" class="btn-secondary">Try your own code</a>
+      <a href="/learn/python-foundations/loops/accumulate" class="btn-primary">Start learning</a>
+      <a href="/learn/python-foundations/loops/accumulate" class="btn-secondary">Try the demo</a>
     </div>
     <ul class="proof-points">
       <li>Follow values as they move through code.</li>
@@ -85,7 +85,7 @@
       { slug: 'filter', name: 'Filter', desc: 'Keep only the items that pass a condition.', use: 'Keep positive values' },
       { slug: 'transform', name: 'Transform', desc: 'Produce a changed value for every input item.', use: 'Double each number' },
     ] as pattern}
-      <a href="/learn/how-loops-build-results/{pattern.slug}" class="pattern-card">
+      <a href="/learn/python-foundations/loops/{pattern.slug}" class="pattern-card surface-card">
         <h3>{pattern.name}</h3>
         <p>{pattern.desc}</p>
         <p class="use">{pattern.use}</p>
@@ -105,10 +105,24 @@
   </ul>
 </section>
 
+<section class="section container-wide dashboard-row">
+  <div class="continue surface-card">
+    <p class="eyebrow">Continue learning</p>
+    <h2>Python Foundations</h2>
+    <p>Build a Total with a Loop — accumulate pattern</p>
+    <a href="/learn/python-foundations/loops/accumulate" class="btn-primary">Continue lesson</a>
+  </div>
+  <div class="progress-panel surface-card">
+    <p class="eyebrow">Today's progress</p>
+    <p class="progress-ring">80%</p>
+    <p class="sub">Daily goal · 4 / 5 lessons</p>
+  </div>
+</section>
+
 <section class="section container cta-section">
   <div class="cta-row">
-    <a href="/learn/how-loops-build-results" class="btn-primary">Learn the four loop patterns</a>
-    <a href="/decode" class="btn-secondary">Try supported Python code</a>
+    <a href="/learn/python-foundations" class="btn-primary">Explore Python Foundations</a>
+    <a href="/decode" class="btn-secondary">Decode your code</a>
   </div>
 </section>
 
@@ -284,5 +298,47 @@
     flex-wrap: wrap;
     gap: var(--space-4);
     justify-content: center;
+  }
+
+  .dashboard-row {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 768px) {
+    .dashboard-row {
+      grid-template-columns: 2fr 1fr;
+    }
+  }
+
+  .continue,
+  .progress-panel {
+    padding: var(--space-6);
+  }
+
+  .continue h2 {
+    font-family: var(--font-display);
+    margin: 0 0 var(--space-2);
+    color: var(--ink-primary);
+  }
+
+  .continue p {
+    color: var(--ink-secondary);
+    margin: 0 0 var(--space-5);
+    font-size: var(--text-sm);
+  }
+
+  .progress-ring {
+    font-family: var(--font-display);
+    font-size: var(--heading-xl);
+    font-weight: 600;
+    color: var(--state-gold);
+    margin: 0 0 var(--space-2);
+  }
+
+  .sub {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    margin: 0;
   }
 </style>

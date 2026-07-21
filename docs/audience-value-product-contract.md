@@ -22,13 +22,17 @@ Language of Learning turns code into a synchronized visual model of values, deci
 | Route | Purpose |
 |-------|---------|
 | `/` | Public landing page |
-| `/demo` | Flagship interactive demonstration |
+| `/demo` | Redirects to flagship lesson |
 | `/learn` | Learning pathway index |
-| `/learn/how-loops-build-results` | Pathway overview |
-| `/learn/how-loops-build-results/{accumulate,count,filter,transform}` | Lessons |
-| `/decode` | Paste-code experience ("Try Your Code") |
+| `/learn/python-foundations` | Pathway browser |
+| `/learn/python-foundations/loops/{accumulate,count,filter,transform}` | Lessons (canonical) |
+| `/library` | Saved content stub |
+| `/decode` | Paste-code experience |
 | `/how-it-works` | Optional technical explanation |
 | `/about` | Product about page |
+| `/internal/style-gallery` | Design token gallery (internal) |
+
+Legacy `/learn/how-loops-build-results/*` redirects to `python-foundations/loops/*`.
 
 ### Secondary (developer) routes
 
@@ -42,7 +46,9 @@ Developer routes must not appear in primary navigation.
 
 ## Primary navigation
 
-Maximum four items: **Learn · Try Your Code · How It Works · About**
+Maximum four items: **Learn · Decode · Library** (+ progress cluster in header)
+
+Footer links: How It Works, About, developer tools.
 
 Logo/product name returns to `/`.
 
