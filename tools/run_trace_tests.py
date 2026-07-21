@@ -27,7 +27,7 @@ class TraceFixtureTests(unittest.TestCase):
         events = [step["event"]["type"] for step in trace["steps"]]
         self.assertEqual(events[0], "call_enter")
         self.assertEqual(events[-1], "return_exit")
-        self.assertEqual(trace["result"]["repr"], "10")
+        self.assertEqual(trace["result"]["repr"], "20")
 
     def test_loop_and_state_change_keywords(self) -> None:
         trace = load_trace("accumulate")

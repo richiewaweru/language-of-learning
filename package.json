@@ -20,6 +20,8 @@
     "test:parity-ops": "python tools/run_interpreter_parity.py",
     "test:visual": "vitest run packages/visual-grammar/src",
     "test:web": "vitest run tests/web",
+    "test:e2e": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots",
     "capture:pm7": "pnpm exec tsx tools/capture_pm7_screenshots.ts",
     "capture:v1": "pnpm exec tsx tools/capture_v1_screenshots.ts",
     "content:rebuild": "pnpm exec tsx tools/rebuild_content_scenes.ts",
@@ -32,8 +34,9 @@
     "export-schemas": "pnpm --filter @lol/lens-contracts export-schemas"
   },
   "devDependencies": {
-    "@lol/lens-contracts": "workspace:*",
     "@eslint/js": "^9.18.0",
+    "@lol/lens-contracts": "workspace:*",
+    "@playwright/test": "^1.61.1",
     "@types/node": "^22.10.5",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",

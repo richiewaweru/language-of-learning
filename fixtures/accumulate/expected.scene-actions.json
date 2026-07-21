@@ -6,7 +6,7 @@
         {
           "type": "spawn_value",
           "tokenId": "tok-S0-call_enter-0",
-          "repr": "[3, 5, 2]",
+          "repr": "[2, 4, 6, 8]",
           "atNode": "fn-L1C0"
         },
         {
@@ -34,7 +34,7 @@
           "type": "advance_item",
           "loop": "loop-L3C4",
           "itemIndex": 0,
-          "itemRepr": "3",
+          "itemRepr": "2",
           "tokenId": "tok-S2-loop_advance-0",
           "collection": "bind-L1C20"
         }
@@ -47,7 +47,7 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "0",
-          "newRepr": "3",
+          "newRepr": "2",
           "inputTokenId": "tok-S3-state_change-0"
         }
       ]
@@ -59,7 +59,7 @@
           "type": "advance_item",
           "loop": "loop-L3C4",
           "itemIndex": 1,
-          "itemRepr": "5",
+          "itemRepr": "4",
           "tokenId": "tok-S4-loop_advance-0",
           "collection": "bind-L1C20"
         }
@@ -71,8 +71,8 @@
         {
           "type": "change_state",
           "cell": "bind-L2C4",
-          "oldRepr": "3",
-          "newRepr": "8",
+          "oldRepr": "2",
+          "newRepr": "6",
           "inputTokenId": "tok-S5-state_change-0"
         }
       ]
@@ -84,7 +84,7 @@
           "type": "advance_item",
           "loop": "loop-L3C4",
           "itemIndex": 2,
-          "itemRepr": "2",
+          "itemRepr": "6",
           "tokenId": "tok-S6-loop_advance-0",
           "collection": "bind-L1C20"
         }
@@ -96,8 +96,8 @@
         {
           "type": "change_state",
           "cell": "bind-L2C4",
-          "oldRepr": "8",
-          "newRepr": "10",
+          "oldRepr": "6",
+          "newRepr": "12",
           "inputTokenId": "tok-S7-state_change-0"
         }
       ]
@@ -106,10 +106,35 @@
       "index": 8,
       "actions": [
         {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 3,
+          "itemRepr": "8",
+          "tokenId": "tok-S8-loop_advance-0",
+          "collection": "bind-L1C20"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "12",
+          "newRepr": "20",
+          "inputTokenId": "tok-S9-state_change-0"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "actions": [
+        {
           "type": "exit_return",
-          "repr": "10",
+          "repr": "20",
           "port": "ret-L5C4",
-          "tokenId": "tok-S8-return_exit-0",
+          "tokenId": "tok-S10-return_exit-0",
           "returnNode": "ret-L5C4",
           "functionNode": "fn-L1C0"
         }

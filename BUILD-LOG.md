@@ -177,7 +177,6 @@ Action-driven semantic motion landed: contracts (`motionVersion` 0.2), determini
 
 Brief draft used labels like `entering`/`stored`; committed Zod enum is `idle|moving|bound|consumed|returned|ghost`. Reducer maps onto the enum (document precedence).
 
-
 ## Phase PM1 summary (implemented, pending judge, 2026-07-16)
 
 `deriveMotionState(scene, graph, trace, stepIndex)` is a deterministic pure fold of
@@ -306,11 +305,23 @@ Learner chrome uses `--brand-blue` for CTAs and nav; semantic eight-hue palette 
 
 ### DECISION: proposal URL shape with legacy redirects (UI-1)
 
-Canonical pathway: `/learn/python-foundations/loops/{lesson}`. `hooks.server.ts` 301-redirects `how-loops-build-results/*` and `/demo` to the new flagship lesson URL. Fixture call remains `[3, 5, 2]` → `10`.
+Canonical pathway: `/learn/python-foundations/loops/{lesson}`. `hooks.server.ts` 301-redirects `how-loops-build-results/*` and `/demo` to the new flagship lesson URL. The approved learner example is now the regenerated canonical fixture `[2, 4, 6, 8]` → `20`.
 
 ### DECISION: learner projection reads engine only (UI-3)
 
 `deriveLearnerProjection` in `apps/web/src/lib/learner-ui/projection/` derives flow steps from graph/trace/scene — no hand-authored frame values.
+
+### CORRECTION: global design CSS and flagship pack hydration (UI-0/UI-2)
+
+The token stylesheet existed but the root layout did not import `app.css`, so the approved visual language never reached learner routes. The root layout now imports it and uses the Svelte 5 children render contract. The flagship loader also stopped before attaching `executionPacks` when a scene block had already been seen; duplicate-scene handling is now scoped to scene loading only, allowing the deterministic engine pack to reach the workspace.
+
+### DECISION: learner routes project engine truth; technical truth stays internal (UI-2–UI-5)
+
+The flagship lesson and landing demo share `CodeLearningPanel`, `LearnerFlowView`, and `PlaybackTimeline`. Their visible values, active source line, explanation state, and progress derive from graph, trace, scene, and the global Selection. Decode opens with an engine-backed example, while graph IDs and raw analyzer data remain confined to debug/internal routes.
+
+### DECISION: browser screenshots replace synthetic visual proof (UI-QC)
+
+Playwright now captures the rendered flagship route at 1680×945 and 390×844 using reduced-motion mode. The suite also exercises synchronized Selection changes and learner-route smoke checks for home, Decode, and pathway. Screenshot baselines live in `tests/e2e/__screenshots__/`.
 
 ### UI-phase evidence
 
@@ -318,5 +329,5 @@ Canonical pathway: `/learn/python-foundations/loops/{lesson}`. `hooks.server.ts`
 pnpm test:all — exit 0
 pnpm --filter web build — exit 0
 tests/web/audience-routes.test.ts — 16 passed
+PLAYWRIGHT_CHANNEL=chrome pnpm test:e2e — 6 passed
 ```
-

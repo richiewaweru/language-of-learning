@@ -280,13 +280,13 @@
   });
 </script>
 
+<svelte:window onkeydown={onKeydown} />
+
 <div
   class="slice"
   class:reduced={reducedMotion}
-  tabindex="0"
   role="region"
   aria-label="Scene player"
-  onkeydown={onKeydown}
 >
   <TraceControls
     {stepIndex}

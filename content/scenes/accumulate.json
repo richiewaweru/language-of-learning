@@ -181,7 +181,7 @@
         {
           "type": "spawn_value",
           "tokenId": "tok-S0-call_enter-0",
-          "repr": "[3, 5, 2]",
+          "repr": "[2, 4, 6, 8]",
           "atNode": "fn-L1C0"
         },
         {
@@ -230,7 +230,7 @@
           "type": "advance_item",
           "loop": "loop-L3C4",
           "itemIndex": 0,
-          "itemRepr": "3",
+          "itemRepr": "2",
           "tokenId": "tok-S2-loop_advance-0",
           "collection": "bind-L1C20"
         }
@@ -238,7 +238,7 @@
       "caption": {
         "key": "loop.advance",
         "params": {
-          "item": "3"
+          "item": "2"
         }
       }
     },
@@ -253,7 +253,7 @@
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "0",
-          "newRepr": "3",
+          "newRepr": "2",
           "inputTokenId": "tok-S3-state_change-0"
         }
       ],
@@ -262,7 +262,7 @@
         "params": {
           "name": "total",
           "old": "0",
-          "new": "3"
+          "new": "2"
         }
       }
     },
@@ -277,7 +277,7 @@
           "type": "advance_item",
           "loop": "loop-L3C4",
           "itemIndex": 1,
-          "itemRepr": "5",
+          "itemRepr": "4",
           "tokenId": "tok-S4-loop_advance-0",
           "collection": "bind-L1C20"
         }
@@ -285,7 +285,7 @@
       "caption": {
         "key": "loop.advance",
         "params": {
-          "item": "5"
+          "item": "4"
         }
       }
     },
@@ -299,8 +299,8 @@
         {
           "type": "change_state",
           "cell": "bind-L2C4",
-          "oldRepr": "3",
-          "newRepr": "8",
+          "oldRepr": "2",
+          "newRepr": "6",
           "inputTokenId": "tok-S5-state_change-0"
         }
       ],
@@ -308,8 +308,8 @@
         "key": "state.change",
         "params": {
           "name": "total",
-          "old": "3",
-          "new": "8"
+          "old": "2",
+          "new": "6"
         }
       }
     },
@@ -324,7 +324,7 @@
           "type": "advance_item",
           "loop": "loop-L3C4",
           "itemIndex": 2,
-          "itemRepr": "2",
+          "itemRepr": "6",
           "tokenId": "tok-S6-loop_advance-0",
           "collection": "bind-L1C20"
         }
@@ -332,7 +332,7 @@
       "caption": {
         "key": "loop.advance",
         "params": {
-          "item": "2"
+          "item": "6"
         }
       }
     },
@@ -346,8 +346,8 @@
         {
           "type": "change_state",
           "cell": "bind-L2C4",
-          "oldRepr": "8",
-          "newRepr": "10",
+          "oldRepr": "6",
+          "newRepr": "12",
           "inputTokenId": "tok-S7-state_change-0"
         }
       ],
@@ -355,13 +355,60 @@
         "key": "state.change",
         "params": {
           "name": "total",
-          "old": "8",
-          "new": "10"
+          "old": "6",
+          "new": "12"
         }
       }
     },
     {
       "index": 8,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 3,
+          "itemRepr": "8",
+          "tokenId": "tok-S8-loop_advance-0",
+          "collection": "bind-L1C20"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "8"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "focus": [
+        "op-L4C16"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "12",
+          "newRepr": "20",
+          "inputTokenId": "tok-S9-state_change-0"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "12",
+          "new": "20"
+        }
+      }
+    },
+    {
+      "index": 10,
       "focus": [
         "ret-L5C4"
       ],
@@ -369,9 +416,9 @@
       "actions": [
         {
           "type": "exit_return",
-          "repr": "10",
+          "repr": "20",
           "port": "ret-L5C4",
-          "tokenId": "tok-S8-return_exit-0",
+          "tokenId": "tok-S10-return_exit-0",
           "returnNode": "ret-L5C4",
           "functionNode": "fn-L1C0"
         }
@@ -379,7 +426,7 @@
       "caption": {
         "key": "return.exit",
         "params": {
-          "repr": "10"
+          "repr": "20"
         }
       }
     }

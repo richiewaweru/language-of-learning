@@ -9,7 +9,7 @@ import { deriveLearnerProjection } from '../../apps/web/src/lib/learner-ui/proje
 const repoRoot = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
 describe('flagship demo data', () => {
-  it('accumulate fixture has return 10 and 9 steps', () => {
+  it('accumulate flagship fixture has return 20 and 11 steps', () => {
     const base = path.join(repoRoot, 'fixtures', 'accumulate');
     const graph = JSON.parse(
       readFileSync(path.join(base, 'expected.graph.json'), 'utf8'),
@@ -18,8 +18,8 @@ describe('flagship demo data', () => {
       readFileSync(path.join(base, 'expected.trace.json'), 'utf8'),
     ) as Trace;
     const scene = buildScene(graph, trace, { sceneId: 'test' });
-    expect(trace.result?.repr).toBe('10');
-    expect(scene.steps.length).toBe(9);
+    expect(trace.result?.repr).toBe('20');
+    expect(scene.steps.length).toBe(11);
     expect(readFileSync(path.join(base, 'source.py'), 'utf8')).toContain('numbers');
   });
 });

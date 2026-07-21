@@ -139,12 +139,12 @@ describe('selection resolver', () => {
     const graph = loadGraph('accumulate');
     const trace = loadTrace('accumulate');
 
-    // The loop's first focus step is index 2; the return's is index 8.
+    // The loop's first focus step is index 2; the return's is the final index 10.
     const loop = resolveSelection({ nodeId: 'loop-L3C4' }, graph, trace);
     const ret = resolveSelection({ nodeId: 'ret-L5C4' }, graph, trace);
 
     expect(loop.stepIndex).toBe(2);
-    expect(ret.stepIndex).toBe(8);
+    expect(ret.stepIndex).toBe(10);
     // Selecting a different node moves the resolved step.
     expect(ret.stepIndex).not.toBe(loop.stepIndex);
     // …and the resolved line follows the node.

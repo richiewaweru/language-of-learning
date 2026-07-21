@@ -1,7 +1,10 @@
 <script lang="ts">
+  import '../app.css';
   import { page } from '$app/stores';
   import AppHeader from '$lib/learner-ui/shell/AppHeader.svelte';
   import ProductFooter from '$lib/product/ProductFooter.svelte';
+
+  let { children } = $props();
 
   const minimalChrome = $derived(
     $page.url.pathname.startsWith('/debug/') ||
@@ -15,7 +18,7 @@
     <AppHeader />
   {/if}
   <main class="page-main">
-    <slot />
+    {@render children()}
   </main>
   {#if !minimalChrome}
     <ProductFooter />

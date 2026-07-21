@@ -32,6 +32,11 @@
       {/each}
     </nav>
 
+    <label class="search">
+      <span aria-hidden="true">⌕</span>
+      <input type="search" aria-label="Search lessons and concepts" placeholder="Search lessons, concepts, code…" />
+    </label>
+
     <div class="header-end">
       <div class="progress-cluster" aria-label="Learning progress">
         <span class="stat">
@@ -50,6 +55,12 @@
       <a href="/learn/python-foundations/loops/accumulate" class="cta btn-primary mobile-cta">
         Continue
       </a>
+      <details class="mobile-menu">
+        <summary aria-label="Open navigation menu">Menu</summary>
+        <nav aria-label="Mobile navigation">
+          {#each navItems as item}<a href={item.href}>{item.label}</a>{/each}
+        </nav>
+      </details>
     </div>
   </div>
 </header>
@@ -129,6 +140,28 @@
     gap: var(--space-4);
   }
 
+  .search {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    width: min(300px, 22vw);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+    background: var(--surface-soft);
+    color: var(--ink-muted);
+  }
+
+  .search input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink-primary);
+    font: inherit;
+    font-size: var(--text-xs);
+  }
+
   .progress-cluster {
     display: none;
     align-items: center;
@@ -176,8 +209,43 @@
   }
 
   .mobile-cta {
+    display: none;
     padding: var(--space-2) var(--space-4);
     font-size: var(--text-xs);
+  }
+
+  @media (min-width: 480px) and (max-width: 767px) {
+    .mobile-cta { display: inline-flex; }
+  }
+
+  .mobile-menu {
+    position: relative;
+  }
+
+  .mobile-menu summary {
+    cursor: pointer;
+    color: var(--ink-primary);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .mobile-menu nav {
+    position: absolute;
+    right: 0;
+    top: calc(100% + var(--space-3));
+    display: grid;
+    min-width: 160px;
+    padding: var(--space-2);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+    background: var(--surface-primary);
+    box-shadow: var(--shadow-md);
+  }
+
+  .mobile-menu nav a {
+    padding: var(--space-3);
+    color: var(--ink-primary);
+    text-decoration: none;
   }
 
   @media (min-width: 768px) {
@@ -196,5 +264,11 @@
     .mobile-cta {
       display: none;
     }
+
+    .mobile-menu { display: none; }
+  }
+
+  @media (min-width: 1180px) {
+    .search { display: flex; }
   }
 </style>

@@ -44,7 +44,7 @@ export async function loadAccumulateVariants(
   root: string = assertRepoRoot(repoRoot),
 ): Promise<SliceVariant[]> {
   return [
-    await loadBundle(path.join(root, 'fixtures', 'accumulate'), 'canonical', 'Canonical [3, 5, 2]'),
+    await loadBundle(path.join(root, 'fixtures', 'accumulate'), 'canonical', 'Canonical [2, 4, 6, 8]'),
   ];
 }
 

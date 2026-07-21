@@ -15,24 +15,25 @@
     {
       "type": "prediction",
       "sceneId": "scene-accumulate",
-      "prompt": "Current number: 5. Running total: 3. What happens when the update runs?",
+      "prompt": "The running total is 12 and the next number is 8. What will the total be after the next update?",
       "options": [
-        { "id": "a", "label": "The total becomes 5" },
-        { "id": "b", "label": "The total becomes 8" },
-        { "id": "c", "label": "The total stays 3" }
+        { "id": "a", "label": "14" },
+        { "id": "b", "label": "18" },
+        { "id": "c", "label": "20" }
       ],
-      "correctId": "b"
+      "correctId": "c"
     },
     { "type": "execution", "sceneId": "scene-accumulate" },
     {
       "type": "patternExplanation",
       "pattern": "ACCUMULATE",
       "steps": [
-        "Start with one state value.",
-        "Visit each item in the collection.",
-        "Combine the current item with the state.",
-        "Store the new state.",
-        "Return the state after the loop."
+        "Start the total at zero.",
+        "Take the next item from the collection.",
+        "Add the current item to the total.",
+        "Store the new running total.",
+        "Repeat until there are no items left.",
+        "Return the final total."
       ]
     },
     { "type": "variation", "variationId": "accumulate_running_sum" },

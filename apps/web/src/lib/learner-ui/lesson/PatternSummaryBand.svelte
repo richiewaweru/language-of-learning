@@ -17,28 +17,29 @@
 <section class="pattern-summary" data-testid="pattern-summary-band">
   <div class="icon" aria-hidden="true">◎</div>
   <div class="content">
-    <h2>Pattern: {pattern}</h2>
-    {#if description}
-      <p class="desc">{description}</p>
-    {/if}
-    {#if whenToUse}
-      <p class="when"><strong>When to use it:</strong> {whenToUse}</p>
-    {/if}
+    <div class="summary-copy">
+      <h2>Pattern: {pattern}</h2>
+      {#if description}<p class="desc">{description}</p>{/if}
+    </div>
+    <div class="when-block">
+      <span class="mini-label">When to use it</span>
+      {#if whenToUse}<p class="when">{whenToUse}</p>{/if}
+    </div>
     {#if examples.length}
       <div class="tags">
-        <span class="tags-label">Common in real life</span>
-        {#each examples as ex}
-          <span class="pill-tag tag">{ex}</span>
-        {/each}
+        <span class="mini-label">Common in real life</span>
+        <div class="tag-list">
+          {#each examples as ex}<span class="pill-tag tag">{ex}</span>{/each}
+        </div>
       </div>
     {/if}
     {#if related.length}
-      <p class="related">
-        <strong>Related patterns:</strong>
-        {#each related as r, i}
-          {r}{#if i < related.length - 1}, {/if}
-        {/each}
-      </p>
+      <div class="related-block">
+        <span class="mini-label">Related patterns</span>
+        <p class="related">
+          {#each related as r, i}{r}{#if i < related.length - 1}, {/if}{/each}
+        </p>
+      </div>
     {/if}
   </div>
 </section>
@@ -47,11 +48,11 @@
   .pattern-summary {
     display: flex;
     gap: var(--space-5);
-    padding: var(--space-6);
+    padding: var(--space-4) var(--space-5);
     background: var(--state-gold-soft);
     border-radius: var(--radius-md);
     border: 1px solid color-mix(in srgb, var(--state-gold) 25%, transparent);
-    margin-top: var(--space-6);
+    margin-top: var(--space-2);
   }
 
   .icon {
@@ -73,6 +74,14 @@
     color: var(--ink-primary);
   }
 
+  .content {
+    display: grid;
+    grid-template-columns: 1.25fr .9fr 1.55fr .75fr;
+    gap: var(--space-5);
+    align-items: center;
+    width: 100%;
+  }
+
   .desc,
   .when,
   .related {
@@ -84,22 +93,39 @@
   }
 
   .tags {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    display: grid;
     gap: var(--space-2);
-    margin-top: var(--space-3);
   }
 
-  .tags-label {
+  .mini-label {
     font-size: var(--text-xs);
     color: var(--ink-muted);
-    margin-right: var(--space-2);
+    font-weight: 600;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   .tag {
     background: var(--surface-primary);
     color: var(--flow-teal);
     border: 1px solid color-mix(in srgb, var(--flow-teal) 30%, transparent);
+  }
+
+  .when,
+  .related {
+    margin-top: var(--space-2);
+  }
+
+  @media (max-width: 900px) {
+    .content {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
+
+    .pattern-summary { align-items: flex-start; }
   }
 </style>

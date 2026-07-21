@@ -9,7 +9,11 @@
   import type { VariationPack } from '$lib/product/loadVariationPack';
 
   let { data } = $props();
-  let progress = $state(loadProgress(data.lesson.slug));
+  function initialProgress() {
+    return loadProgress(data.lesson.slug);
+  }
+
+  let progress = $state(initialProgress());
   let predictionFeedback = $state<Record<string, string>>({});
   let transferAnswers = $state<Record<string, string>>({});
   let transferFeedback = $state<Record<string, string>>({});

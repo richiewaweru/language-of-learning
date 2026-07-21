@@ -47,11 +47,12 @@ export async function load({
         block.type === 'execution'
       ) {
         const sceneId = block.sceneId;
-        if (!sceneId || sceneBlocks.some((s) => s.sceneId === sceneId)) continue;
-        const scene = await loadScene(sceneId);
-        const example = await loadExample(sceneId);
-        const initialCaption = scene.steps[0] ? renderCaption(scene.steps[0].caption) : '';
-        sceneBlocks.push({ sceneId, scene, example, initialCaption });
+        if (sceneId && !sceneBlocks.some((s) => s.sceneId === sceneId)) {
+          const scene = await loadScene(sceneId);
+          const example = await loadExample(sceneId);
+          const initialCaption = scene.steps[0] ? renderCaption(scene.steps[0].caption) : '';
+          sceneBlocks.push({ sceneId, scene, example, initialCaption });
+        }
       }
       if (block.type === 'execution') {
         const example = await loadExample(block.sceneId);

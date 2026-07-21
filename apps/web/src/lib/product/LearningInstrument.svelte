@@ -28,7 +28,11 @@
     initialStep?: number;
   } = $props();
 
-  let selection = $state<Selection>({ stepIndex: initialStep });
+  function createInitialSelection(): Selection {
+    return { stepIndex: initialStep };
+  }
+
+  let selection = $state<Selection>(createInitialSelection());
   let mobileTab = $state<'code' | 'visual' | 'explain'>('visual');
   let drawerOpen = $state(false);
   let showTechnical = $state(false);
@@ -68,7 +72,7 @@
     if (showTruthDrawer && (next.nodeId || next.line)) drawerOpen = true;
   }
 
-  const callDisplay = $derived(pack.argsRepr[0] ?? '[3, 5, 2]');
+  const callDisplay = $derived(pack.argsRepr[0] ?? '[2, 4, 6, 8]');
 </script>
 
 <section class="instrument" class:compact data-testid="learning-instrument">

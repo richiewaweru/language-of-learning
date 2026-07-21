@@ -49,6 +49,6 @@ describe('resolveTruthDetail', () => {
       stepIndex,
     );
     expect(detail?.what).toContain('total');
-    expect(detail?.currentValue).toBe('3');
+    expect(detail?.currentValue).toBe('2');
   });
 });

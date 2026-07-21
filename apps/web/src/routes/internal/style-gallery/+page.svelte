@@ -15,7 +15,7 @@
     <h2>Typography</h2>
     <p class="display-sample">Display — Source Serif 4</p>
     <p class="body-sample">Body — Inter at 15px for interface copy.</p>
-    <code class="mono-sample">JetBrains Mono — calculate_total([3, 5, 2])</code>
+    <code class="mono-sample">JetBrains Mono — calculate_total([2, 4, 6, 8])</code>
   </section>
 
   <section class="section">

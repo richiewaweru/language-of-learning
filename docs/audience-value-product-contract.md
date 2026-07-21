@@ -62,7 +62,7 @@ def calculate_total(numbers):
     return total
 ```
 
-Call: `calculate_total([3, 5, 2])` → result `10`
+Call: `calculate_total([2, 4, 6, 8])` → result `20`
 
 Must run through the real analyzer, trace runtime, pattern engine, scene builder, and motion-state reducer.
 

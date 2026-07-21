@@ -1,3 +1,6 @@
+<script lang="ts">
+</script>
+
 <footer class="footer">
   <div class="footer-inner container">
     <div class="footer-brand">
@@ -19,10 +22,10 @@
         <a href="/about">About</a>
       </div>
       <div class="col">
-        <p class="col-title">Developer tools</p>
-        <a href="/debug/graph">Graph inspector</a>
-        <a href="/internal/style-gallery">Style gallery</a>
-        <a href="/slices/accumulate">Accumulate slice</a>
+        <p class="col-title">Language of Learning</p>
+        <a href="/how-it-works">How the visual model works</a>
+        <a href="/about">Our learning approach</a>
+        <a href="/library">Saved lessons</a>
       </div>
     </nav>
   </div>

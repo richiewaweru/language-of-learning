@@ -2,13 +2,11 @@
   import PageContainer from '$lib/learner-ui/shell/PageContainer.svelte';
   import LessonWorkspace from '$lib/learner-ui/lesson/LessonWorkspace.svelte';
   import ComparisonPanel from '$lib/product/ComparisonPanel.svelte';
-  import { markSectionComplete, loadProgress } from '$lib/product/lessonProgress';
+  import { markSectionComplete } from '$lib/product/lessonProgress';
 
   let { data } = $props();
-  let progress = $state(loadProgress(data.lesson.slug));
   let predictionFeedback = $state('');
 
-  const pack = $derived(data.flagshipPack);
   const progressPercent = $derived(
     Math.round(((data.lessonIndex - 1) / data.lessonCount) * 100 + 15),
   );
@@ -45,15 +43,22 @@
 </svelte:head>
 
 <PageContainer wide>
-  {#if pack}
+  {#if data.flagshipPack}
     <LessonWorkspace
-      {pack}
+      pack={data.flagshipPack}
       {breadcrumbs}
       title={data.lesson.slug === 'accumulate' ? 'Build a Total with a Loop' : data.lesson.title}
       {subtitle}
       explainSteps={data.patternSteps}
       {patternSummary}
       {progressPercent}
+      initialStep={Math.max(
+        0,
+        data.flagshipPack.trace.steps
+          .map((step, index) => ({ type: step.event.type, index }))
+          .filter((step) => step.type === 'state_change')
+          .at(-2)?.index ?? 0,
+      )}
       prediction={data.predictionBlock
         ? {
             prompt: data.predictionBlock.prompt,
@@ -64,7 +69,7 @@
               predictionFeedback = correct
                 ? 'Correct — that matches what the trace shows at this step.'
                 : 'Not quite — step through the execution to see the actual update.';
-              progress = markSectionComplete(data.lesson.slug, 'prediction');
+              markSectionComplete(data.lesson.slug, 'prediction');
             },
           }
         : undefined}

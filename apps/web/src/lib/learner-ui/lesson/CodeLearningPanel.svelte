@@ -106,6 +106,11 @@
     flex: 1;
   }
 
+  .code code {
+    display: flex;
+    flex-direction: column;
+  }
+
   .line {
     display: block;
     padding: 2px var(--space-3);
@@ -133,5 +138,11 @@
     border-top: 1px solid var(--line-soft);
     font-size: var(--text-xs);
     color: var(--ink-faint);
+  }
+
+  @media (min-width: 1024px) {
+    .code-panel {
+      min-height: 550px;
+    }
   }
 </style>

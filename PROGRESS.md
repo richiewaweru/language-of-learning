@@ -14,20 +14,24 @@
 1. pnpm test:all — green (incl. test:web 20 tests, audience-routes + projection)
 2. pnpm test:lessons — 4/4 machine-checked
 3. pnpm --filter web build — exit 0
-4. Canonical flagship URL: /learn/python-foundations/loops/accumulate
-5. Legacy redirects: how-loops-build-results/* → python-foundations/loops/*
-6. Style gallery: /internal/style-gallery
-7. ADR 0012 learner UI skin refresh filed
+4. PLAYWRIGHT_CHANNEL=chrome pnpm test:e2e — 6/6 browser tests green
+5. Desktop + mobile flagship screenshot baselines captured at 1680×945 and 390×844
+6. Canonical flagship URL: /learn/python-foundations/loops/accumulate
+7. Legacy redirects: how-loops-build-results/* → python-foundations/loops/*
+8. Style gallery: /internal/style-gallery
+9. ADR 0012 learner UI skin refresh filed
 ```
 
 ### What shipped (UI-0–UI-5)
 
 - Design tokens v0.2: warm `#faf9f6`, brand cobalt, Source Serif 4 + Inter + JetBrains Mono
-- `learner-ui/` shell (AppHeader, Breadcrumbs, PageContainer) and lesson workspace
-- LessonWorkspace at `/learn/python-foundations/loops/accumulate` (engine-driven, `[3,5,2]`)
+- Responsive `learner-ui/` shell with AppHeader, search placeholder, mobile navigation, breadcrumbs, and page containers
+- LessonWorkspace at `/learn/python-foundations/loops/accumulate` (engine-driven, `[2,4,6,8] → 20`)
 - Learner projection: `deriveLearnerProjection` + LearnerFlowView
-- Decode restyle: Paste/Upload/Examples, Structure/Flow/State/Explain, pattern sidebar
-- Pathway browser, library stub, landing continue-learning panel
+- Coordinated code, flow, timeline, explanation, prediction, and pattern summary through one Selection
+- Decode restyle: engine-backed initial example, Paste/Upload/Examples, Structure/Flow/State/Explain, pattern sidebar
+- Three-column pathway roadmap and engine-backed landing demo
+- Real Playwright screenshot regression for the flagship composition and mobile layout
 - hooks.server.ts legacy route redirects
 
 ### Human validation (unchanged)

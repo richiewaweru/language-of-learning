@@ -21,28 +21,44 @@
   import { deriveLearnerProjection, eventToLearnerLabel } from '$lib/learner-ui/projection/deriveLearnerProjection';
   import { analyzeSource, loadAnalysis, recordEvent, saveAnalysis } from '$lib/api';
 
-  const DEFAULT_SOURCE = `def calculate_total(numbers):
-    total = 0
-    for number in numbers:
-        total = total + number
-    return total`;
+  let { data } = $props();
 
-  let source = $state(DEFAULT_SOURCE);
-  let argsText = $state('[3, 5, 2]');
+  function createInitialDecodeState() {
+    const pack = data.pack;
+    const initialStep =
+      pack.trace.steps
+        .map((step, index) => ({ type: step.event.type, index }))
+        .filter((step) => step.type === 'state_change')
+        .at(-2)?.index ?? 0;
+    return {
+      source: pack.source,
+      argsText: pack.argsRepr[0] ?? '[]',
+      graph: pack.graph,
+      trace: pack.trace,
+      pattern: detectPattern(pack.graph),
+      scene: pack.scene,
+      selection: { stepIndex: initialStep } as Selection,
+      transfer: buildTransferCheck(pack.graph),
+    };
+  }
+
+  const initial = createInitialDecodeState();
+  let source = $state(initial.source);
+  let argsText = $state(initial.argsText);
   let error = $state('');
   let analyzing = $state(false);
-  let graph = $state<SemanticGraph | null>(null);
-  let trace = $state<Trace | null>(null);
-  let pattern = $state<PatternHit | null>(null);
-  let scene = $state<ReturnType<typeof buildScene> | null>(null);
+  let graph = $state<SemanticGraph | null>(initial.graph);
+  let trace = $state<Trace | null>(initial.trace);
+  let pattern = $state<PatternHit | null>(initial.pattern);
+  let scene = $state<ReturnType<typeof buildScene> | null>(initial.scene);
   let violation = $state<{ construct: string; message: string } | null>(null);
-  let selection = $state<Selection>({ stepIndex: 0 });
+  let selection = $state<Selection>(initial.selection);
   let savedId = $state('');
   let loadId = $state('');
-  let transfer = $state<TransferCheck | null>(null);
+  let transfer = $state<TransferCheck | null>(initial.transfer);
   let transferAnswer = $state('');
   let transferFeedback = $state('');
-  let activeView = $state<'structure' | 'flow' | 'state' | 'explain'>('flow');
+  let activeView = $state<'structure' | 'flow' | 'state' | 'explain'>('structure');
   let inputTab = $state<'paste' | 'upload' | 'examples'>('paste');
   let drawerOpen = $state(false);
   let showTechnical = $state(false);
@@ -222,7 +238,7 @@
         </label>
         <label class="field args-field">
           <span>Sample input</span>
-          <input class="args" bind:value={argsText} placeholder="[3, 5, 2]" />
+          <input class="args" bind:value={argsText} placeholder="[2, 4, 6, 8]" />
         </label>
       {:else if inputTab === 'examples'}
         <p class="hint">Quick examples use the default accumulate function.</p>
@@ -317,7 +333,7 @@
       {#if pattern}
         <div class="insight-card pattern-card surface-card" data-testid="pattern-hit">
           <p class="card-label">Pattern detected</p>
-          <h2>{pattern.pattern}</h2>
+          <h2>{pattern.pattern[0]}{pattern.pattern.slice(1).toLowerCase()}</h2>
           <p class="confidence">{pattern.confidence} confidence</p>
           <a href="/learn/python-foundations/loops/accumulate" class="link">Learn more →</a>
         </div>

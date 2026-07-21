@@ -108,8 +108,8 @@ describe('deriveMotionState — accumulate (fold 0..N)', () => {
     expect('reducedMotion' in a).toBe(false);
   });
 
-  it('surfaces returnValue on the exit step (accumulate returns 10), none at step 0', () => {
-    expect(deriveMotionState(scene, graph, trace, last).returnValue).toBe('10');
+  it('surfaces returnValue on the exit step (accumulate returns 20), none at step 0', () => {
+    expect(deriveMotionState(scene, graph, trace, last).returnValue).toBe('20');
     expect(deriveMotionState(scene, graph, trace, 0).returnValue).toBeUndefined();
   });
 

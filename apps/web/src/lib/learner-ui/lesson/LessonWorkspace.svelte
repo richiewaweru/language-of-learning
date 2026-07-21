@@ -54,7 +54,11 @@
     initialStep?: number;
   } = $props();
 
-  let selection = $state<Selection>({ stepIndex: initialStep });
+  function createInitialSelection(): Selection {
+    return { stepIndex: initialStep };
+  }
+
+  let selection = $state<Selection>(createInitialSelection());
   let mobileTab = $state<'code' | 'visual' | 'explain'>('visual');
   let drawerOpen = $state(false);
   let showTechnical = $state(false);
@@ -77,13 +81,16 @@
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const callDisplay = $derived(pack.argsRepr[0] ?? '[3, 5, 2]');
+  const callDisplay = $derived(pack.argsRepr[0] ?? '[]');
 
   const activeExplainStep = $derived(
     Math.min(
       Math.floor((stepIndex / Math.max(pack.scene.steps.length - 1, 1)) * explainSteps.length),
       explainSteps.length - 1,
     ),
+  );
+  const effectiveProgress = $derived(
+    Math.max(progressPercent, Math.round(((stepIndex + 1) / pack.scene.steps.length) * 100)),
   );
 
   function handleLineSelect(line: number) {
@@ -112,7 +119,7 @@
     {breadcrumbs}
     {title}
     {subtitle}
-    {progressPercent}
+    progressPercent={effectiveProgress}
   />
 
   {#if explainSteps.length === 0}
@@ -286,6 +293,27 @@
     box-shadow: none;
     background: var(--warning-soft);
     border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .prediction-wrap :global(.prediction h2) {
+    margin-bottom: var(--space-2);
+  }
+
+  .prediction-wrap :global(.prompt) {
+    margin-bottom: var(--space-3);
+    font-size: var(--text-xs);
+    line-height: 1.45;
+  }
+
+  .prediction-wrap :global(.options) {
+    flex-direction: row;
+  }
+
+  .prediction-wrap :global(.options button) {
+    flex: 1;
+    text-align: center;
+    padding: var(--space-2);
   }
 
   .technical-toggle {

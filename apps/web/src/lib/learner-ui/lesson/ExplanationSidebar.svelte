@@ -11,7 +11,11 @@
     tab?: 'explain' | 'key' | 'notes';
   } = $props();
 
-  let activeTab = $state(tab);
+  let activeTab = $state<'explain' | 'key' | 'notes'>('explain');
+
+  $effect(() => {
+    activeTab = tab;
+  });
 </script>
 
 <div class="explanation-sidebar surface-card" data-testid="explanation-sidebar">
@@ -41,7 +45,7 @@
       {/each}
     </ol>
     {#if caption}
-      <p class="caption">{caption}</p>
+      <p class="caption sr-only" aria-live="polite">{caption}</p>
     {/if}
   {:else if activeTab === 'key'}
     <p class="key-idea">
@@ -87,14 +91,14 @@
     padding: var(--space-4);
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: 2px;
   }
 
   .steps li {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: var(--space-2) var(--space-3);
-    padding: var(--space-3);
+    padding: 9px var(--space-3);
     border-radius: var(--radius-sm);
     font-size: var(--text-sm);
     color: var(--ink-secondary);

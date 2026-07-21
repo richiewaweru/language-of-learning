@@ -46,10 +46,10 @@ describe('flagship truth — accumulate', () => {
     },
   );
 
-  it('final return is 10', () => {
-    expect(trace.result?.repr).toBe('10');
+  it('final return is 20', () => {
+    expect(trace.result?.repr).toBe('20');
     const last = trace.steps[trace.steps.length - 1]!;
     expect(last.event.type).toBe('return_exit');
-    expect(renderCaption(scene.steps[last.index]!.caption)).toContain('10');
+    expect(renderCaption(scene.steps[last.index]!.caption)).toContain('20');
   });
 });

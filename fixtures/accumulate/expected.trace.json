@@ -1,17 +1,13 @@
 {
   "call": {
     "functionId": "fn-L1C0",
-    "argsRepr": [
-      "[3, 5, 2]"
-    ]
+    "argsRepr": ["[2, 4, 6, 8]"]
   },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": [
-        "fn-L1C0"
-      ],
+      "focus": ["fn-L1C0"],
       "bindings": {},
       "event": {
         "type": "call_enter",
@@ -21,11 +17,9 @@
     {
       "index": 1,
       "line": 2,
-      "focus": [
-        "bind-L2C4"
-      ],
+      "focus": ["bind-L2C4"],
       "bindings": {
-        "numbers": "[3, 5, 2]",
+        "numbers": "[2, 4, 6, 8]",
         "total": "0"
       },
       "event": {
@@ -37,130 +31,148 @@
     {
       "index": 2,
       "line": 3,
-      "focus": [
-        "loop-L3C4"
-      ],
+      "focus": ["loop-L3C4"],
       "bindings": {
-        "number": "3",
-        "numbers": "[3, 5, 2]",
+        "number": "2",
+        "numbers": "[2, 4, 6, 8]",
         "total": "0"
       },
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
         "itemIndex": 0,
-        "itemRepr": "3"
+        "itemRepr": "2"
       }
     },
     {
       "index": 3,
       "line": 4,
-      "focus": [
-        "op-L4C16"
-      ],
+      "focus": ["op-L4C16"],
       "bindings": {
-        "number": "3",
-        "numbers": "[3, 5, 2]",
-        "total": "3"
+        "number": "2",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "2"
       },
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
         "oldRepr": "0",
-        "newRepr": "3"
+        "newRepr": "2"
       }
     },
     {
       "index": 4,
       "line": 3,
-      "focus": [
-        "loop-L3C4"
-      ],
+      "focus": ["loop-L3C4"],
       "bindings": {
-        "number": "5",
-        "numbers": "[3, 5, 2]",
-        "total": "3"
+        "number": "4",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "2"
       },
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
         "itemIndex": 1,
-        "itemRepr": "5"
+        "itemRepr": "4"
       }
     },
     {
       "index": 5,
       "line": 4,
-      "focus": [
-        "op-L4C16"
-      ],
+      "focus": ["op-L4C16"],
       "bindings": {
-        "number": "5",
-        "numbers": "[3, 5, 2]",
-        "total": "8"
+        "number": "4",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "6"
       },
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
-        "oldRepr": "3",
-        "newRepr": "8"
+        "oldRepr": "2",
+        "newRepr": "6"
       }
     },
     {
       "index": 6,
       "line": 3,
-      "focus": [
-        "loop-L3C4"
-      ],
+      "focus": ["loop-L3C4"],
       "bindings": {
-        "number": "2",
-        "numbers": "[3, 5, 2]",
-        "total": "8"
+        "number": "6",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "6"
       },
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
         "itemIndex": 2,
-        "itemRepr": "2"
+        "itemRepr": "6"
       }
     },
     {
       "index": 7,
       "line": 4,
-      "focus": [
-        "op-L4C16"
-      ],
+      "focus": ["op-L4C16"],
       "bindings": {
-        "number": "2",
-        "numbers": "[3, 5, 2]",
-        "total": "10"
+        "number": "6",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "12"
       },
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
-        "oldRepr": "8",
-        "newRepr": "10"
+        "oldRepr": "6",
+        "newRepr": "12"
       }
     },
     {
       "index": 8,
-      "line": 5,
-      "focus": [
-        "ret-L5C4"
-      ],
+      "line": 3,
+      "focus": ["loop-L3C4"],
       "bindings": {
-        "number": "2",
-        "numbers": "[3, 5, 2]",
-        "total": "10"
+        "number": "8",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "12"
+      },
+      "event": {
+        "type": "loop_advance",
+        "loop": "loop-L3C4",
+        "itemIndex": 3,
+        "itemRepr": "8"
+      }
+    },
+    {
+      "index": 9,
+      "line": 4,
+      "focus": ["op-L4C16"],
+      "bindings": {
+        "number": "8",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "20"
+      },
+      "event": {
+        "type": "state_change",
+        "binding": "bind-L2C4",
+        "oldRepr": "12",
+        "newRepr": "20"
+      }
+    },
+    {
+      "index": 10,
+      "line": 5,
+      "focus": ["ret-L5C4"],
+      "bindings": {
+        "number": "8",
+        "numbers": "[2, 4, 6, 8]",
+        "total": "20"
       },
       "event": {
         "type": "return_exit",
-        "repr": "10"
+        "repr": "20"
       }
     }
   ],
   "truncated": false,
   "result": {
-    "repr": "10"
+    "repr": "20"
   }
 }

@@ -26,17 +26,31 @@ export type LearnerFlowStep = {
 
 function collectionRepr(graph: SemanticGraph, trace: Trace, stepIndex: number): string {
   const coll = graph.nodes.find((n) => n.kind === 'collection');
-  if (!coll) return '';
   const bindings = trace.steps[stepIndex]?.bindings ?? {};
-  for (const [name, repr] of Object.entries(bindings)) {
-    const bind = graph.nodes.find((n) => n.kind === 'binding' && 'name' in n && n.name === name);
-    if (
-      bind &&
-      graph.relations?.some((r) => r.type === 'contains' && r.to === coll.id && r.from === bind.id)
-    ) {
-      return repr;
+  if (coll) {
+    for (const [name, repr] of Object.entries(bindings)) {
+      const bind = graph.nodes.find((n) => n.kind === 'binding' && 'name' in n && n.name === name);
+      if (
+        bind &&
+        graph.relations?.some((r) => r.type === 'contains' && r.to === coll.id && r.from === bind.id)
+      ) {
+        return repr;
+      }
     }
   }
+  const parameterValue = Object.entries(bindings).find(([name, repr]) => {
+    if (!repr.startsWith('[') || !repr.endsWith(']')) return false;
+    return graph.nodes.some(
+      (node) =>
+        node.kind === 'binding' &&
+        'role' in node &&
+        node.role === 'parameter' &&
+        'name' in node &&
+        node.name === name,
+    );
+  });
+  if (parameterValue) return parameterValue[1];
+  if (!coll) return '';
   if ('items' in coll && Array.isArray((coll as { items?: unknown[] }).items)) {
     const items = (coll as { items: Array<{ repr?: string }> }).items;
     return `[${items.map((i) => i.repr ?? '?').join(', ')}]`;
@@ -46,13 +60,13 @@ function collectionRepr(graph: SemanticGraph, trace: Trace, stepIndex: number): 
 
 function stateRepr(graph: SemanticGraph, trace: Trace, stepIndex: number): string {
   const state = graph.nodes.find((n) => n.kind === 'binding' && 'role' in n && n.role === 'state');
-  if (!state || !('name' in state)) return '';
+  if (!state || !('name' in state) || typeof state.name !== 'string') return '';
   return trace.steps[stepIndex]?.bindings[state.name] ?? '';
 }
 
 function currentItemRepr(graph: SemanticGraph, trace: Trace, stepIndex: number): string {
   const iter = graph.nodes.find((n) => n.kind === 'binding' && 'role' in n && n.role === 'iterator');
-  if (!iter || !('name' in iter)) return '';
+  if (!iter || !('name' in iter) || typeof iter.name !== 'string') return '';
   return trace.steps[stepIndex]?.bindings[iter.name] ?? '';
 }
 
@@ -87,9 +101,14 @@ export function deriveLearnerProjection(
   const currentVal = currentItemRepr(graph, trace, stepIndex);
   const stateVal = stateRepr(graph, trace, stepIndex);
   const resultVal = returnRepr(trace);
+  const operation = graph.nodes.find((node) => node.kind === 'operation');
+  const operationVal =
+    operation && 'expr' in operation && typeof operation.expr === 'string'
+      ? operation.expr
+      : '';
 
   const eventType = trace.steps[stepIndex]?.event?.type ?? '';
-  const workActive = ['state_change', 'operation_eval'].includes(eventType);
+  const workActive = eventType === 'state_change';
   const returnActive = eventType === 'return_exit' || stepIndex === trace.steps.length - 1;
 
   const flowSteps: LearnerFlowStep[] = [
@@ -98,19 +117,19 @@ export function deriveLearnerProjection(
       label: 'Input collection',
       value: inputVal,
       kind: 'input',
-      active: stepIndex === 0 || eventType === 'loop_enter',
+      active: stepIndex === 0 || eventType === 'call_enter' || eventType === 'bind_param',
     },
     {
       id: 'current',
       label: 'Current item',
       value: currentVal,
       kind: 'current',
-      active: ['loop_advance', 'state_change', 'operation_eval'].includes(eventType),
+      active: eventType === 'loop_advance' || eventType === 'state_change',
     },
     {
       id: 'work',
-      label: 'Add to running total',
-      value: currentVal && stateVal ? `${stateVal}` : '—',
+      label: 'Operation',
+      value: operationVal,
       kind: 'work',
       active: workActive,
     },
