@@ -1,6 +1,9 @@
 import { loadPathway, loadLesson, loadScene, loadExample } from '$lib/content';
+import { loadVariationPack } from '$lib/product/loadVariationPack';
 import { error } from '@sveltejs/kit';
 import { renderCaption } from '@lol/lens-scenes';
+import type { DemoPack } from '$lib/product/loadDemoPack';
+import type { VariationPack } from '$lib/product/loadVariationPack';
 
 export async function load({ params }: { params: { pathway: string; lesson: string } }) {
   try {
@@ -13,26 +16,54 @@ export async function load({ params }: { params: { pathway: string; lesson: stri
     const prevSlug = idx > 0 ? pathway.lessonSlugs[idx - 1] : null;
     const nextSlug = idx < pathway.lessonSlugs.length - 1 ? pathway.lessonSlugs[idx + 1] : null;
 
-    const sceneBlocks = [];
+    const sceneBlocks: Array<{
+      sceneId: string;
+      scene: Awaited<ReturnType<typeof loadScene>>;
+      example: Awaited<ReturnType<typeof loadExample>>;
+      initialCaption: string;
+    }> = [];
+
+    const executionPacks: Record<string, DemoPack> = {};
+    const variationPacks: Record<string, VariationPack> = {};
+
     for (const block of lesson.blocks) {
-      if (block.type !== 'scene') continue;
-      const scene = await loadScene(block.sceneId);
-      const example = await loadExample(block.sceneId);
-      const initialCaption = scene.steps[0]
-        ? renderCaption(scene.steps[0].caption)
-        : '';
-      sceneBlocks.push({
-        sceneId: block.sceneId,
-        scene,
-        example,
-        initialCaption,
-      });
+      if (block.type === 'scene' || block.type === 'staticPreview' || block.type === 'execution') {
+        const sceneId =
+          block.type === 'scene' || block.type === 'staticPreview' || block.type === 'execution'
+            ? block.sceneId
+            : '';
+        if (!sceneId || sceneBlocks.some((s) => s.sceneId === sceneId)) continue;
+        const scene = await loadScene(sceneId);
+        const example = await loadExample(sceneId);
+        const initialCaption = scene.steps[0] ? renderCaption(scene.steps[0].caption) : '';
+        sceneBlocks.push({ sceneId, scene, example, initialCaption });
+      }
+      if (block.type === 'execution') {
+        const example = await loadExample(block.sceneId);
+        executionPacks[block.sceneId] = {
+          id: block.sceneId,
+          title: lesson.title,
+          source: example.source,
+          argsRepr: example.argsRepr,
+          graph: example.graph,
+          trace: example.trace,
+          scene: await loadScene(block.sceneId),
+        };
+      }
+      if (block.type === 'variation' || block.type === 'transferCheck') {
+        const vid = block.type === 'variation' ? block.variationId : block.variationId;
+        if (!variationPacks[vid]) {
+          variationPacks[vid] = loadVariationPack(vid);
+        }
+      }
     }
 
     return {
       pathway,
       lesson,
       sceneBlocks,
+      executionPacks,
+      variationPacks,
       prevSlug,
       nextSlug,
       lessonIndex: idx + 1,

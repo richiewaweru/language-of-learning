@@ -40,18 +40,37 @@ function verifyLesson(slug: string): CheckResult[] {
   results.push(check(lesson.slug === slug, `schema slug=${lesson.slug}`));
   results.push(
     check(
-      lesson.verification?.verified_by === 'PENDING-RICHIE',
+      lesson.verification?.verified_by === 'PENDING-HUMAN' ||
+        lesson.verification?.verified_by === 'PENDING-RICHIE',
       `verification placeholder=${lesson.verification?.verified_by}`,
     ),
   );
 
-  const sceneBlocks = lesson.blocks.filter((b) => b.type === 'scene');
+  const requiredTypes = [
+    'question',
+    'staticPreview',
+    'prediction',
+    'execution',
+    'patternExplanation',
+    'variation',
+    'comparison',
+    'transferCheck',
+    'summary',
+  ];
+  for (const t of requiredTypes) {
+    results.push(check(lesson.blocks.some((b) => b.type === t), `section type ${t}`));
+  }
+
+  const sceneBlocks = lesson.blocks.filter(
+    (b) => b.type === 'scene' || b.type === 'staticPreview' || b.type === 'execution',
+  );
   results.push(check(sceneBlocks.length >= 1, `scene blocks=${sceneBlocks.length}`));
 
   for (const block of sceneBlocks) {
-    if (block.type !== 'scene') continue;
-    const meta = sceneIndex[block.sceneId];
-    results.push(check(Boolean(meta), `sceneId ${block.sceneId} in index`));
+    if (block.type !== 'scene' && block.type !== 'staticPreview' && block.type !== 'execution') continue;
+    const sceneId = block.sceneId;
+    const meta = sceneIndex[sceneId];
+    results.push(check(Boolean(meta), `sceneId ${sceneId} in index`));
     if (!meta) continue;
 
     const fixture = meta.fixture;
@@ -98,7 +117,7 @@ function verifyLesson(slug: string): CheckResult[] {
     const badRefs = scene.layout.map((n) => n.id).filter((id) => !nodeIds.has(id));
     results.push(check(badRefs.length === 0, `scene nodes ⊆ graph (${badRefs.length} bad)`));
 
-    const rebuilt = buildScene(graph, trace, { sceneId: block.sceneId });
+    const rebuilt = buildScene(graph, trace, { sceneId });
     results.push(
       check(rebuilt.steps.length === scene.steps.length, 'pre-rendered step count matches rebuild'),
     );

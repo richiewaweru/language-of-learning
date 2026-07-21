@@ -1,7 +1,8 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "slug": "accumulate",
   "title": "Accumulate — build up one value",
+  "difficulty": "Foundation",
   "objectives": [
     "Recognize a state binding updated from its prior value and the iterator",
     "Map the loop frame to the code that walks a collection",
@@ -9,32 +10,64 @@
   ],
   "prerequisites": [],
   "blocks": [
+    { "type": "question", "text": "How can a loop remember everything it has processed so far?" },
+    { "type": "staticPreview", "sceneId": "scene-accumulate" },
     {
-      "type": "text",
-      "content": "Sometimes a loop builds one answer by folding each item into a running total. That pattern is ACCUMULATE."
+      "type": "prediction",
+      "sceneId": "scene-accumulate",
+      "prompt": "Current number: 5. Running total: 3. What happens when the update runs?",
+      "options": [
+        { "id": "a", "label": "The total becomes 5" },
+        { "id": "b", "label": "The total becomes 8" },
+        { "id": "c", "label": "The total stays 3" }
+      ],
+      "correctId": "b"
+    },
+    { "type": "execution", "sceneId": "scene-accumulate" },
+    {
+      "type": "patternExplanation",
+      "pattern": "ACCUMULATE",
+      "steps": [
+        "Start with one state value.",
+        "Visit each item in the collection.",
+        "Combine the current item with the state.",
+        "Store the new state.",
+        "Return the state after the loop."
+      ]
+    },
+    { "type": "variation", "variationId": "accumulate_running_sum" },
+    {
+      "type": "comparison",
+      "neighborPattern": "COUNT",
+      "rows": [
+        { "label": "State starts at", "current": "0 (or any initial value)", "neighbor": "0" },
+        { "label": "Update uses", "current": "The current item's value", "neighbor": "Add 1 when condition passes" },
+        { "label": "Result answers", "current": "How much total?", "neighbor": "How many?" }
+      ]
     },
     {
-      "type": "scene",
-      "sceneId": "scene-accumulate"
+      "type": "transferCheck",
+      "variationId": "accumulate_running_sum",
+      "questions": [
+        {
+          "id": "pattern",
+          "prompt": "What pattern is this renamed example?",
+          "answerKey": "accumulate",
+          "rubric": "ACCUMULATE — state combines with each item"
+        }
+      ]
     },
     {
-      "type": "text",
-      "content": "Canonical example: `calculate_total` from fixtures/accumulate. The state cell `total` starts at 0 and grows as `price` arrives."
-    },
-    {
-      "type": "check",
-      "checkId": "accumulate-line-total"
+      "type": "summary",
+      "fields": [
+        { "key": "Shape", "value": "One state value updated inside a loop over a collection" },
+        { "key": "State", "value": "Running total (or accumulator)" },
+        { "key": "Repeated action", "value": "Add current item to state" },
+        { "key": "Result", "value": "Single combined value" },
+        { "key": "Common uses", "value": "Sum, product, join strings" }
+      ]
     }
   ],
-  "checks": [
-    {
-      "id": "accumulate-line-total",
-      "prompt": "Which line initializes the running total?",
-      "answerKey": "2",
-      "rubric": "Line 2: total = 0"
-    }
-  ],
-  "verification": {
-    "verified_by": "PENDING-RICHIE"
-  }
+  "checks": [],
+  "verification": { "verified_by": "PENDING-HUMAN" }
 }

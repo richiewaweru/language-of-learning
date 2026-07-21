@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "source": "def calculate_total(prices):\n    total = 0\n    for price in prices:\n        total = total + price\n    return total",
+  "source": "def calculate_total(numbers):\n    total = 0\n    for number in numbers:\n        total = total + number\n    return total",
   "nodes": [
     {
       "id": "fn-L1C0",
@@ -23,9 +23,9 @@
         "startLine": 1,
         "startCol": 20,
         "endLine": 1,
-        "endCol": 26
+        "endCol": 27
       },
-      "name": "prices",
+      "name": "numbers",
       "role": "parameter",
       "mutable": false
     },
@@ -62,9 +62,9 @@
         "startLine": 3,
         "startCol": 4,
         "endLine": 4,
-        "endCol": 28
+        "endCol": 29
       },
-      "iteratorName": "price",
+      "iteratorName": "number",
       "collectionRef": "bind-L1C20",
       "body": "op-L4C16"
     },
@@ -75,9 +75,9 @@
         "startLine": 3,
         "startCol": 8,
         "endLine": 3,
-        "endCol": 13
+        "endCol": 14
       },
-      "name": "price",
+      "name": "number",
       "role": "iterator",
       "mutable": false
     },
@@ -88,9 +88,9 @@
         "startLine": 4,
         "startCol": 16,
         "endLine": 4,
-        "endCol": 28
+        "endCol": 29
       },
-      "expr": "total + price"
+      "expr": "total + number"
     },
     {
       "id": "ret-L5C4",

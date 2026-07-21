@@ -6,6 +6,7 @@
     buildTransferCheck,
     gradeTransferCheck,
     resolveSelection,
+    resolveTruthDetail,
     type SemanticGraph,
     type Trace,
     type TransferCheck,
@@ -13,12 +14,13 @@
   import { detectPattern } from '@lol/lens-patterns';
   import type { PatternHit, Selection } from '@lol/lens-contracts';
   import CodeEditor from '$lib/CodeEditor.svelte';
+  import TruthDrawer from '$lib/product/TruthDrawer.svelte';
   import { analyzeSource, loadAnalysis, recordEvent, saveAnalysis } from '$lib/api';
 
-  const DEFAULT_SOURCE = `def calculate_total(prices):
+  const DEFAULT_SOURCE = `def calculate_total(numbers):
     total = 0
-    for price in prices:
-        total = total + price
+    for number in numbers:
+        total = total + number
     return total`;
 
   let source = $state(DEFAULT_SOURCE);
@@ -37,11 +39,21 @@
   let transferAnswer = $state('');
   let transferFeedback = $state('');
   let activeView = $state<'code' | 'shape' | 'trace' | 'pattern'>('shape');
+  let drawerOpen = $state(false);
+  let showTechnical = $state(false);
 
   const unsupported = $derived(graph?.unsupported ?? []);
   const resolved = $derived(
     graph && trace && scene
       ? resolveSelection(selection, graph, trace, scene.layout)
+      : null,
+  );
+
+  const stepIndex = $derived(selection.stepIndex ?? 0);
+
+  const truthDetail = $derived(
+    graph && trace && scene
+      ? resolveTruthDetail(selection, graph, trace, scene, stepIndex)
       : null,
   );
 
@@ -139,6 +151,7 @@
     } else {
       selection = next;
     }
+    drawerOpen = true;
   }
 
   function selectNode(nodeId: string) {
@@ -149,6 +162,7 @@
     } else {
       selection = next;
     }
+    drawerOpen = true;
   }
 
   function onStepChange(index: number) {
@@ -307,7 +321,15 @@
     {/if}
   {/if}
 
-  <p class="nav"><a href="/">Home</a> · <a href="/slices/accumulate">Accumulate slice</a></p>
+  <p class="nav"><a href="/">Home</a> · <a href="/demo">Demo</a></p>
+
+  <TruthDrawer
+    detail={truthDetail}
+    open={drawerOpen}
+    onClose={() => (drawerOpen = false)}
+    {showTechnical}
+    onToggleTechnical={(v) => (showTechnical = v)}
+  />
 </main>
 
 <style>

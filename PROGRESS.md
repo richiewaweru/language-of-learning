@@ -2,32 +2,41 @@
 
 ## Current phase
 
-**PM7 — complete.** P-motion PM0–PM7 done (`gate-PM7`).
+**V — Audience Value Proof.** Technical implementation V0–V4 complete; human validation **PENDING-HUMAN**.
 
 ## Last gate
 
-**gate-PM7** — 2026-07-16
+**gate-V4 (technical)** — 2026-07-21
 
-## Gate report — PM7 (final P-motion)
+## Gate report — Audience Value Proof (technical handoff)
 
 ```
-1. pnpm test:all — green
-2. pnpm capture:pm7 — 8 SVGs in BUILD-LOG/assets/pm7
-3. accumulate final returnValue assert = 10
-4. docs/learner-validation-pm7.md filed (Richie runs human A/B)
-5. 10 accumulate_* variations in fixtures/variations
-6. pnpm --filter web build — exit 0
+1. pnpm test:all — green (incl. test:web, 56 lens-scenes tests)
+2. pnpm test:lessons — 4/4 machine-checked (44 checks each, full lesson anatomy)
+3. pnpm capture:v1 — 8 SVGs in BUILD-LOG/assets/v1
+4. pnpm --filter web build — exit 0
+5. Public routes: /, /demo, /learn/*, /decode, /how-it-works, /about
+6. docs/audience-value-*.md + ADRs 0009–0011 + learner-validation-v4.md filed
 ```
 
-### What shipped (PM0–PM7)
+### What shipped (V0–V4 technical)
 
-- Motion contract + recreated function-component PoC
-- deriveMotionState fold; richer scene actions + layout edges
-- RuntimeTokenLayer, paths, state morph, branch routes, return exit
-- Keyboard + aria-live + timing token groups
-- Visual regression assets + learner protocol
+- Living Diagram Notebook shell: ProductHeader/Footer, extended design tokens
+- Audience homepage with engine-derived HeroDemo
+- `/demo` flagship LearningInstrument (accumulate [3,5,2] → 10)
+- Learner step labels + captions (`deriveStepLabel`, `deriveLearnerCaption`)
+- Four-lesson pathway with full 9-section anatomy
+- Connected Truth View: `resolveTruthDetail` + TruthDrawer (demo, lessons, decode)
+- Prediction, comparison, variation, transfer, summary components
+- Local lesson progress persistence
 
-### Still for Richie
+### Human validation (not complete)
 
-- Run learner-validation-pm7.md A/B
-- Smoke test + PENDING-RICHIE lesson sign-off (unchanged from F4)
+| Item | Status |
+|------|--------|
+| Five-person learner protocol | PENDING-HUMAN |
+| Teacher/explainer review | PENDING-HUMAN |
+| Richie lesson sign-off | PENDING-HUMAN |
+| PM7 A/B sign-off | PENDING-HUMAN |
+
+**Overall status: TECHNICALLY COMPLETE — HUMAN VALIDATION PENDING**

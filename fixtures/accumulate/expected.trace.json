@@ -25,7 +25,7 @@
         "bind-L2C4"
       ],
       "bindings": {
-        "prices": "[3, 5, 2]",
+        "numbers": "[3, 5, 2]",
         "total": "0"
       },
       "event": {
@@ -41,8 +41,8 @@
         "loop-L3C4"
       ],
       "bindings": {
-        "price": "3",
-        "prices": "[3, 5, 2]",
+        "number": "3",
+        "numbers": "[3, 5, 2]",
         "total": "0"
       },
       "event": {
@@ -59,8 +59,8 @@
         "op-L4C16"
       ],
       "bindings": {
-        "price": "3",
-        "prices": "[3, 5, 2]",
+        "number": "3",
+        "numbers": "[3, 5, 2]",
         "total": "3"
       },
       "event": {
@@ -77,8 +77,8 @@
         "loop-L3C4"
       ],
       "bindings": {
-        "price": "5",
-        "prices": "[3, 5, 2]",
+        "number": "5",
+        "numbers": "[3, 5, 2]",
         "total": "3"
       },
       "event": {
@@ -95,8 +95,8 @@
         "op-L4C16"
       ],
       "bindings": {
-        "price": "5",
-        "prices": "[3, 5, 2]",
+        "number": "5",
+        "numbers": "[3, 5, 2]",
         "total": "8"
       },
       "event": {
@@ -113,8 +113,8 @@
         "loop-L3C4"
       ],
       "bindings": {
-        "price": "2",
-        "prices": "[3, 5, 2]",
+        "number": "2",
+        "numbers": "[3, 5, 2]",
         "total": "8"
       },
       "event": {
@@ -131,8 +131,8 @@
         "op-L4C16"
       ],
       "bindings": {
-        "price": "2",
-        "prices": "[3, 5, 2]",
+        "number": "2",
+        "numbers": "[3, 5, 2]",
         "total": "10"
       },
       "event": {
@@ -149,8 +149,8 @@
         "ret-L5C4"
       ],
       "bindings": {
-        "price": "2",
-        "prices": "[3, 5, 2]",
+        "number": "2",
+        "numbers": "[3, 5, 2]",
         "total": "10"
       },
       "event": {

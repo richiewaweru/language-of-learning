@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/richiewaweru/language-of-learning/actions/workflows/ci.yml/badge.svg)](https://github.com/richiewaweru/language-of-learning/actions/workflows/ci.yml)
 
-Deterministic structural code lens for beginner Python: paste a supported function, see graph / trace / pattern / scene, and study the **How loops build results** pathway.
+Deterministic structural code lens for beginner Python: see how loops build results through synchronized code, visuals, and trace-derived explanations.
 
-Authority: `docs/semantic-contract.md` → `docs/visual-constitution.md` + `docs/design-tokens.css` → `docs/foundation-plan.md`.
+Authority: `docs/semantic-contract.md` → `docs/visual-constitution.md` + `docs/design-tokens.css` → `docs/audience-value-product-contract.md`.
 
 ## Quickstart (≤10 commands)
 
@@ -20,26 +20,30 @@ From a fresh clone:
 
 Then open:
 
-6.  http://127.0.0.1:5173/decode  
-7.  http://127.0.0.1:5173/learn/how-loops-build-results  
+6.  http://127.0.0.1:5173/ — audience landing + hero demo  
+7.  http://127.0.0.1:5173/demo — flagship demonstration  
+8.  http://127.0.0.1:5173/learn/how-loops-build-results — four-lesson pathway  
+9.  http://127.0.0.1:5173/decode — try your code  
 
 Optional checks:
 
 ```bash
-8.  pnpm test:lessons
-9.  pnpm test:journey
-10. pnpm build
+pnpm test:all
+pnpm build
 ```
 
-Commands **1–5** get a running app; **6–7** are URLs; **8–10** verify the build.
+Commands **1–5** get a running app; **6–9** are key URLs; optional checks verify the build.
 
 ## What you get
 
 | Surface | Route |
 |---|---|
-| Decode | `/decode` |
+| Landing + hero demo | `/` |
+| Flagship demo | `/demo` |
 | Learn pathway | `/learn/how-loops-build-results` |
-| Accumulate / Filter slices | `/slices/accumulate`, `/slices/filter` |
+| Try your code | `/decode` |
+| How it works | `/how-it-works` |
+| Developer slices | `/slices/accumulate`, `/slices/filter` |
 | Local API | `http://127.0.0.1:8000` (`pnpm api`) |
 
 ## Requirements

@@ -754,3 +754,125 @@ See CORRECTIVE-RUN-unified.md final 10-command block.
 4. Fresh preview browser check on `/slices/accumulate` → real UI; zero page/console errors
 
 **Phase R1 complete.**
+
+## Phase V0 — Product framing and design foundation [gate: audience homepage + nav + responsive + test:all]
+
+- [ ] V0-01 Audit current public and learner-facing routes
+      done-when: route inventory documented in product contract
+      status: in-progress
+      evidence:
+      judge:
+
+- [ ] V0-02 Write audience-value product contract
+      done-when: docs/audience-value-product-contract.md exists
+      status: in-progress
+      evidence:
+      judge:
+
+- [ ] V0-03 Write Living Diagram Notebook design sheet
+      done-when: docs/audience-value-design-system.md exists
+      status: in-progress
+      evidence:
+      judge:
+
+- [ ] V0-04 Extend neutral design tokens without changing semantic law
+      done-when: design-tokens.css extended with aliases + new skin tokens
+      status: todo
+      evidence:
+      judge:
+
+- [ ] V0-05 Build shared public shell
+      done-when: ProductHeader + ProductFooter in layout
+      status: todo
+      evidence:
+      judge:
+
+- [ ] V0-06 Replace developer-facing homepage
+      done-when: homepage shows audience copy; no "v0.1 skeleton"
+      status: todo
+      evidence:
+      judge:
+
+- [ ] V0-07 Move developer tools out of primary navigation
+      done-when: nav has ≤4 items; dev routes in footer only
+      status: todo
+      evidence:
+      judge:
+
+- [ ] V0-08 Add responsive and accessibility baseline
+      done-when: mobile/tablet/desktop layout verified
+      status: todo
+      evidence:
+      judge:
+
+- [ ] V0-09 Run gate-V0
+      done-when: pnpm --filter web build exit 0; test:all unchanged
+      status: todo
+      evidence:
+      judge:
+
+## Phase V1 — Flagship demonstration [gate: engine-derived demo + learner captions + tests]
+
+- [ ] V1-01 Lock flagship source and call fixture
+- [ ] V1-02 Add engine-derived demo data loader
+- [ ] V1-03 Build shared LearningInstrument
+- [ ] V1-04 Build homepage HeroDemo
+- [ ] V1-05 Build full /demo route
+- [ ] V1-06 Add learner-facing step labels
+- [ ] V1-07 Add trace-derived captions
+- [ ] V1-08 Add before/after and pattern sections
+- [ ] V1-09 Add mobile and static fallback
+- [ ] V1-10 Add truth and browser tests
+- [ ] V1-11 Run gate-V1
+
+## Phase V2 — Four-lesson pathway [gate: 4/4 lessons full anatomy]
+
+- [ ] V2-01 Build pathway overview
+- [ ] V2-02 Build PatternFamilyMap
+- [ ] V2-03 Define complete lesson schema
+- [ ] V2-04 Upgrade accumulate lesson
+- [ ] V2-05 Upgrade count lesson
+- [ ] V2-06 Upgrade filter lesson
+- [ ] V2-07 Upgrade transform lesson
+- [ ] V2-08 Build prediction system
+- [ ] V2-09 Build variation challenges
+- [ ] V2-10 Build neighbor comparisons
+- [ ] V2-11 Build transfer checks
+- [ ] V2-12 Build structural summaries
+- [ ] V2-13 Add local progress persistence
+- [ ] V2-14 Run machine lesson gate
+- [ ] V2-15 Mark human review PENDING-HUMAN
+- [ ] V2-16 Run gate-V2
+
+## Phase V3 — Connected Truth View [gate: bidirectional selection + TruthDrawer]
+
+- [ ] V3-01 Define learner truth-detail contract
+- [ ] V3-02 Extend shared selection resolver where necessary
+- [ ] V3-03 Connect code selection to scene selection
+- [ ] V3-04 Connect scene selection to code selection
+- [ ] V3-05 Add runtime token details
+- [ ] V3-06 Add state transition details
+- [ ] V3-07 Add branch details
+- [ ] V3-08 Add return details
+- [ ] V3-09 Build TruthDrawer
+- [ ] V3-10 Add optional TechnicalEvidence
+- [ ] V3-11 Add keyboard and screen-reader behavior
+- [ ] V3-12 Add reverse-step and stale-selection tests
+- [ ] V3-13 Run gate-V3
+
+## Phase V4 — Validation and readiness [gate: no P0/P1 + human protocol filed]
+
+- [ ] V4-01 Create clean-checkout product review checklist
+- [ ] V4-02 Run full public route browser sweep
+- [ ] V4-03 Fix all technical P0 defects
+- [ ] V4-04 Fix all technical P1 defects
+- [ ] V4-05 Create learner-validation protocol
+- [ ] V4-06 Create teacher-review protocol
+- [ ] V4-07 Mark learner validation PENDING-HUMAN
+- [ ] V4-08 Mark teacher validation PENDING-HUMAN
+- [ ] V4-09 Mark Richie lesson sign-off PENDING-HUMAN
+- [ ] V4-10 Mark PM7 A/B sign-off PENDING-HUMAN
+- [ ] V4-11 Run full test suite
+- [ ] V4-12 Run production build and preview
+- [ ] V4-13 Produce final technical handoff
+- [ ] V4-14 Leave gate-V4 pending unless human thresholds exist

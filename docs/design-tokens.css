@@ -55,6 +55,67 @@
   --radius-pill: 999px;       /* ONLY values are fully rounded (S-rule) */
   --border-w: 1.5px;          /* standard */
   --border-w-strong: 2.5px;   /* function boundary */
+
+  /* ── LIVING DIAGRAM NOTEBOOK — extended skin (V0) ────────── */
+  /* Aliases preserve existing token consumers */
+  --bg-canvas:     #F4F1EA;
+  --bg-page:       var(--bg);
+  --surface-paper: var(--paper);
+  --surface-raised: #FFFFFF;
+  --surface-recessed: #EEEAE1;
+  --surface-code:  #F7F5EF;
+  --surface-dark:  #1E2027;
+
+  --ink-strong:    var(--ink);
+  --ink-body:      #30323A;
+  --ink-muted:     var(--muted);
+  --ink-faint:     #9799A3;
+  --ink-inverse:   #FAF9F6;
+
+  --line-soft:     #E4E0D7;
+  --line-default:  var(--line);
+  --line-strong:   #A8A49B;
+  --grid-line-soft: rgba(23, 25, 31, 0.055);
+  --grid-line-emphasis: rgba(23, 25, 31, 0.085);
+
+  --shadow-xs:     0 1px 2px rgba(23, 25, 31, 0.06);
+  --shadow-sm:     0 3px 10px rgba(23, 25, 31, 0.07);
+  --shadow-md:     0 10px 30px rgba(23, 25, 31, 0.09);
+  --shadow-lg:     0 24px 60px rgba(23, 25, 31, 0.12);
+  --shadow-offset: 4px 4px 0 rgba(23, 25, 31, 0.92);
+
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-panel: 18px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 28px;
+  --space-7: 36px;
+  --space-8: 48px;
+  --space-9: 64px;
+  --space-10: 88px;
+  --space-11: 120px;
+
+  --content-narrow: 720px;
+  --content-reading: 820px;
+  --content-standard: 1120px;
+  --content-wide: 1360px;
+  --content-canvas: 1520px;
+
+  --font-display: Georgia, "Times New Roman", serif;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 19px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --text-3xl: clamp(42px, 6vw, 72px);
 }
 
 /* Reduced motion: instant state changes, ghost becomes two-beat static */

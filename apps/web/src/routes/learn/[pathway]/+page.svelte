@@ -1,78 +1,114 @@
 <script lang="ts">
+  import PatternFamilyMap from '$lib/product/PatternFamilyMap.svelte';
+  import { loadProgress } from '$lib/product/lessonProgress';
+
   let { data } = $props();
+
+  function lessonProgress(slug: string): string {
+    if (typeof localStorage === 'undefined') return '';
+    const p = loadProgress(slug);
+    return p.completedSections.length > 0 ? `${p.completedSections.length} sections started` : '';
+  }
 </script>
 
 <svelte:head>
   <title>{data.pathway.title} — Learn</title>
 </svelte:head>
 
-<main>
+<article class="pathway-page container">
   <p class="eyebrow">Pathway</p>
   <h1>{data.pathway.title}</h1>
   <p class="lede">{data.pathway.summary}</p>
+  <p class="promise">Learn four structures that explain many beginner Python loops.</p>
+
+  <PatternFamilyMap />
 
   <ol class="lessons">
     {#each data.lessons as lesson, i}
       <li>
         <a href="/learn/{data.pathway.slug}/{lesson.slug}">
           <span class="n">{i + 1}</span>
-          {lesson.title}
+          <span class="meta">
+            <span class="title">{lesson.title}</span>
+            {#if lesson.difficulty}
+              <span class="diff">{lesson.difficulty}</span>
+            {/if}
+          </span>
         </a>
       </li>
     {/each}
   </ol>
 
-  <p class="nav">
-    <a href="/learn">← All pathways</a>
-    ·
-    <a href="/learn/{data.pathway.slug}/{data.lessons[0]?.slug}">Start lesson 1 →</a>
+  <p class="continue">
+    <a href="/learn/{data.pathway.slug}/{data.lessons[0]?.slug}" class="btn-primary">
+      {data.lessons[0] ? 'Start pathway' : 'Back'}
+    </a>
   </p>
-</main>
+</article>
 
 <style>
-  main {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 1.5rem;
-    background: var(--paper);
-    min-height: 100vh;
+  .pathway-page {
+    padding: var(--space-8) var(--space-6) var(--space-10);
   }
-  .eyebrow {
-    font: var(--eyebrow);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+
   h1 {
-    color: var(--work-purple);
-    margin: 0.25rem 0;
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    margin: var(--space-2) 0 var(--space-3);
   }
-  .lede {
-    color: var(--muted);
+
+  .lede, .promise {
+    color: var(--ink-muted);
+    max-width: 55ch;
   }
+
   .lessons {
-    padding-left: 0;
+    padding: 0;
     list-style: none;
+    margin: var(--space-8) 0;
   }
+
   .lessons li {
-    margin: 0.75rem 0;
+    margin: var(--space-3) 0;
   }
+
   .lessons a {
     display: flex;
-    gap: 0.75rem;
+    gap: var(--space-4);
     align-items: baseline;
-    color: var(--data-blue);
-    font: 600 1.05rem/1.3 var(--font-ui);
     text-decoration: none;
+    color: var(--ink-strong);
+    padding: var(--space-4);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+    background: var(--surface-paper);
   }
+
+  .lessons a:hover {
+    border-color: var(--ink-strong);
+  }
+
   .n {
     font: 700 12px/1 var(--font-mono);
-    color: var(--muted);
+    color: var(--ink-faint);
   }
-  .nav {
-    margin-top: 2rem;
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
   }
-  a {
-    color: var(--data-blue);
+
+  .title {
+    font-weight: 600;
+  }
+
+  .diff {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+
+  .continue {
+    margin-top: var(--space-6);
   }
 </style>

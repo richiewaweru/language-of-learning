@@ -1,0 +1,6 @@
+<!-- v1 final_state step=7 return=10 tokens=undefined -->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="120">
+  <text x="8" y="24" font-family="monospace" font-size="12">final_state</text>
+  <text x="8" y="48" font-family="sans-serif" font-size="11">The current number is 2. Add it to the running total of 8. The new total is 10.</text>
+  <text x="8" y="72" font-family="monospace" font-size="10">bindings: {"number":"2","numbers":"[3, 5, 2]","total":"10"}</text>
+</svg>

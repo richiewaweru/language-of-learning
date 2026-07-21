@@ -1,40 +1,73 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "slug": "filter",
-  "title": "Filter — keep only some items",
+  "title": "Filter — keep matching items",
+  "difficulty": "Builds a collection",
   "objectives": [
-    "Recognize a loop with a branch whose true path appends to a new collection",
-    "See flow-teal loop and branch-magenta fork together",
-    "Predict which items land in the result list"
+    "See FILTER as a loop that appends when a condition passes",
+    "Track both the iterator and the growing output collection",
+    "Contrast FILTER with COUNT"
   ],
-  "prerequisites": ["accumulate"],
+  "prerequisites": ["count"],
   "blocks": [
+    { "type": "question", "text": "How can a loop keep some items and leave others out?" },
+    { "type": "staticPreview", "sceneId": "scene-filter" },
     {
-      "type": "text",
-      "content": "FILTER builds a new collection by keeping items that pass a test. Untaken paths dim; they do not vanish."
+      "type": "prediction",
+      "sceneId": "scene-filter",
+      "prompt": "The current item passes the condition. Will it be kept?",
+      "options": [
+        { "id": "a", "label": "Yes, it will be appended" },
+        { "id": "b", "label": "No, it will be skipped" },
+        { "id": "c", "label": "The list will be cleared" }
+      ],
+      "correctId": "a"
+    },
+    { "type": "execution", "sceneId": "scene-filter" },
+    {
+      "type": "patternExplanation",
+      "pattern": "FILTER",
+      "steps": [
+        "Start with an empty output collection.",
+        "Visit each item.",
+        "Check a condition.",
+        "Append the item when it passes.",
+        "Return the collection."
+      ]
+    },
+    { "type": "variation", "variationId": "filter_keep_positive" },
+    {
+      "type": "comparison",
+      "neighborPattern": "TRANSFORM",
+      "rows": [
+        { "label": "Output", "current": "Subset of input items", "neighbor": "One new value per input item" },
+        { "label": "Condition role", "current": "Decides keep or skip", "neighbor": "Not required" },
+        { "label": "Items processed", "current": "Some may be dropped", "neighbor": "Every item produces output" }
+      ]
     },
     {
-      "type": "scene",
-      "sceneId": "scene-filter"
+      "type": "transferCheck",
+      "variationId": "filter_keep_positive",
+      "questions": [
+        {
+          "id": "pattern",
+          "prompt": "What pattern keeps only passing items?",
+          "answerKey": "filter",
+          "rubric": "FILTER — append when condition passes"
+        }
+      ]
     },
     {
-      "type": "text",
-      "content": "Canonical example: `positive_prices` from fixtures/filter."
-    },
-    {
-      "type": "check",
-      "checkId": "filter-line-append"
+      "type": "summary",
+      "fields": [
+        { "key": "Shape", "value": "Output collection + condition + append" },
+        { "key": "State", "value": "Growing result list" },
+        { "key": "Repeated action", "value": "Append item when condition passes" },
+        { "key": "Result", "value": "Filtered collection" },
+        { "key": "Common uses", "value": "Keep positives, select winners" }
+      ]
     }
   ],
-  "checks": [
-    {
-      "id": "filter-line-append",
-      "prompt": "Which line appends a kept item?",
-      "answerKey": "6",
-      "rubric": "Line 6: results.append(price)"
-    }
-  ],
-  "verification": {
-    "verified_by": "PENDING-RICHIE"
-  }
+  "checks": [],
+  "verification": { "verified_by": "PENDING-HUMAN" }
 }

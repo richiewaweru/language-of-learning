@@ -1,5 +1,5 @@
-def calculate_total(prices):
+def calculate_total(numbers):
     total = 0
-    for price in prices:
-        total = total + price
+    for number in numbers:
+        total = total + number
     return total

@@ -264,3 +264,37 @@ the bundled-chunk and `apps/web` starting points.
 - Production preview `/slices/accumulate` — HTTP 200 with `Accumulator`; hydrated browser body showed the interactive scene and logged zero browser errors.
 - `pnpm test:all` — exit 0 after the fixes.
 
+## Session gate — Audience Value Proof start (2026-07-21)
+
+Before V0 work:
+
+```
+pnpm test:all — exit 0 (analyzer, trace, variations, patterns, scenes, fixtures, journey, api-save, lessons, parity-ops, visual, typecheck, lint)
+pnpm --filter web build — exit 0
+```
+
+## Phase V summary — Audience Value Proof (2026-07-21)
+
+### DECISION: accumulate fixture uses `numbers` parameter (V1-01)
+
+Flagship source aligned to product contract; goldens regenerated via `regenerate_fixture_expectations.py`.
+
+### DECISION: learner captions in lens-scenes (V1-07)
+
+`deriveStepLabel` and `deriveLearnerCaption` wrap trace values — never hand-typed in Svelte.
+
+### DECISION: variation packs via Python export (V2)
+
+`tools/export_variation_pack.py` builds graph+trace at SSR for lesson variations without hand-authored scene truth.
+
+### V-phase evidence
+
+```
+pnpm test:all — exit 0
+pnpm test:lessons — 4/4 machine-checked
+pnpm capture:v1 — 8 SVGs BUILD-LOG/assets/v1
+pnpm --filter web build — exit 0
+```
+
+Human validation per `docs/learner-validation-v4.md` remains PENDING-HUMAN.
+
