@@ -21,6 +21,13 @@ from lol_trace import run_trace  # noqa: E402
 from lol_trace.sandbox import SandboxViolation  # noqa: E402
 
 from build_artifacts import ENGINE_VERSION, ArtifactError, build_artifacts  # noqa: E402
+from apps.api.ai_runtime import (  # noqa: E402
+    AISettings,
+    ChatRequest,
+    TeachingRequest,
+    status as ai_runtime_status,
+    teach,
+)
 
 DATA = ROOT / "data"
 ANALYSES = DATA / "analyses"
@@ -33,7 +40,12 @@ if not EVENTS.exists():
 app = FastAPI(title="Language of Learning API", version=ENGINE_VERSION)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:4173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:4173",
+        "http://127.0.0.1:4173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -168,3 +180,24 @@ def post_event(req: EventRequest) -> dict[str, str]:
     with EVENTS.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(record) + "\n")
     return {"status": "recorded"}
+
+
+@app.get("/ai/status")
+def ai_status() -> dict[str, Any]:
+    """Return safe runtime capability information; never return credentials."""
+    return ai_runtime_status(AISettings.load())
+
+
+@app.post("/ai/explain-step")
+def ai_explain_step(req: TeachingRequest) -> dict[str, Any]:
+    return teach(req, "explain_step").model_dump()
+
+
+@app.post("/ai/explain-program")
+def ai_explain_program(req: TeachingRequest) -> dict[str, Any]:
+    return teach(req, "explain_program").model_dump()
+
+
+@app.post("/ai/chat")
+def ai_chat(req: ChatRequest) -> dict[str, Any]:
+    return teach(req, "chat", req.question).model_dump()

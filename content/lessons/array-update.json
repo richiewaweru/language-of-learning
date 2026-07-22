@@ -1,0 +1,68 @@
+{
+  "version": "0.2",
+  "slug": "array-update",
+  "title": "Array mutation — update a value in place",
+  "difficulty": "Foundation",
+  "objectives": [
+    "Identify the collection, selected index, old value, and new value",
+    "Distinguish mutation from creating a separate result",
+    "Use object identity to explain aliases to the same list"
+  ],
+  "prerequisites": ["collections", "state"],
+  "blocks": [
+    { "type": "question", "text": "What changes when code writes a new value into an existing list position?" },
+    { "type": "text", "content": "Goal: trace the selected cell from its previous value to its current value." },
+    { "type": "staticPreview", "sceneId": "scene-array-update" },
+    {
+      "type": "prediction",
+      "sceneId": "scene-array-update",
+      "prompt": "The list is [1, 2, 3] and the code writes 9 at index 0. What list is returned?",
+      "options": [
+        { "id": "a", "label": "[1, 2, 3]" },
+        { "id": "b", "label": "[9, 2, 3]" },
+        { "id": "c", "label": "[1, 2, 3, 9]" }
+      ],
+      "correctId": "b"
+    },
+    { "type": "execution", "sceneId": "scene-array-update" },
+    {
+      "type": "patternExplanation",
+      "pattern": "ARRAY_MUTATION",
+      "steps": [
+        "Read the existing collection and selected index.",
+        "Record the cell's previous value.",
+        "Write the verified new value into the same collection.",
+        "Show the old-to-new transition in State.",
+        "Return the mutated collection."
+      ]
+    },
+    { "type": "variation", "variationId": "array-update" },
+    {
+      "type": "comparison",
+      "neighborPattern": "TRANSFORM",
+      "rows": [
+        { "label": "Collection identity", "current": "The existing list changes", "neighbor": "A separate result list is built" },
+        { "label": "Visual focus", "current": "Selected index and old-to-new value", "neighbor": "Input item moving into output" },
+        { "label": "Result", "current": "Mutated collection", "neighbor": "New collection" }
+      ]
+    },
+    {
+      "type": "transferCheck",
+      "variationId": "array-update",
+      "questions": [
+        { "id": "result", "prompt": "If the assignment becomes values[1] = 7 for [1, 2, 3], what is returned?", "answerKey": "[1, 7, 3]", "rubric": "Only the selected index changes." }
+      ]
+    },
+    {
+      "type": "summary",
+      "fields": [
+        { "key": "Shape", "value": "Indexed write into an existing collection" },
+        { "key": "State evidence", "value": "Role, name, previous value, current value, and object identity" },
+        { "key": "Effect", "value": "The selected cell changes in place" },
+        { "key": "Transfer challenge", "value": "Change the index, literal, names, and inputs, then predict the returned list" }
+      ]
+    }
+  ],
+  "checks": [],
+  "verification": { "verified_by": "PENDING-HUMAN" }
+}

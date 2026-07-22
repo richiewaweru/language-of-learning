@@ -21,18 +21,14 @@
   import SemanticStateView from '$lib/learner-ui/lesson/SemanticStateView.svelte';
   import GuidedTraceView from '$lib/learner-ui/lesson/GuidedTraceView.svelte';
   import GraphInspector from '$lib/learner-ui/lesson/GraphInspector.svelte';
+  import AskLens from '$lib/learner-ui/lesson/AskLens.svelte';
   import { deriveFlowProjection } from '$lib/learner-ui/projection/deriveSemanticProjections';
-  import { analyzeSource, loadAnalysis, recordEvent, saveAnalysis } from '$lib/api';
+  import { analyzeSource, recordEvent } from '$lib/api';
 
   let { data } = $props();
 
   function createInitialDecodeState() {
     const pack = data.pack;
-    const initialStep =
-      pack.trace.steps
-        .map((step, index) => ({ type: step.event.type, index }))
-        .filter((step) => step.type === 'state_change')
-        .at(-2)?.index ?? 0;
     return {
       source: pack.source,
       argsText: pack.argsRepr[0] ?? '[]',
@@ -41,7 +37,7 @@
       pattern: detectPattern(pack.graph),
       scene: pack.scene,
       semanticScene: pack.semanticScene,
-      selection: { stepIndex: initialStep } as Selection,
+      selection: { stepIndex: 0 } as Selection,
       transfer: buildTransferCheck(pack.graph),
     };
   }
@@ -58,13 +54,11 @@
   let semanticScene = $state<SemanticScene | null>(initial.semanticScene);
   let violation = $state<{ construct: string; message: string } | null>(null);
   let selection = $state<Selection>(initial.selection);
-  let savedId = $state('');
-  let loadId = $state('');
   let transfer = $state<TransferCheck | null>(initial.transfer);
   let transferAnswer = $state('');
   let transferFeedback = $state('');
-  let activeView = $state<'structure' | 'flow' | 'state' | 'explain'>('structure');
-  let inputTab = $state<'paste' | 'upload' | 'examples'>('paste');
+  let activeView = $state<'structure' | 'flow' | 'state' | 'explain'>('flow');
+  let inputTab = $state<'paste' | 'examples'>('paste');
   let drawerOpen = $state(false);
   let showTechnical = $state(false);
 
@@ -76,6 +70,7 @@
   );
 
   const stepIndex = $derived(selection.stepIndex ?? 0);
+  const totalSteps = $derived(semanticScene?.steps.length ?? 0);
 
   const truthDetail = $derived(
     graph && trace && scene
@@ -86,9 +81,29 @@
   function parseArgs(text: string): string[] {
     const trimmed = text.trim();
     if (!trimmed) return [];
-    // single literal or comma-separated literals
-    if (trimmed.startsWith('[')) return [trimmed];
-    return trimmed.split(',').map((s) => s.trim()).filter(Boolean);
+    const args: string[] = [];
+    let start = 0;
+    let depth = 0;
+    let quote = '';
+    let escaped = false;
+    for (let index = 0; index < trimmed.length; index += 1) {
+      const character = trimmed[index];
+      if (quote) {
+        if (escaped) escaped = false;
+        else if (character === '\\') escaped = true;
+        else if (character === quote) quote = '';
+        continue;
+      }
+      if (character === '"' || character === "'") quote = character;
+      else if ('([{'.includes(character)) depth += 1;
+      else if (')]}'.includes(character)) depth = Math.max(0, depth - 1);
+      else if (character === ',' && depth === 0) {
+        args.push(trimmed.slice(start, index).trim());
+        start = index + 1;
+      }
+    }
+    args.push(trimmed.slice(start).trim());
+    return args.filter(Boolean);
   }
 
   async function runAnalyze() {
@@ -120,47 +135,6 @@
       error = err instanceof Error ? err.message : String(err);
     } finally {
       analyzing = false;
-    }
-  }
-
-  async function onSave() {
-    if (!graph || !trace) return;
-    try {
-      const res = await saveAnalysis({
-        source,
-        argsRepr: parseArgs(argsText),
-        graph,
-        trace,
-        pattern,
-        scene,
-        id: savedId || undefined,
-      });
-      savedId = res.id;
-      loadId = res.id;
-      await recordEvent('save', { id: res.id });
-    } catch (err) {
-      error = err instanceof Error ? err.message : String(err);
-    }
-  }
-
-  async function onLoad() {
-    if (!loadId.trim()) return;
-    try {
-      const data = await loadAnalysis(loadId.trim());
-      source = String(data.source ?? '');
-      argsText = Array.isArray(data.argsRepr) ? data.argsRepr.join(', ') : argsText;
-      graph = data.graph as SemanticGraph;
-      trace = data.trace as Trace;
-      pattern = (data.pattern as PatternHit | null) ?? detectPattern(graph);
-      scene = (data.scene as ReturnType<typeof buildScene> | null) ??
-        (trace.steps?.length ? buildScene(graph, trace) : null);
-      semanticScene = trace.steps?.length ? normalizeSemanticScene(graph, trace) : null;
-      transfer = buildTransferCheck(graph);
-      savedId = String(data.id ?? loadId);
-      selection = { stepIndex: 0 };
-      await recordEvent('load', { id: savedId });
-    } catch (err) {
-      error = err instanceof Error ? err.message : String(err);
     }
   }
 
@@ -197,10 +171,27 @@
   function onSelectionChange(next: Selection) {
     selection = next;
   }
+  function goToStep(next: number) {
+    const last = Math.max(0, (semanticScene?.steps.length ?? 1) - 1);
+    selection = { ...selection, stepIndex: Math.min(last, Math.max(0, next)) };
+  }
   const projection = $derived(
     semanticScene
       ? deriveFlowProjection(semanticScene, stepIndex)
       : null,
+  );
+  const patternLessonHref = $derived(
+    pattern?.pattern === 'ACCUMULATE'
+      ? '/learn/python-foundations/loops/accumulate'
+      : pattern?.pattern === 'COUNT'
+        ? '/learn/python-foundations/loops/count'
+        : pattern?.pattern === 'FILTER'
+          ? '/learn/python-foundations/loops/filter'
+          : pattern?.pattern === 'TRANSFORM'
+            ? '/learn/python-foundations/loops/transform'
+            : pattern?.pattern === 'SEARCH'
+              ? '/learn/python-foundations/loops/search'
+            : null,
   );
 </script>
 
@@ -224,13 +215,15 @@
   <div class="decode-layout">
     <section class="input-panel surface-card">
       <div class="input-tabs" role="tablist">
-        {#each ['paste', 'upload', 'examples'] as tab}
+        {#each ['paste', 'examples'] as tab}
           <button
             type="button"
+            role="tab"
+            aria-selected={inputTab === tab}
             class:active={inputTab === tab}
             onclick={() => (inputTab = tab as typeof inputTab)}
           >
-            {tab === 'paste' ? 'Paste Code' : tab === 'upload' ? 'Upload' : 'Examples'}
+            {tab === 'paste' ? 'Paste Code' : 'Examples'}
           </button>
         {/each}
       </div>
@@ -245,14 +238,12 @@
           <input class="args" bind:value={argsText} placeholder="[2, 4, 6, 8]" />
         </label>
       {:else if inputTab === 'examples'}
-        <p class="hint">Quick examples use the default accumulate function.</p>
+        <p class="hint">Explore supported functions, loops, lists, and conditionals.</p>
         <div class="example-pills">
           {#each ['Functions', 'Loops', 'Lists', 'Conditionals'] as ex}
             <button type="button" class="pill-tag" onclick={() => (inputTab = 'paste')}>{ex}</button>
           {/each}
         </div>
-      {:else}
-        <p class="hint">File upload is not yet available. Paste your code instead.</p>
       {/if}
 
       <button type="button" class="btn-primary visualize" onclick={runAnalyze} disabled={analyzing}>
@@ -260,21 +251,40 @@
       </button>
 
       {#if error}
-        <p class="error" data-testid="error">{error}</p>
+        <div class="error" data-testid="error" role="alert">
+          <p>We could not visualize that program. {error}</p>
+          <button type="button" class="btn-secondary" onclick={runAnalyze}>Retry</button>
+        </div>
+      {:else if violation}
+        <div class="error" data-testid="unsupported" role="status">
+          <p><strong>Execution not verified.</strong> {violation.message}</p>
+          <p>Lens will not invent a trace for unsupported behavior.</p>
+        </div>
       {/if}
     </section>
 
     <section class="workspace">
       {#if graph && trace}
+        {#if totalSteps}
+          <div class="decode-playback" data-testid="decode-playback" aria-label="Execution controls">
+            <button type="button" class="btn-secondary" onclick={() => goToStep(0)} disabled={stepIndex === 0}>Start</button>
+            <button type="button" class="btn-secondary" onclick={() => goToStep(stepIndex - 1)} disabled={stepIndex === 0}>Back</button>
+            <span>Step {stepIndex + 1} of {totalSteps}</span>
+            <button type="button" class="btn-secondary" onclick={() => goToStep(stepIndex + 1)} disabled={stepIndex >= totalSteps - 1}>Next</button>
+            <button type="button" class="btn-secondary" onclick={() => goToStep(totalSteps - 1)} disabled={stepIndex >= totalSteps - 1}>End</button>
+          </div>
+        {/if}
         <div class="view-tabs" role="tablist">
           {#each [
-            { id: 'structure', label: 'Graph Inspector' },
             { id: 'flow', label: 'Flow' },
             { id: 'state', label: 'State' },
             { id: 'explain', label: 'Guided Trace' },
+            { id: 'structure', label: 'Graph Inspector' },
           ] as view}
             <button
               type="button"
+              role="tab"
+              aria-selected={activeView === view.id}
               class:active={activeView === view.id}
               onclick={() => (activeView = view.id as typeof activeView)}
             >
@@ -284,7 +294,13 @@
         </div>
 
         <div class="workspace-main surface-card" data-testid="view-{activeView}">
-          {#if activeView === 'structure' && scene && semanticScene}
+          {#if violation}
+            <div class="unsupported-workspace" data-testid="unsupported-workspace">
+              <h2>Verified visualization unavailable</h2>
+              <p>{violation.message}</p>
+              <p>Try a smaller function using supported assignments, loops, conditions, list operations, and returns.</p>
+            </div>
+          {:else if activeView === 'structure' && scene && semanticScene}
             <GraphInspector
               {scene}
               {semanticScene}
@@ -316,15 +332,15 @@
           <p class="card-label">Pattern detected</p>
           <h2>{pattern.pattern[0]}{pattern.pattern.slice(1).toLowerCase()}</h2>
           <p class="confidence">{pattern.confidence} confidence</p>
-          <a href="/learn/python-foundations/loops/accumulate" class="link">Learn more →</a>
+          {#if patternLessonHref}<a href={patternLessonHref} class="link">Learn this pattern →</a>{/if}
         </div>
       {/if}
 
       <div class="insight-card surface-card">
         <p class="card-label">Try this next</p>
         <ul>
-          <li>Modify the code to return the sum of cubes</li>
-          <li>What if the list is empty? Add a guard.</li>
+          <li>Rename the function and variables, then Visualize again.</li>
+          <li>Change an input value and predict which State row will change.</li>
         </ul>
       </div>
 
@@ -344,6 +360,13 @@
     </aside>
   </div>
 
+  <AskLens
+    {source}
+    argsRepr={parseArgs(argsText)}
+    {stepIndex}
+    lessonGoal="Connect the current Flow, State, and Guided Trace views."
+  />
+
   <footer class="scope-strip surface-card">
     <p>
       <strong>Scope:</strong> We currently support core Python loop patterns.
@@ -353,15 +376,6 @@
         All good for this snippet.
       {/if}
     </p>
-    <details class="admin">
-      <summary>Save / load analysis</summary>
-      <div class="admin-row">
-        <button type="button" class="btn-secondary" onclick={onSave} disabled={!graph}>Save</button>
-        <input class="id" bind:value={loadId} placeholder="analysis id" />
-        <button type="button" class="btn-secondary" onclick={onLoad}>Load</button>
-        {#if savedId}<span class="saved">saved: {savedId}</span>{/if}
-      </div>
-    </details>
   </footer>
 
   <TruthDrawer
@@ -470,13 +484,20 @@
     color: var(--alert-orange);
     font-size: var(--text-sm);
     margin: 0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--space-2);
+    align-items:center;
+    justify-content:space-between;
   }
+  .error p { margin:0; }
 
   .view-tabs {
     display: flex;
     gap: var(--space-2);
     margin-bottom: var(--space-3);
   }
+  .decode-playback { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:var(--space-2); margin-bottom:var(--space-3); color:var(--ink-muted); font-size:var(--text-xs); }
 
   .view-tabs button {
     padding: var(--space-2) var(--space-4);
@@ -504,6 +525,8 @@
     text-align: center;
     color: var(--ink-muted);
   }
+  .unsupported-workspace { min-height:300px; display:grid; place-content:center; gap:var(--space-2); text-align:center; color:var(--ink-secondary); }
+  .unsupported-workspace h2,.unsupported-workspace p { margin:0; }
 
   .sidebar {
     display: flex;
@@ -568,29 +591,4 @@
     color: var(--ink-secondary);
   }
 
-  .admin {
-    margin-top: var(--space-3);
-    font-size: var(--text-xs);
-  }
-
-  .admin-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-top: var(--space-2);
-    align-items: center;
-  }
-
-  .id {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    padding: var(--space-2);
-    border: 1px solid var(--line-soft);
-    border-radius: var(--radius-xs);
-  }
-
-  .saved {
-    font-size: var(--text-xs);
-    color: var(--ink-faint);
-  }
 </style>

@@ -1,0 +1,49 @@
+{
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": ["[1, 2, 3]"]
+  },
+  "steps": [
+    {
+      "index": 0,
+      "line": 1,
+      "focus": ["fn-L1C0"],
+      "bindings": {},
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-L1C0"
+      }
+    },
+    {
+      "index": 1,
+      "line": 2,
+      "focus": ["mut-L2C4", "bind-L1C17"],
+      "bindings": {
+        "values": "[9, 2, 3]"
+      },
+      "event": {
+        "type": "indexed_mutation",
+        "collection": "bind-L1C17",
+        "indexRepr": "0",
+        "oldRepr": "1",
+        "newRepr": "9"
+      }
+    },
+    {
+      "index": 2,
+      "line": 3,
+      "focus": ["ret-L3C4"],
+      "bindings": {
+        "values": "[9, 2, 3]"
+      },
+      "event": {
+        "type": "return_exit",
+        "repr": "[9, 2, 3]"
+      }
+    }
+  ],
+  "truncated": false,
+  "result": {
+    "repr": "[9, 2, 3]"
+  }
+}

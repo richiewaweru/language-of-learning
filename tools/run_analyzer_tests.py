@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "packages" / "analyzer-python" / "src"))
 from lol_analyzer import analyze_source, canonical_json  # noqa: E402
 
 
-FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard"]
+FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard", "array-update"]
 
 # Contract N2: every node id is positional — <kind-prefix>-L<line>C<col> with an
 # optional ordinal suffix that breaks positional collisions. No names, literals,
@@ -109,7 +109,7 @@ class AnalyzerFixtureTests(unittest.TestCase):
             expected = (fixture_dir(fixture) / "expected.graph.json").read_text(encoding="utf-8")
             self.assertEqual(actual, expected, fixture)
             matched += 1
-        self.assertEqual(matched, 6)
+        self.assertEqual(matched, len(FIXTURES))
 
 
 def fixture_dir(name: str) -> Path:

@@ -1,0 +1,68 @@
+{
+  "version": "0.2",
+  "slug": "search",
+  "title": "Linear search — stop at the first match",
+  "difficulty": "Foundation",
+  "objectives": [
+    "Follow a cursor through a collection until a condition matches",
+    "Explain why an early return stops the loop and the function",
+    "Transfer the structure to renamed values and a different condition"
+  ],
+  "prerequisites": ["conditions", "loops"],
+  "blocks": [
+    { "type": "question", "text": "How can a function stop as soon as it finds the first matching item?" },
+    { "type": "text", "content": "Goal: connect the current item, comparison, chosen branch, and returned result." },
+    { "type": "staticPreview", "sceneId": "scene-search" },
+    {
+      "type": "prediction",
+      "sceneId": "scene-search",
+      "prompt": "The cursor reaches 4 and the condition 4 > 0 is true. What happens next?",
+      "options": [
+        { "id": "a", "label": "The function returns 4" },
+        { "id": "b", "label": "The loop checks 2 first" },
+        { "id": "c", "label": "The function returns -1" }
+      ],
+      "correctId": "a"
+    },
+    { "type": "execution", "sceneId": "scene-search" },
+    {
+      "type": "patternExplanation",
+      "pattern": "SEARCH",
+      "steps": [
+        "Select the next item from the collection.",
+        "Compare the current item with the search condition.",
+        "Follow the branch recorded by execution.",
+        "Return immediately when the condition matches.",
+        "Return the fallback only when no item matches."
+      ]
+    },
+    { "type": "variation", "variationId": "search_find_zero" },
+    {
+      "type": "comparison",
+      "neighborPattern": "COUNT",
+      "rows": [
+        { "label": "Loop goal", "current": "Find the first match", "neighbor": "Count every match" },
+        { "label": "On a match", "current": "Return and stop", "neighbor": "Update state and continue" },
+        { "label": "Result", "current": "Matched item or fallback", "neighbor": "Number of matches" }
+      ]
+    },
+    {
+      "type": "transferCheck",
+      "variationId": "search_find_zero",
+      "questions": [
+        { "id": "pattern", "prompt": "What makes the renamed example a linear search?", "answerKey": "early return", "rubric": "It returns as soon as the condition matches." }
+      ]
+    },
+    {
+      "type": "summary",
+      "fields": [
+        { "key": "Shape", "value": "Cursor plus comparison inside a loop" },
+        { "key": "Branch", "value": "A matching branch returns immediately" },
+        { "key": "Fallback", "value": "Returned only after the loop finds no match" },
+        { "key": "Transfer challenge", "value": "Change the condition and input values without changing the structure" }
+      ]
+    }
+  ],
+  "checks": [],
+  "verification": { "verified_by": "PENDING-HUMAN" }
+}

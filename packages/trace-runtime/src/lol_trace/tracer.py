@@ -163,8 +163,7 @@ class Tracer:
             self._exec_assign(stmt)
             return False
         if isinstance(stmt, ast.For):
-            self._exec_for(stmt)
-            return False
+            return self._exec_for(stmt)
         if isinstance(stmt, ast.While):
             return self._exec_while(stmt)
         if isinstance(stmt, ast.If):
@@ -300,7 +299,7 @@ class Tracer:
             },
         )
 
-    def _exec_for(self, stmt: ast.For) -> None:
+    def _exec_for(self, stmt: ast.For) -> bool:
         if not isinstance(stmt.target, ast.Name) or not (
             isinstance(stmt.iter, ast.Name) or self._is_range_call(stmt.iter)
         ):
@@ -328,7 +327,8 @@ class Tracer:
             )
             for child in stmt.body:
                 if self._exec_stmt(child):
-                    return
+                    return True
+        return False
 
     def _exec_while(self, stmt: ast.While) -> bool:
         if stmt.orelse:

@@ -1,0 +1,11 @@
+File,Line,Finding,Classification,Action,Status,Test
+apps/web/src/routes/decode/+page.svelte,41,"Initial step selects the penultimate state_change event",confirmed bug,"Default to the first execution step so pasted programs do not inherit fixture-shaped navigation",closed,tests/e2e/decode-acceptance.spec.ts
+apps/web/src/routes/decode/+page.svelte,68,"Graph Inspector is the default view and appears before Flow",confirmed bug,"Make Flow default and order Flow; State; Guided Trace; Graph Inspector",closed,tests/e2e/flagship-lesson.spec.ts
+apps/web/src/routes/decode/+page.svelte,248,"Examples copy claims every quick example uses the default accumulate function",suspicious,"Replace with structurally neutral learner copy",closed,tests/e2e/flagship-lesson.spec.ts
+apps/web/src/routes/decode/+page.svelte,319,"Every detected pattern links to the accumulation lesson",confirmed bug,"Map verified patterns to valid lesson routes and omit a link when no route exists",closed,tests/e2e/decode-acceptance.spec.ts
+apps/web/src/routes/decode/+page.svelte,309,"Try-next prompts are accumulation-specific for every pasted program",confirmed bug,"Use structurally neutral rename/input transfer prompts",closed,tests/e2e/decode-acceptance.spec.ts
+apps/web/src/lib/repoRoot.ts,5,"Fixture path is used only as a repository-root marker",acceptable fixture,"No product output depends on the fixture",closed,tests/web/repo-root.test.ts
+apps/web/src/lib/product/loadDemoPack.ts,19,"Flagship demo intentionally loads the accumulation fixture",acceptable fixture,"Keep isolated to the named flagship demo loader",closed,flagship browser tests
+apps/web/src/routes/learn/[pathway]/+page.svelte,13,"Pathway status and lesson duration are fixed",acceptable copy,"Review during class-route phase; not used to derive execution output",review,class-route browser tests
+apps/web/src/routes/learn/[pathway]/[module]/[lesson]/+page.svelte,22,"Lesson presentation branches directly on accumulate slug",suspicious,"New search and mutation routes use content-driven objectives and pattern steps; remaining flagship copy is intentionally accumulation-specific",review,tests/e2e/class-routes.spec.ts
+.env.example,5,"Example environment file contained a credential-like API key",confirmed bug,"Remove the value; keep secrets only in ignored local environment",closed,secret scan

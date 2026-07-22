@@ -96,19 +96,6 @@
           "functionNode": "fn-L1C0"
         }
       ]
-    },
-    {
-      "index": 8,
-      "actions": [
-        {
-          "type": "exit_return",
-          "repr": "-1",
-          "port": "ret-L5C4",
-          "tokenId": "tok-S8-return_exit-0",
-          "returnNode": "ret-L5C4",
-          "functionNode": "fn-L1C0"
-        }
-      ]
     }
   ]
 }

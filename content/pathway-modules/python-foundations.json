@@ -3,8 +3,8 @@
   "modules": {
     "loops": {
       "title": "Loops",
-      "summary": "Four patterns for building a result with a loop.",
-      "lessonSlugs": ["accumulate", "count", "filter", "transform"]
+      "summary": "Six structural patterns for following values, branches, and collection changes.",
+      "lessonSlugs": ["accumulate", "count", "filter", "transform", "search", "array-update"]
     }
   }
 }

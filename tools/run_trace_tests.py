@@ -15,11 +15,25 @@ from lol_trace import canonical_json, run_trace  # noqa: E402
 from lol_trace.sandbox import SandboxGuard, SandboxViolation  # noqa: E402
 
 
-FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard"]
+FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard", "array-update"]
 HOSTILE = ["infinite_loop", "huge_allocation", "eval_attempt", "import_attempt", "dunder_escape"]
 
 
 class TraceFixtureTests(unittest.TestCase):
+    def test_return_inside_for_stops_function_execution(self) -> None:
+        source = (
+            "def first_match(values):\n"
+            "    for value in values:\n"
+            "        if value > 5:\n"
+            "            return value\n"
+            "    return -1\n"
+        )
+        graph = analyze_source(source)
+        trace = run_trace(source, graph, ["[2, 8, 12]"])
+        self.assertEqual(trace["result"]["repr"], "8")
+        returns = [step["event"]["repr"] for step in trace["steps"] if step["event"]["type"] == "return_exit"]
+        self.assertEqual(returns, ["8"])
+
     maxDiff = None
 
     def test_call_enter_and_return_keywords(self) -> None:
@@ -53,7 +67,7 @@ class TraceFixtureTests(unittest.TestCase):
             self.assertEqual(first, expected, fixture)
             self.assertEqual(canonical_json(first), canonical_json(second), fixture)
             matched += 1
-        self.assertEqual(matched, 6)
+        self.assertEqual(matched, len(FIXTURES))
 
     def test_alias_mutation_preserves_shared_object_identity(self) -> None:
         source = (

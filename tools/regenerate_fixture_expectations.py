@@ -29,6 +29,7 @@ from lol_trace import canonical_json as trace_canonical_json  # noqa: E402
 from lol_trace import run_trace  # noqa: E402
 
 PATTERN_FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard"]
+SUPPORTED_FIXTURES = ["array-update"]
 
 
 def regenerate_graph(fixture_dir: Path) -> None:
@@ -53,6 +54,11 @@ def regenerate_trace(fixture_dir: Path) -> None:
 def regenerate_positive_fixtures() -> None:
     print("Positive pattern fixtures:")
     for name in PATTERN_FIXTURES:
+        fixture_dir = ROOT / "fixtures" / name
+        regenerate_graph(fixture_dir)
+        regenerate_trace(fixture_dir)
+    print("Additional supported fixtures:")
+    for name in SUPPORTED_FIXTURES:
         fixture_dir = ROOT / "fixtures" / name
         regenerate_graph(fixture_dir)
         regenerate_trace(fixture_dir)

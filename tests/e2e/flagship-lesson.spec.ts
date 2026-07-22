@@ -154,7 +154,15 @@ test.describe('learner route integration', () => {
   test('Decode opens with a useful engine-backed example', async ({ page }) => {
     await page.goto('/decode');
     await waitForHydration(page);
-    await expect(page.getByTestId('view-structure')).toBeVisible();
+    await expect(page.getByTestId('view-flow')).toBeVisible();
+    await expect(page.getByRole('tab').allTextContents()).resolves.toEqual([
+      'Paste Code',
+      'Examples',
+      'Flow',
+      'State',
+      'Guided Trace',
+      'Graph Inspector',
+    ]);
     await expect(page.getByTestId('pattern-hit')).toContainText('Accumulate');
     await expect(page.getByLabel('Sample input')).toHaveValue('[2, 4, 6, 8]');
   });

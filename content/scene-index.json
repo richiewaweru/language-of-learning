@@ -14,5 +14,13 @@
   "scene-transform": {
     "fixture": "transform",
     "examplePath": "fixtures/transform"
+  },
+  "scene-search": {
+    "fixture": "search",
+    "examplePath": "fixtures/search"
+  },
+  "scene-array-update": {
+    "fixture": "array-update",
+    "examplePath": "fixtures/array-update"
   }
 }

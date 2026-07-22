@@ -13,5 +13,6 @@ vendor/pyodide/
 __pycache__/
 *.pyc
 .pytest_cache/
+.codex-tmp/
 .DS_Store
 data/

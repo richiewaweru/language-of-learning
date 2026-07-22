@@ -1,0 +1,152 @@
+{
+  "id": "scene-array-update",
+  "graphRef": "fixtures/array-update",
+  "motionVersion": "0.2",
+  "layout": [
+    {
+      "id": "mut-L2C4",
+      "kind": "mutation",
+      "x": 56,
+      "y": 98,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "ret-L3C4",
+      "kind": "return",
+      "x": 56,
+      "y": 140,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "x": 28,
+      "y": 28,
+      "width": 476,
+      "height": 154
+    },
+    {
+      "id": "bind-L1C17",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-fn-L1C0-mut-L2C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "mut-L2C4",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 105,
+        "x2": 126,
+        "y2": 112
+      }
+    },
+    {
+      "id": "edge-mut-L2C4-bind-L1C17-mutates",
+      "fromNode": "mut-L2C4",
+      "toNode": "bind-L1C17",
+      "kind": "data",
+      "path": {
+        "x1": 126,
+        "y1": 112,
+        "x2": 112,
+        "y2": 70
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-ret-L3C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "ret-L3C4",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 105,
+        "x2": 126,
+        "y2": 154
+      }
+    },
+    {
+      "id": "edge-ret-L3C4-bind-L1C17-returns",
+      "fromNode": "ret-L3C4",
+      "toNode": "bind-L1C17",
+      "kind": "return",
+      "path": {
+        "x1": 126,
+        "y1": 154,
+        "x2": 112,
+        "y2": 70
+      }
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "fn-L1C0"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[1, 2, 3]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "update_first"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "mut-L2C4",
+        "bind-L1C17"
+      ],
+      "line": 2,
+      "actions": [],
+      "caption": {
+        "key": "call.enter",
+        "params": {}
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "ret-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "[9, 2, 3]",
+          "port": "ret-L3C4",
+          "tokenId": "tok-S2-return_exit-0",
+          "returnNode": "ret-L3C4",
+          "functionNode": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "[9, 2, 3]"
+        }
+      }
+    }
+  ]
+}

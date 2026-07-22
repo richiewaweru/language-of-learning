@@ -1,0 +1,319 @@
+{
+  "id": "scene-search",
+  "graphRef": "fixtures/search",
+  "motionVersion": "0.2",
+  "layout": [
+    {
+      "id": "ret-L4C12",
+      "kind": "return",
+      "x": 112,
+      "y": 238,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "branch-L3C8",
+      "kind": "branch",
+      "x": 84,
+      "y": 168,
+      "width": 308,
+      "height": 112
+    },
+    {
+      "id": "loop-L2C4",
+      "kind": "loop",
+      "x": 56,
+      "y": 98,
+      "width": 364,
+      "height": 196
+    },
+    {
+      "id": "ret-L5C4",
+      "kind": "return",
+      "x": 56,
+      "y": 308,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "x": 28,
+      "y": 28,
+      "width": 476,
+      "height": 322
+    },
+    {
+      "id": "bind-L1C24",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    },
+    {
+      "id": "bind-L2C8",
+      "kind": "binding",
+      "x": 182,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-fn-L1C0-loop-L2C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "loop-L2C4",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 189,
+        "x2": 238,
+        "y2": 196
+      }
+    },
+    {
+      "id": "edge-loop-L2C4-bind-L1C24-iterates",
+      "fromNode": "loop-L2C4",
+      "toNode": "bind-L1C24",
+      "kind": "repeat",
+      "path": {
+        "x1": 238,
+        "y1": 196,
+        "x2": 112,
+        "y2": 70
+      }
+    },
+    {
+      "id": "edge-loop-L2C4-branch-L3C8-contains",
+      "fromNode": "loop-L2C4",
+      "toNode": "branch-L3C8",
+      "kind": "control",
+      "path": {
+        "x1": 238,
+        "y1": 196,
+        "x2": 238,
+        "y2": 224
+      }
+    },
+    {
+      "id": "edge-branch-L3C8-ret-L4C12-contains",
+      "fromNode": "branch-L3C8",
+      "toNode": "ret-L4C12",
+      "kind": "control",
+      "path": {
+        "x1": 238,
+        "y1": 224,
+        "x2": 182,
+        "y2": 252
+      }
+    },
+    {
+      "id": "edge-ret-L4C12-bind-L2C8-returns",
+      "fromNode": "ret-L4C12",
+      "toNode": "bind-L2C8",
+      "kind": "return",
+      "path": {
+        "x1": 182,
+        "y1": 252,
+        "x2": 238,
+        "y2": 70
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-ret-L5C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "ret-L5C4",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 189,
+        "x2": 126,
+        "y2": 322
+      }
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "fn-L1C0"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[-3, -1, 4, 2]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "find_first_positive"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "loop-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L2C4",
+          "itemIndex": 0,
+          "itemRepr": "-3",
+          "tokenId": "tok-S1-loop_advance-0",
+          "collection": "bind-L1C24"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "-3"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "branch-L3C8"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L3C8",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L3C8",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "loop-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L2C4",
+          "itemIndex": 1,
+          "itemRepr": "-1",
+          "tokenId": "tok-S3-loop_advance-0",
+          "collection": "bind-L1C24"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "-1"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "branch-L3C8"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L3C8",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L3C8",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "loop-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L2C4",
+          "itemIndex": 2,
+          "itemRepr": "4",
+          "tokenId": "tok-S5-loop_advance-0",
+          "collection": "bind-L1C24"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "4"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "branch-L3C8"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L3C8",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L3C8",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "ret-L4C12"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "4",
+          "port": "ret-L4C12",
+          "tokenId": "tok-S7-return_exit-0",
+          "returnNode": "ret-L4C12",
+          "functionNode": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "4"
+        }
+      }
+    }
+  ]
+}

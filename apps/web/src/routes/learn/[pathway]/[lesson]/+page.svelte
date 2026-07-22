@@ -7,6 +7,7 @@
   import { markSectionComplete, loadProgress } from '$lib/product/lessonProgress';
   import type { DemoPack } from '$lib/product/loadDemoPack';
   import type { VariationPack } from '$lib/product/loadVariationPack';
+  import { normalizeSemanticScene } from '@lol/lens-scenes';
 
   let { data } = $props();
   function initialProgress() {
@@ -23,7 +24,22 @@
   }
 
   function packFromExecution(sceneId: string): DemoPack | undefined {
-    return data.executionPacks[sceneId];
+    const existing = data.executionPacks[sceneId];
+    if (existing) return existing;
+    const loaded = data.sceneBlocks.find((entry) => entry.sceneId === sceneId);
+    if (!loaded) return undefined;
+    return {
+      id: sceneId,
+      title: data.lesson.title,
+      source: loaded.example.source,
+      argsRepr: loaded.example.argsRepr,
+      graph: loaded.example.graph,
+      trace: loaded.example.trace,
+      scene: loaded.scene,
+      semanticScene: normalizeSemanticScene(loaded.example.graph, loaded.example.trace, {
+        sceneId: 'semantic-' + sceneId,
+      }),
+    };
   }
 
   function packFromVariation(vid: string): VariationPack | undefined {
@@ -114,6 +130,7 @@
               graph: vpack.graph,
               trace: vpack.trace,
               scene: vpack.scene,
+              semanticScene: normalizeSemanticScene(vpack.graph, vpack.trace),
             }}
             showTruthDrawer={true}
           />
