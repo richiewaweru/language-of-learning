@@ -1,6 +1,7 @@
 <script lang="ts">
   import PageContainer from '$lib/learner-ui/shell/PageContainer.svelte';
   import Breadcrumbs from '$lib/learner-ui/shell/Breadcrumbs.svelte';
+  import { summarizePathwayProgress } from '$lib/product/lessonProgress';
   let { data } = $props();
 
   const moduleSlug = 'loops';
@@ -9,10 +10,16 @@
     return `/learn/${data.pathway.slug}/${moduleSlug}/${slug}`;
   }
 
-  function lessonStatus(slug: string, index: number): 'complete' | 'current' | 'locked' {
-    if (slug === 'accumulate') return 'current';
-    if (index <= 1) return 'current';
-    return 'locked';
+  const pathwayProgress = $derived(summarizePathwayProgress(data.lessons));
+  const completedSlugs = $derived(new Set(pathwayProgress.completedSlugs));
+  const currentLesson = $derived(data.lessons.find(
+    (lesson: (typeof data.lessons)[number]) => lesson.slug === pathwayProgress.currentSlug,
+  ));
+
+  function lessonStatus(slug: string): 'complete' | 'current' | 'available' {
+    if (completedSlugs.has(slug)) return 'complete';
+    if (slug === pathwayProgress.currentSlug) return 'current';
+    return 'available';
   }
 </script>
 
@@ -41,9 +48,9 @@
   <div class="pathway-layout">
     <aside class="path-nav">
       <div class="nav-progress surface-card">
-        <div class="nav-progress-row"><span>Overall progress</span><strong>32%</strong></div>
-        <div class="mini-progress"><span></span></div>
-        <p>42 / 132 lessons</p>
+        <div class="nav-progress-row"><span>Overall progress</span><strong>{pathwayProgress.percent}%</strong></div>
+        <div class="mini-progress"><span style:width={`${pathwayProgress.percent}%`}></span></div>
+        <p>{pathwayProgress.completedLessons} of {pathwayProgress.totalLessons} lessons</p>
       </div>
       <nav aria-label="Learning navigation">
         <a href="/learn">⌂ <span>Overview</span></a>
@@ -59,27 +66,19 @@
       <h2>Your path</h2>
       <ol class="lesson-list">
         {#each data.lessons as lesson, i}
-          {@const status = lessonStatus(lesson.slug, i)}
+          {@const status = lessonStatus(lesson.slug)}
           <li class={status}>
-            {#if status === 'locked'}
-              <div class="lesson-row locked">
-                <span class="icon">🔒</span>
+            <a href={lessonHref(lesson.slug)} class="lesson-row">
+              <span class="icon">{status === 'complete' ? '✓' : '●'}</span>
+              <span class="lesson-number">{i + 1}</span>
+              <span class="meta">
                 <span class="title">{lesson.title}</span>
-              </div>
-            {:else}
-              <a href={lessonHref(lesson.slug)} class="lesson-row">
-                <span class="icon">{status === 'complete' ? '✓' : '●'}</span>
-                <span class="lesson-number">{i + 1}</span>
-                <span class="meta">
-                  <span class="title">{lesson.title}</span>
-                  <span class="lesson-description">{lesson.objectives?.[0] ?? 'Build a visual mental model.'}</span>
-                  {#if status === 'current'}
-                    <span class="badge">In progress</span>
-                  {/if}
-                </span>
-                <span class="duration">{12 + i * 4} min</span>
-              </a>
-            {/if}
+                <span class="lesson-description">{lesson.objectives?.[0] ?? 'Build a visual mental model.'}</span>
+                {#if status === 'current'}
+                  <span class="badge">In progress</span>
+                {/if}
+              </span>
+            </a>
           </li>
         {/each}
       </ol>
@@ -88,26 +87,28 @@
     <aside class="sidebar">
       <div class="progress-card surface-card">
         <p class="label">Overall progress</p>
-        <div class="ring" aria-label="32 percent complete">32%</div>
-        <p class="sub">42 / 132 lessons</p>
+        <div class="ring" aria-label={`${pathwayProgress.percent} percent complete`}>
+          {pathwayProgress.percent}%
+        </div>
+        <p class="sub">{pathwayProgress.completedLessons} of {pathwayProgress.totalLessons} lessons</p>
       </div>
 
       <div class="continue-card surface-card">
-        <p class="label">Current lesson</p>
-        <h3>Build a Total with a Loop</h3>
-        <pre class="lesson-preview">for n in numbers:
-  total = total + n</pre>
-        <ul class="objectives">
-          <li>Track a running total</li>
-          <li>See each loop update</li>
-          <li>Recognize Accumulate</li>
-        </ul>
-        <a href={lessonHref('accumulate')} class="btn-primary full">Continue lesson</a>
-      </div>
-
-      <div class="streak-card surface-card">
-        <p class="label">Keep it up!</p>
-        <p class="streak">🔥 7 day streak</p>
+        {#if currentLesson}
+          <p class="label">Current lesson</p>
+          <h3>{currentLesson.title}</h3>
+          {#if currentLesson.objectives?.length}
+            <ul class="objectives">
+              {#each currentLesson.objectives as objective}
+                <li>{objective}</li>
+              {/each}
+            </ul>
+          {/if}
+          <a href={lessonHref(currentLesson.slug)} class="btn-primary full">Continue lesson</a>
+        {:else}
+          <p class="label">Pathway complete</p>
+          <h3>You completed every lesson in this pathway.</h3>
+        {/if}
       </div>
     </aside>
   </div>
@@ -185,7 +186,6 @@
 
   .mini-progress span {
     display: block;
-    width: 32%;
     height: 100%;
     background: var(--state-gold);
   }
@@ -244,7 +244,7 @@
     color: inherit;
   }
 
-  .lesson-row:hover:not(.locked) {
+  .lesson-row:hover {
     border-color: var(--brand-blue);
     box-shadow: var(--shadow-sm);
   }
@@ -256,11 +256,6 @@
 
   li.complete .icon {
     color: var(--exit-green);
-  }
-
-  .locked {
-    opacity: 0.55;
-    cursor: not-allowed;
   }
 
   .meta {
@@ -281,13 +276,6 @@
     max-width: 48ch;
   }
 
-  .duration {
-    margin-left: auto;
-    color: var(--ink-muted);
-    font-size: var(--text-xs);
-    white-space: nowrap;
-  }
-
   .title {
     font-weight: 600;
     color: var(--ink-primary);
@@ -306,8 +294,7 @@
   }
 
   .progress-card,
-  .continue-card,
-  .streak-card {
+  .continue-card {
     padding: var(--space-5);
   }
 
@@ -339,15 +326,6 @@
     color: var(--ink-primary);
   }
 
-  .lesson-preview {
-    margin: 0 0 var(--space-4);
-    padding: var(--space-4);
-    border-radius: var(--radius-sm);
-    background: var(--surface-soft);
-    color: var(--work-purple);
-    font: 12px/1.6 var(--font-mono);
-  }
-
   .objectives {
     padding: 0;
     margin: 0 0 var(--space-4);
@@ -364,10 +342,4 @@
     text-align: center;
   }
 
-  .streak {
-    margin: 0;
-    font-size: var(--text-md);
-    font-weight: 600;
-    color: var(--ink-primary);
-  }
 </style>

@@ -38,23 +38,12 @@
     </label>
 
     <div class="header-end">
-      <div class="progress-cluster" aria-label="Learning progress">
-        <span class="stat">
-          <span class="stat-icon" aria-hidden="true">🔥</span>
-          <span class="stat-label">7 day streak</span>
-        </span>
-        <span class="stat">
-          <span class="stat-icon gold" aria-hidden="true">★</span>
-          <span class="stat-label">1,250 XP</span>
-        </span>
+      <div class="progress-cluster" aria-label="Account">
         <button type="button" class="profile" aria-label="Profile menu">
           <span class="avatar">A</span>
           <span class="profile-name">Avery</span>
         </button>
       </div>
-      <a href="/learn/python-foundations/loops/accumulate" class="cta btn-primary mobile-cta">
-        Continue
-      </a>
       <details class="mobile-menu">
         <summary aria-label="Open navigation menu">Menu</summary>
         <nav aria-label="Mobile navigation">
@@ -168,18 +157,6 @@
     gap: var(--space-4);
   }
 
-  .stat {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-xs);
-    color: var(--ink-secondary);
-  }
-
-  .stat-icon.gold {
-    color: var(--state-gold);
-  }
-
   .profile {
     display: flex;
     align-items: center;
@@ -206,16 +183,6 @@
     font-size: var(--text-sm);
     color: var(--ink-primary);
     display: none;
-  }
-
-  .mobile-cta {
-    display: none;
-    padding: var(--space-2) var(--space-4);
-    font-size: var(--text-xs);
-  }
-
-  @media (min-width: 480px) and (max-width: 767px) {
-    .mobile-cta { display: inline-flex; }
   }
 
   .mobile-menu {
@@ -259,10 +226,6 @@
 
     .profile-name {
       display: inline;
-    }
-
-    .mobile-cta {
-      display: none;
     }
 
     .mobile-menu { display: none; }

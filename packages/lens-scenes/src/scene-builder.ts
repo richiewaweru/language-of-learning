@@ -172,8 +172,17 @@ function actionsForStep(graph: SemanticGraph, step: TraceStep, trace: Trace): Sc
       };
       return [fnId ? { ...base, functionNode: fnId } : base];
     }
-    case 'effect_fire':
-      return [{ type: 'pulse_effect', node: event.effect, repr: event.repr }];
+    case 'effect_fire': {
+      const effectType = byId(graph).get(event.effect)?.effectType;
+      return [
+        {
+          type: 'pulse_effect',
+          node: event.effect,
+          ...(effectType ? { effectType } : {}),
+          repr: event.repr,
+        },
+      ];
+    }
     default:
       return [];
   }

@@ -1,0 +1,119 @@
+{
+  "steps": [
+    {
+      "index": 0,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[1, 2, 3]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "—",
+          "newRepr": "0",
+          "inputTokenId": "tok-S1-state_init-0"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 0,
+          "itemRepr": "1",
+          "tokenId": "tok-S2-loop_advance-0",
+          "collection": "bind-L1C17"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "0",
+          "newRepr": "1",
+          "inputTokenId": "tok-S3-state_change-0"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 1,
+          "itemRepr": "2",
+          "tokenId": "tok-S4-loop_advance-0",
+          "collection": "bind-L1C17"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "1",
+          "newRepr": "3",
+          "inputTokenId": "tok-S5-state_change-0"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 2,
+          "itemRepr": "3",
+          "tokenId": "tok-S6-loop_advance-0",
+          "collection": "bind-L1C17"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "3",
+          "newRepr": "6",
+          "inputTokenId": "tok-S7-state_change-0"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "6",
+          "port": "ret-L5C4",
+          "tokenId": "tok-S8-return_exit-0",
+          "returnNode": "ret-L5C4",
+          "functionNode": "fn-L1C0"
+        }
+      ]
+    }
+  ]
+}

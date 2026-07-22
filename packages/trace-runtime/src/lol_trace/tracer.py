@@ -21,6 +21,7 @@ class GraphIndex:
     branches: list[dict[str, Any]]
     returns: list[dict[str, Any]]
     mutations: list[dict[str, Any]]
+    effects: list[dict[str, Any]]
     calls: list[dict[str, Any]]
     operations: dict[str, dict[str, Any]]
     node_line: dict[str, int]
@@ -35,6 +36,7 @@ def index_graph(graph: dict[str, Any]) -> GraphIndex:
     branches = [node for node in nodes if node["kind"] == "branch"]
     returns = [node for node in nodes if node["kind"] == "return"]
     mutations = [node for node in nodes if node["kind"] == "mutation"]
+    effects = [node for node in nodes if node["kind"] == "effect"]
     calls = [node for node in nodes if node["kind"] == "call"]
     operations = {node["id"]: node for node in nodes if node["kind"] == "operation"}
     node_line = {node["id"]: node["sourceRange"]["startLine"] for node in nodes}
@@ -52,6 +54,7 @@ def index_graph(graph: dict[str, Any]) -> GraphIndex:
         branches=branches,
         returns=returns,
         mutations=mutations,
+        effects=effects,
         calls=calls,
         operations=operations,
         node_line=node_line,
@@ -383,6 +386,22 @@ class Tracer:
         )
 
     def _exec_expr(self, stmt: ast.Expr) -> None:
+        if self._is_print_call(stmt.value):
+            if stmt.value.keywords:
+                raise SandboxViolation("Call", "Print keyword arguments are not supported.")
+            args = [self._eval_expr(arg) for arg in stmt.value.args]
+            effect = self._effect_for_stmt(stmt)
+            self.trace.emit(
+                effect["sourceRange"]["startLine"],
+                [effect["id"]],
+                self.trace.snapshot(self.env),
+                {
+                    "type": "effect_fire",
+                    "effect": effect["id"],
+                    "repr": " ".join(value_repr(arg) for arg in args),
+                },
+            )
+            return
         if not self._is_append_call(stmt.value):
             raise SandboxViolation(type(stmt.value).__name__, "Unsupported expression statement.")
         target = stmt.value.func.value
@@ -549,6 +568,26 @@ class Tracer:
             f"No mutation node resolves to line {stmt.lineno} col {stmt.col_offset}.",
         )
 
+    def _effect_for_stmt(self, stmt: ast.Expr) -> dict[str, Any]:
+        for effect in self.graph.effects:
+            source_range = effect["sourceRange"]
+            if (
+                source_range["startLine"] == stmt.lineno
+                and source_range["startCol"] == stmt.col_offset
+            ):
+                return effect
+        on_line = [
+            effect
+            for effect in self.graph.effects
+            if effect["sourceRange"]["startLine"] == stmt.lineno
+        ]
+        if len(on_line) == 1:
+            return on_line[0]
+        raise SandboxViolation(
+            "effect",
+            f"No effect node resolves to line {stmt.lineno} col {stmt.col_offset}.",
+        )
+
     def _mutation_for_assign(self, stmt: ast.Assign) -> dict[str, Any]:
         for mutation in self.graph.mutations:
             source_range = mutation["sourceRange"]
@@ -594,6 +633,13 @@ class Tracer:
             and node.func.attr == "append"
             and isinstance(node.func.value, ast.Name)
             and len(node.args) == 1
+        )
+
+    def _is_print_call(self, node: ast.AST) -> bool:
+        return (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "print"
         )
 
     def _is_range_call(self, node: ast.AST) -> bool:

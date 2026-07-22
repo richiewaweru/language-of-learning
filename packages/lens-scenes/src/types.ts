@@ -15,6 +15,7 @@ export type GraphNode = {
   conditionExpr?: string;
   targetRef?: string;
   mutationType?: string;
+  effectType?: string;
   valueRef?: string;
   params?: string[];
   repr?: string;

@@ -6,6 +6,10 @@ import { buildScene } from '../../packages/lens-scenes/src/build-scene.ts';
 import { normalizeSemanticScene } from '../../packages/lens-scenes/src/normalize-semantic-scene.ts';
 import type { SemanticGraph, Trace } from '../../packages/lens-scenes/src/types.ts';
 import { deriveFlowProjection } from '../../apps/web/src/lib/learner-ui/projection/deriveSemanticProjections.ts';
+import {
+  isLessonComplete,
+  summarizePathwayProgress,
+} from '../../apps/web/src/lib/product/lessonProgress.ts';
 
 const repoRoot = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -47,6 +51,78 @@ describe('learner projection', () => {
     ].join(' ');
     expect(labelText).not.toMatch(/fn-|bind-|loop-L/);
   });
+
+  it('keeps the result hidden when print fires', () => {
+    const base = path.join(repoRoot, 'fixtures', 'print_total');
+    const graph = JSON.parse(readFileSync(path.join(base, 'expected.graph.json'), 'utf8')) as SemanticGraph;
+    const trace = JSON.parse(readFileSync(path.join(base, 'expected.trace.json'), 'utf8')) as Trace;
+    const semanticScene = normalizeSemanticScene(graph, trace, { sceneId: 'print-test' });
+    const projection = deriveFlowProjection(semanticScene, semanticScene.steps.length - 1);
+    expect(projection.eventType).toBe('effect');
+    expect(projection.result).toEqual({ visible: false, active: false });
+  });
+});
+
+describe('pathway progress', () => {
+  const lessons = [
+    {
+      slug: 'first',
+      blocks: [
+        { type: 'prediction' },
+        { type: 'transferCheck', questions: [{ id: 'pattern' }] },
+      ],
+    },
+    { slug: 'second', blocks: [{ type: 'prediction' }] },
+    { slug: 'third', blocks: [{ type: 'text' }] },
+    { slug: 'fourth', blocks: [{ type: 'prediction' }] },
+  ];
+  const empty = { completedSections: [], predictions: {}, transfers: {} };
+
+  it('requires every trackable section and accepts the existing prediction alias', () => {
+    expect(isLessonComplete(lessons[0].blocks, { ...empty, completedSections: ['prediction'] })).toBe(false);
+    expect(
+      isLessonComplete(lessons[0].blocks, {
+        ...empty,
+        completedSections: ['prediction', 'transfer-pattern'],
+      }),
+    ).toBe(true);
+  });
+
+  it('derives fresh, partial, and complete pathway summaries', () => {
+    expect(summarizePathwayProgress(lessons, () => empty)).toMatchObject({
+      completedLessons: 0,
+      totalLessons: 4,
+      percent: 0,
+      currentSlug: 'first',
+    });
+    const partial = summarizePathwayProgress(lessons, (slug) =>
+      slug === 'first'
+        ? { ...empty, completedSections: ['prediction', 'transfer-pattern'] }
+        : empty,
+    );
+    expect(partial).toMatchObject({ completedLessons: 1, percent: 25, currentSlug: 'second' });
+    const complete = summarizePathwayProgress(lessons, (slug) => ({
+      ...empty,
+      completedSections:
+        slug === 'first' ? ['prediction', 'transfer-pattern'] : ['prediction'],
+    }));
+    expect(complete).toMatchObject({ completedLessons: 3, percent: 75, currentSlug: 'third' });
+  });
+
+  it('has no current lesson when every trackable lesson is complete', () => {
+    const trackableLessons = lessons.filter((lesson) => lesson.slug !== 'third');
+    const complete = summarizePathwayProgress(trackableLessons, (slug) => ({
+      ...empty,
+      completedSections:
+        slug === 'first' ? ['prediction', 'transfer-pattern'] : ['prediction'],
+    }));
+    expect(complete).toMatchObject({
+      completedLessons: 3,
+      totalLessons: 3,
+      percent: 100,
+      currentSlug: undefined,
+    });
+  });
 });
 
 describe('homepage contract', () => {
@@ -68,6 +144,16 @@ describe('homepage contract', () => {
     expect(header).toContain('Decode');
     expect(header).toContain('Library');
     expect(header).not.toContain('Graph inspector');
+    expect(header).not.toMatch(/streak|XP/);
+  });
+
+  it('pathway page contains no fabricated progress chrome', () => {
+    const pathway = readFileSync(
+      path.join(repoRoot, 'apps/web/src/routes/learn/[pathway]/+page.svelte'),
+      'utf8',
+    );
+    expect(pathway).not.toMatch(/32%|42 \/ 132|streak|\d+\s+min|locked/);
+    expect(pathway).toContain('pathwayProgress.percent');
   });
 });
 

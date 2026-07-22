@@ -75,6 +75,28 @@ describe('scene builder', () => {
     expect(types).toContain('advance_item');
     expect(types).toContain('exit_return');
   });
+
+  it('maps print and return contrast fixtures truthfully', () => {
+    const printActions = buildSceneActions(loadGraph('print_total'), loadTrace('print_total'));
+    const returnActions = buildSceneActions(loadGraph('return_total'), loadTrace('return_total'));
+    expect(printActions).toEqual(
+      JSON.parse(
+        readFileSync(join(ROOT, 'fixtures', 'print_total', 'expected.scene-actions.json'), 'utf8'),
+      ),
+    );
+    expect(returnActions).toEqual(
+      JSON.parse(
+        readFileSync(join(ROOT, 'fixtures', 'return_total', 'expected.scene-actions.json'), 'utf8'),
+      ),
+    );
+    expect(printActions.steps.at(-1)?.actions).toContainEqual({
+      type: 'pulse_effect',
+      node: 'eff-L5C4',
+      effectType: 'print',
+      repr: '6',
+    });
+    expect(returnActions.steps.at(-1)?.actions[0]?.type).toBe('exit_return');
+  });
 });
 
 describe('selection resolver', () => {

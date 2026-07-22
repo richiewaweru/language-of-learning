@@ -407,6 +407,19 @@ class Analyzer:
             self.ensure_call_node(value, parent_id)
 
     def visit_expr_stmt(self, expr: ast.Expr, parent_id: str) -> None:
+        if self.is_print_call(expr.value):
+            effect_id = self.alloc_id("eff", expr)
+            self.nodes.append(
+                {
+                    "id": effect_id,
+                    "kind": "effect",
+                    "sourceRange": self.range_for(expr),
+                    "effectType": "print",
+                }
+            )
+            self.node_ids.add(effect_id)
+            self.rel(parent_id, "contains", effect_id)
+            return
         if not self.is_append_call(expr.value):
             self.add_unsupported(expr, type(expr.value).__name__)
             return
@@ -476,6 +489,8 @@ class Analyzer:
             return self.define_binding_id(name, first)
         if isinstance(first, ast.Expr) and self.is_append_call(first.value):
             return self.alloc_id("mut", first)
+        if isinstance(first, ast.Expr) and self.is_print_call(first.value):
+            return self.alloc_id("eff", first)
         return "unsupported-body"
 
     def return_value_ref(self, value: ast.expr | None) -> str:
@@ -590,6 +605,13 @@ class Analyzer:
             and value.func.attr == "append"
             and isinstance(value.func.value, ast.Name)
             and len(value.args) == 1
+        )
+
+    def is_print_call(self, value: ast.AST) -> bool:
+        return (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id == "print"
         )
 
     def is_supported_call(self, value: ast.AST | None) -> bool:

@@ -15,6 +15,14 @@ function loadAccumulate(): { graph: SemanticGraph; trace: Trace } {
   return { graph, trace };
 }
 
+function loadFixture(name: string): { graph: SemanticGraph; trace: Trace } {
+  const base = path.join(repoRoot, 'fixtures', name);
+  return {
+    graph: JSON.parse(readFileSync(path.join(base, 'expected.graph.json'), 'utf8')) as SemanticGraph,
+    trace: JSON.parse(readFileSync(path.join(base, 'expected.trace.json'), 'utf8')) as Trace,
+  };
+}
+
 describe('learner labels — accumulate flagship', () => {
   const { graph, trace } = loadAccumulate();
   const scene = buildScene(graph, trace, { sceneId: 'scene-accumulate' });
@@ -66,5 +74,16 @@ describe('learner labels — accumulate flagship', () => {
     const step = trace.steps[10]!;
     const caption = deriveLearnerCaption(graph, step, trace, scene.steps[10]);
     expect(caption).toContain('20');
+  });
+});
+
+describe('learner labels — print effect', () => {
+  it('uses the actual printed representation', () => {
+    const { graph, trace } = loadFixture('print_total');
+    const step = trace.steps.at(-1)!;
+    const scene = buildScene(graph, trace);
+    expect(deriveLearnerCaption(graph, step, trace, scene.steps.at(-1))).toBe(
+      'An effect runs: 6.',
+    );
   });
 });

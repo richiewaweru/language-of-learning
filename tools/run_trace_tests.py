@@ -16,6 +16,7 @@ from lol_trace.sandbox import SandboxGuard, SandboxViolation  # noqa: E402
 
 
 FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard", "array-update"]
+CONTRAST_FIXTURES = ["print_total", "return_total"]
 HOSTILE = ["infinite_loop", "huge_allocation", "eval_attempt", "import_attempt", "dunder_escape"]
 
 
@@ -56,9 +57,42 @@ class TraceFixtureTests(unittest.TestCase):
         self.assertIn("condition_eval", events)
         self.assertIn("collection_append", events)
 
+    def test_print_effect_has_no_result_or_violation(self) -> None:
+        trace = load_trace("print_total")
+        effects = [step for step in trace["steps"] if step["event"]["type"] == "effect_fire"]
+        self.assertEqual(len(effects), 1)
+        self.assertEqual(effects[0]["event"]["repr"], "6")
+        self.assertFalse(trace["truncated"])
+        self.assertNotIn("violation", trace)
+        self.assertNotIn("result", trace)
+
+    def test_return_contrast_has_result(self) -> None:
+        trace = load_trace("return_total")
+        self.assertEqual(trace["steps"][-1]["event"]["type"], "return_exit")
+        self.assertEqual(trace["result"]["repr"], "6")
+
+    def test_print_argument_variants(self) -> None:
+        cases = [
+            ("def show():\n    print()", [], ""),
+            ("def show(a, b):\n    print(a, b)", ["1", "2"], "1 2"),
+        ]
+        for source, args, expected in cases:
+            graph = analyze_source(source)
+            trace = run_trace(source, graph, args)
+            self.assertEqual(trace["steps"][-1]["event"]["type"], "effect_fire")
+            self.assertEqual(trace["steps"][-1]["event"]["repr"], expected)
+            self.assertNotIn("result", trace)
+
+    def test_print_keywords_remain_unsupported(self) -> None:
+        source = "def show(value):\n    print(value, end='')"
+        graph = analyze_source(source)
+        trace = run_trace(source, graph, ["1"])
+        self.assertEqual(trace["violation"]["construct"], "Call")
+        self.assertEqual(trace["steps"][-1]["event"]["type"], "unsupported")
+
     def test_all_fixture_traces_match_expected(self) -> None:
         matched = 0
-        for fixture in FIXTURES:
+        for fixture in FIXTURES + CONTRAST_FIXTURES:
             first = load_trace(fixture)
             second = load_trace(fixture)
             expected = json.loads(
@@ -67,7 +101,7 @@ class TraceFixtureTests(unittest.TestCase):
             self.assertEqual(first, expected, fixture)
             self.assertEqual(canonical_json(first), canonical_json(second), fixture)
             matched += 1
-        self.assertEqual(matched, len(FIXTURES))
+        self.assertEqual(matched, len(FIXTURES) + len(CONTRAST_FIXTURES))
 
     def test_alias_mutation_preserves_shared_object_identity(self) -> None:
         source = (

@@ -14,6 +14,7 @@ from lol_analyzer import analyze_source, canonical_json  # noqa: E402
 
 
 FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard", "array-update"]
+CONTRAST_FIXTURES = ["print_total", "return_total"]
 
 # Contract N2: every node id is positional — <kind-prefix>-L<line>C<col> with an
 # optional ordinal suffix that breaks positional collisions. No names, literals,
@@ -84,6 +85,20 @@ class AnalyzerFixtureTests(unittest.TestCase):
         text = analyzer_path.read_text(encoding="utf-8")
         self.assertEqual(text.count("def visit_stmt"), 1)
 
+    def test_print_emits_one_contained_effect(self) -> None:
+        graph = load_graph("print_total")
+        effects = [node for node in graph["nodes"] if node["kind"] == "effect"]
+        self.assertEqual(len(effects), 1)
+        self.assertEqual(effects[0]["effectType"], "print")
+        self.assertEqual(effects[0]["sourceRange"]["startLine"], 5)
+        self.assertEqual(graph["unsupported"], [])
+        self.assertTrue(
+            any(
+                relation["type"] == "contains" and relation["to"] == effects[0]["id"]
+                for relation in graph["relations"]
+            )
+        )
+
     def test_structural_v1_nodes_are_factual_and_supported(self) -> None:
         source = (
             "def bounded(values):\n"
@@ -110,6 +125,12 @@ class AnalyzerFixtureTests(unittest.TestCase):
             self.assertEqual(actual, expected, fixture)
             matched += 1
         self.assertEqual(matched, len(FIXTURES))
+
+    def test_contrast_fixture_graphs_match_expected(self) -> None:
+        for fixture in CONTRAST_FIXTURES:
+            actual = canonical_json(load_graph(fixture))
+            expected = (fixture_dir(fixture) / "expected.graph.json").read_text(encoding="utf-8")
+            self.assertEqual(actual, expected, fixture)
 
 
 def fixture_dir(name: str) -> Path:
