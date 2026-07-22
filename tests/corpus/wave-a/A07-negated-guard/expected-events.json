@@ -1,0 +1,37 @@
+{
+  "runs": [
+    {
+      "required": [
+        "supported_call",
+        "condition_eval",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "supported_call",
+        "condition_eval",
+        "return_exit"
+      ],
+      "counts": {}
+    },
+    {
+      "required": [
+        "supported_call",
+        "condition_eval",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "supported_call",
+        "condition_eval",
+        "return_exit"
+      ],
+      "counts": {}
+    }
+  ]
+}
+

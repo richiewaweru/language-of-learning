@@ -1,0 +1,19 @@
+{
+  "runs": [
+    {
+      "required": [
+        "builtin-evaluated",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "builtin-evaluated",
+        "return_exit"
+      ],
+      "counts": {}
+    }
+  ]
+}
+

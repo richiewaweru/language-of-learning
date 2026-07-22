@@ -1,0 +1,6 @@
+{
+  "code": "UNSUPPORTED_IMPORT",
+  "message": "Imports and external libraries are outside the current deterministic Lens scope.",
+  "verifiedSteps": false
+}
+

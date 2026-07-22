@@ -1,0 +1,6 @@
+{
+  "code": "UNSUPPORTED_CLASS",
+  "message": "Classes and object fields are not yet supported. Lens currently focuses on variables, lists, loops, branches, and returns.",
+  "verifiedSteps": false
+}
+

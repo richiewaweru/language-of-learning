@@ -1,0 +1,14 @@
+{
+  "requiredNodeKinds": [
+    "function",
+    "branch",
+    "loop",
+    "operation",
+    "return"
+  ],
+  "forbiddenNodeKinds": [
+    "generic-operation"
+  ],
+  "requiredRelations": []
+}
+

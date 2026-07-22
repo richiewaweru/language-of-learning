@@ -1,0 +1,18 @@
+{
+  "requiredNodeKinds": [
+    "function",
+    "builtin-call",
+    "return"
+  ],
+  "forbiddenNodeKinds": [
+    "generic-operation"
+  ],
+  "requiredRelations": [],
+  "requiredNodeProperties": [
+    {
+      "kind": "builtin-call",
+      "expansion": "collapsed"
+    }
+  ]
+}
+

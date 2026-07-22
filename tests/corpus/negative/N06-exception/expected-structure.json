@@ -1,0 +1,11 @@
+{
+  "verifiedGraph": false,
+  "requiredNodeKinds": [],
+  "forbiddenNodeKinds": [
+    "function",
+    "operation",
+    "return",
+    "generic-operation"
+  ]
+}
+

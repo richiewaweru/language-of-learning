@@ -143,8 +143,10 @@ export const RelationSchema = z.object({
 
 export const UnsupportedRegionSchema = z.object({
   sourceRange: SourceRangeSchema,
+  code: z.string(),
   construct: z.string(),
   message: z.string(),
+  diagnostic: z.string(),
 });
 
 export const SemanticGraphSchema = z.object({

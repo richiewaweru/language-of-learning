@@ -55,6 +55,16 @@ def build_graph_and_trace(source: str, args_repr: list[str]) -> tuple[dict[str, 
         graph = analyze_source(source)
     except SyntaxError as exc:
         raise ArtifactError({"construct": "syntax", "message": f"Source failed to parse: {exc.msg}"}) from exc
+    if graph.get("unsupported"):
+        rejection = graph["unsupported"][0]
+        raise ArtifactError(
+            {
+                "code": rejection.get("code", "UNSUPPORTED_CONSTRUCT"),
+                "construct": rejection.get("construct", "unsupported"),
+                "message": rejection.get("message", "This behavior is not supported."),
+                "diagnostic": rejection.get("diagnostic", "Analyzer rejected source before graph construction."),
+            }
+        )
     has_fn = any(node.get("kind") == "function" for node in graph.get("nodes", []))
     if not has_fn:
         raise ArtifactError(

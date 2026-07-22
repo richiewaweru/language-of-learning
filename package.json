@@ -11,6 +11,7 @@
     "test:fixtures": "vitest run tests/fixtures",
     "test:analyzer": "python tools/run_analyzer_tests.py",
     "test:trace": "python tools/run_trace_tests.py",
+    "test:wave-a": "python tools/run_wave_a_corpus.py",
     "test:variations": "python tools/run_variation_tests.py",
     "test:patterns": "pnpm --filter @lol/lens-patterns test",
     "test:scenes": "pnpm --filter @lol/lens-scenes test",

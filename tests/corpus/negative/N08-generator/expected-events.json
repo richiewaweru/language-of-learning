@@ -1,0 +1,6 @@
+{
+  "code": "UNSUPPORTED_GENERATOR",
+  "message": "Generators are not yet supported because suspended execution frames are not yet visualized.",
+  "verifiedSteps": false
+}
+

@@ -1,0 +1,6 @@
+{
+  "code": "UNSUPPORTED_MULTIPLE_FUNCTIONS",
+  "message": "Multiple functions are not yet supported. Lens currently explains one top-level function at a time.",
+  "verifiedSteps": false
+}
+

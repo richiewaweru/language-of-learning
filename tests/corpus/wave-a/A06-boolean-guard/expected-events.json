@@ -1,0 +1,53 @@
+{
+  "runs": [
+    {
+      "required": [
+        "condition_eval",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "condition_eval",
+        "return_exit"
+      ],
+      "counts": {
+        "condition_eval": 2
+      }
+    },
+    {
+      "required": [
+        "condition_eval",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "condition_eval",
+        "return_exit"
+      ],
+      "counts": {
+        "condition_eval": 1
+      }
+    },
+    {
+      "required": [
+        "condition_eval",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "condition_eval",
+        "return_exit"
+      ],
+      "counts": {
+        "condition_eval": 2
+      }
+    }
+  ]
+}
+

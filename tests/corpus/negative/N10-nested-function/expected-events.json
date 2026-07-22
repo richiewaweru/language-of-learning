@@ -1,0 +1,6 @@
+{
+  "code": "UNSUPPORTED_NESTED_FUNCTION",
+  "message": "Nested functions and captured scopes are not yet supported.",
+  "verifiedSteps": false
+}
+

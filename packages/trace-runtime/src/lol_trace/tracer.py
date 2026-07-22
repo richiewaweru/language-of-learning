@@ -144,17 +144,8 @@ class Tracer:
         except SandboxViolation as exc:
             self.trace.violation = exc.as_dict()
             self.trace.truncated = exc.construct in {"step_limit", "timeout", "memory_limit"}
-            if not self.trace.truncated:
-                self.trace.emit(
-                    getattr(self.function, "lineno", 1),
-                    [],
-                    self.trace.snapshot(self.env),
-                    {
-                        "type": "unsupported",
-                        "construct": exc.construct,
-                        "message": exc.message,
-                    },
-                )
+            self.trace.steps.clear()
+            self.trace.result_repr = None
             return self.trace.finish()
 
     def _tick(self) -> None:
@@ -671,6 +662,21 @@ def shared_object_ids(bindings: dict[str, Any]) -> dict[str, str]:
 
 
 def run_trace(source: str, graph: dict[str, Any], args_repr: list[str]) -> dict[str, Any]:
+    if graph.get("unsupported"):
+        rejection = graph["unsupported"][0]
+        violation = {
+            "code": rejection.get("code", "UNSUPPORTED_CONSTRUCT"),
+            "construct": rejection.get("construct", "unsupported"),
+            "message": rejection.get("message", "This behavior is not supported."),
+        }
+        if rejection.get("diagnostic"):
+            violation["diagnostic"] = rejection["diagnostic"]
+        return {
+            "call": {"functionId": "blocked", "argsRepr": args_repr},
+            "steps": [],
+            "violation": violation,
+            "truncated": False,
+        }
     return Tracer(source, graph, args_repr).run()
 
 

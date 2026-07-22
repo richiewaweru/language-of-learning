@@ -1,0 +1,6 @@
+{
+  "code": "UNSUPPORTED_RECURSION",
+  "message": "Recursion is not yet supported. Lens currently explains single-frame iterative programs.",
+  "verifiedSteps": false
+}
+

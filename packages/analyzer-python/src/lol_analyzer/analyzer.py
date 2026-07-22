@@ -11,8 +11,51 @@ from typing import Any
 @dataclass
 class UnsupportedRegion:
     sourceRange: dict[str, int]
+    code: str
     construct: str
     message: str
+    diagnostic: str
+
+
+CANONICAL_UNSUPPORTED: dict[str, tuple[str, str]] = {
+    "UNSUPPORTED_MULTIPLE_FUNCTIONS": (
+        "multiple functions",
+        "Multiple functions are not yet supported. Lens currently explains one top-level function at a time.",
+    ),
+    "UNSUPPORTED_RECURSION": (
+        "recursion",
+        "Recursion is not yet supported. Lens currently explains single-frame iterative programs.",
+    ),
+    "UNSUPPORTED_CLASS": (
+        "classes and object fields",
+        "Classes and object fields are not yet supported. Lens currently focuses on variables, lists, loops, branches, and returns.",
+    ),
+    "UNSUPPORTED_DICTIONARY": (
+        "dictionaries",
+        "Dictionaries are not yet supported in this pilot. Use lists for the current supported collection model.",
+    ),
+    "UNSUPPORTED_COMPREHENSION": (
+        "comprehensions",
+        "Comprehensions are not yet expanded. Rewrite this as an explicit loop, branch, and append sequence.",
+    ),
+    "UNSUPPORTED_EXCEPTION_FLOW": (
+        "exception handling",
+        "Exception control flow is not yet supported.",
+    ),
+    "UNSUPPORTED_IMPORT": (
+        "imports and external libraries",
+        "Imports and external libraries are outside the current deterministic Lens scope.",
+    ),
+    "UNSUPPORTED_GENERATOR": (
+        "generators",
+        "Generators are not yet supported because suspended execution frames are not yet visualized.",
+    ),
+    "UNSUPPORTED_ASYNC": ("async execution", "Async execution is not yet supported."),
+    "UNSUPPORTED_NESTED_FUNCTION": (
+        "nested functions",
+        "Nested functions and captured scopes are not yet supported.",
+    ),
+}
 
 
 class Analyzer:
@@ -41,6 +84,11 @@ class Analyzer:
         self.collection_ids: dict[str, str] = {}
 
     def analyze(self) -> dict[str, Any]:
+        rejection = self.canonical_rejection()
+        if rejection is not None:
+            self.unsupported = [rejection]
+            return self.graph()
+
         functions = [node for node in self.tree.body if isinstance(node, ast.FunctionDef)]
         if len(functions) != 1 or len(self.tree.body) != 1:
             for node in self.tree.body:
@@ -52,8 +100,10 @@ class Analyzer:
                 self.unsupported.append(
                     UnsupportedRegion(
                         sourceRange=self.range_for(self.tree.body[0] if self.tree.body else self.tree),
+                        code="UNSUPPORTED_PROGRAM_SHAPE",
                         construct=construct,
                         message=message,
+                        diagnostic=f"top-level FunctionDef count={len(functions)}; body count={len(self.tree.body)}",
                     ).__dict__
                 )
             return self.graph()
@@ -95,13 +145,64 @@ class Analyzer:
         return self.graph()
 
     def graph(self) -> dict[str, Any]:
+        # Rejection is atomic: unsupported source never retains nodes or
+        # relations that could be mistaken for a partially verified graph.
+        nodes = [] if self.unsupported else self.nodes
+        relations = [] if self.unsupported else self.relations
         return {
             "version": "0.1",
             "source": self.source,
-            "nodes": self.nodes,
-            "relations": self.relations,
+            "nodes": nodes,
+            "relations": relations,
             "unsupported": self.unsupported,
         }
+
+    def canonical_rejection(self) -> dict[str, Any] | None:
+        top_functions = [node for node in self.tree.body if isinstance(node, ast.FunctionDef)]
+        checks: list[tuple[str, ast.AST | None]] = [
+            ("UNSUPPORTED_CLASS", next((node for node in ast.walk(self.tree) if isinstance(node, ast.ClassDef)), None)),
+            ("UNSUPPORTED_ASYNC", next((node for node in ast.walk(self.tree) if isinstance(node, (ast.AsyncFunctionDef, ast.AsyncFor, ast.AsyncWith, ast.Await))), None)),
+            ("UNSUPPORTED_IMPORT", next((node for node in ast.walk(self.tree) if isinstance(node, (ast.Import, ast.ImportFrom))), None)),
+        ]
+        if len(top_functions) > 1:
+            checks.insert(0, ("UNSUPPORTED_MULTIPLE_FUNCTIONS", top_functions[1]))
+        function = top_functions[0] if len(top_functions) == 1 else None
+        if function is not None:
+            nested = next(
+                (node for node in ast.walk(function) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node is not function),
+                None,
+            )
+            recursion = next(
+                (
+                    node
+                    for node in ast.walk(function)
+                    if isinstance(node, ast.Call)
+                    and isinstance(node.func, ast.Name)
+                    and node.func.id == function.name
+                ),
+                None,
+            )
+            checks.extend(
+                [
+                    ("UNSUPPORTED_NESTED_FUNCTION", nested),
+                    ("UNSUPPORTED_RECURSION", recursion),
+                    ("UNSUPPORTED_GENERATOR", next((node for node in ast.walk(function) if isinstance(node, (ast.Yield, ast.YieldFrom))), None)),
+                    ("UNSUPPORTED_DICTIONARY", next((node for node in ast.walk(function) if isinstance(node, ast.Dict)), None)),
+                    ("UNSUPPORTED_COMPREHENSION", next((node for node in ast.walk(function) if isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp))), None)),
+                    ("UNSUPPORTED_EXCEPTION_FLOW", next((node for node in ast.walk(function) if isinstance(node, (ast.Try, ast.TryStar, ast.Raise))), None)),
+                ]
+            )
+        for code, node in checks:
+            if node is not None:
+                construct, message = CANONICAL_UNSUPPORTED[code]
+                return UnsupportedRegion(
+                    sourceRange=self.range_for(node),
+                    code=code,
+                    construct=construct,
+                    message=message,
+                    diagnostic=f"{type(node).__name__} at line {getattr(node, 'lineno', 1)}, column {getattr(node, 'col_offset', 0)}",
+                ).__dict__
+        return None
 
     def precollect(self, function: ast.FunctionDef) -> None:
         for node in ast.walk(function):
@@ -680,8 +781,10 @@ class Analyzer:
         message = f"This version does not yet visualize {construct}."
         region = UnsupportedRegion(
             sourceRange=self.range_for(node),
+            code="UNSUPPORTED_CONSTRUCT",
             construct=construct,
             message=message,
+            diagnostic=f"{type(node).__name__} at line {getattr(node, 'lineno', 1)}, column {getattr(node, 'col_offset', 0)}",
         ).__dict__
         if region not in self.unsupported:
             self.unsupported.append(region)

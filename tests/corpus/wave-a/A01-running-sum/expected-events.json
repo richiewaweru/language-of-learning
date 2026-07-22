@@ -1,0 +1,19 @@
+{
+  "runs": [
+    {
+      "required": [
+        "state_change",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "state_change",
+        "return_exit"
+      ],
+      "counts": {}
+    }
+  ]
+}
+

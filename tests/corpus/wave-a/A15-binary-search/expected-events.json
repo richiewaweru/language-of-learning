@@ -1,0 +1,23 @@
+{
+  "runs": [
+    {
+      "required": [
+        "loop_test",
+        "indexed_selection",
+        "condition_eval",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "loop_test",
+        "indexed_selection",
+        "condition_eval",
+        "return_exit"
+      ],
+      "counts": {}
+    }
+  ]
+}
+

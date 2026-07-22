@@ -1,0 +1,6 @@
+{
+  "code": "UNSUPPORTED_COMPREHENSION",
+  "message": "Comprehensions are not yet expanded. Rewrite this as an explicit loop, branch, and append sequence.",
+  "verifiedSteps": false
+}
+

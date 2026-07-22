@@ -1,0 +1,25 @@
+{
+  "requiredNodeKinds": [
+    "function",
+    "loop",
+    "operation",
+    "mutation",
+    "return"
+  ],
+  "forbiddenNodeKinds": [
+    "generic-operation"
+  ],
+  "requiredRelations": [
+    {
+      "fromKind": "operation",
+      "type": "feeds",
+      "toKind": "mutation"
+    },
+    {
+      "fromKind": "mutation",
+      "type": "mutates",
+      "toKind": "binding"
+    }
+  ]
+}
+

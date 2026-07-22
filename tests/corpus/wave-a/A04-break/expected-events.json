@@ -1,0 +1,19 @@
+{
+  "runs": [
+    {
+      "required": [
+        "loop-exit",
+        "return_exit"
+      ],
+      "forbidden": [
+        "unsupported"
+      ],
+      "ordered": [
+        "loop-exit",
+        "return_exit"
+      ],
+      "counts": {}
+    }
+  ]
+}
+
