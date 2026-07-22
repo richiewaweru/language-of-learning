@@ -33,7 +33,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-L5C8",
+          "branch": "op-L5C11",
           "result": false
         }
       ]
@@ -42,17 +42,37 @@
       "index": 3,
       "actions": [
         {
-          "type": "advance_item",
-          "loop": "loop-L4C4",
-          "itemIndex": 1,
-          "itemRepr": "3",
-          "tokenId": "tok-S3-loop_advance-0",
-          "collection": "bind-L1C20"
+          "type": "evaluate",
+          "branch": "branch-L5C8",
+          "result": false
         }
       ]
     },
     {
       "index": 4,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L4C4",
+          "itemIndex": 1,
+          "itemRepr": "3",
+          "tokenId": "tok-S4-loop_advance-0",
+          "collection": "bind-L1C20"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L5C11",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 6,
       "actions": [
         {
           "type": "evaluate",
@@ -62,44 +82,21 @@
       ]
     },
     {
-      "index": 5,
+      "index": 7,
       "actions": [
         {
           "type": "move_value",
           "repr": "3",
           "fromNode": "bind-L4C8",
           "toNode": "coll-L2C4",
-          "tokenId": "tok-S5-collection_append-0"
+          "tokenId": "tok-S7-collection_append-0"
         },
         {
           "type": "append_value",
           "collection": "coll-L2C4",
           "valueRepr": "3",
-          "tokenId": "tok-S5-collection_append-0",
+          "tokenId": "tok-S7-collection_append-0",
           "newIndex": 0
-        }
-      ]
-    },
-    {
-      "index": 6,
-      "actions": [
-        {
-          "type": "advance_item",
-          "loop": "loop-L4C4",
-          "itemIndex": 2,
-          "itemRepr": "0",
-          "tokenId": "tok-S6-loop_advance-0",
-          "collection": "bind-L1C20"
-        }
-      ]
-    },
-    {
-      "index": 7,
-      "actions": [
-        {
-          "type": "evaluate",
-          "branch": "branch-L5C8",
-          "result": false
         }
       ]
     },
@@ -109,8 +106,8 @@
         {
           "type": "advance_item",
           "loop": "loop-L4C4",
-          "itemIndex": 3,
-          "itemRepr": "5",
+          "itemIndex": 2,
+          "itemRepr": "0",
           "tokenId": "tok-S8-loop_advance-0",
           "collection": "bind-L1C20"
         }
@@ -121,8 +118,8 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-L5C8",
-          "result": true
+          "branch": "op-L5C11",
+          "result": false
         }
       ]
     },
@@ -130,18 +127,9 @@
       "index": 10,
       "actions": [
         {
-          "type": "move_value",
-          "repr": "5",
-          "fromNode": "bind-L4C8",
-          "toNode": "coll-L2C4",
-          "tokenId": "tok-S10-collection_append-0"
-        },
-        {
-          "type": "append_value",
-          "collection": "coll-L2C4",
-          "valueRepr": "5",
-          "tokenId": "tok-S10-collection_append-0",
-          "newIndex": 1
+          "type": "evaluate",
+          "branch": "branch-L5C8",
+          "result": false
         }
       ]
     },
@@ -149,10 +137,62 @@
       "index": 11,
       "actions": [
         {
+          "type": "advance_item",
+          "loop": "loop-L4C4",
+          "itemIndex": 3,
+          "itemRepr": "5",
+          "tokenId": "tok-S11-loop_advance-0",
+          "collection": "bind-L1C20"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L5C11",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L5C8",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "actions": [
+        {
+          "type": "move_value",
+          "repr": "5",
+          "fromNode": "bind-L4C8",
+          "toNode": "coll-L2C4",
+          "tokenId": "tok-S14-collection_append-0"
+        },
+        {
+          "type": "append_value",
+          "collection": "coll-L2C4",
+          "valueRepr": "5",
+          "tokenId": "tok-S14-collection_append-0",
+          "newIndex": 1
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "actions": [
+        {
           "type": "exit_return",
           "repr": "[3, 5]",
           "port": "ret-L8C4",
-          "tokenId": "tok-S11-return_exit-0",
+          "tokenId": "tok-S15-return_exit-0",
           "returnNode": "ret-L8C4",
           "functionNode": "fn-L1C0"
         }

@@ -1,13 +1,17 @@
 {
   "call": {
     "functionId": "fn-L1C0",
-    "argsRepr": ["[1, 2, 3]"]
+    "argsRepr": [
+      "[1, 2, 3]"
+    ]
   },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": ["fn-L1C0"],
+      "focus": [
+        "fn-L1C0"
+      ],
       "bindings": {},
       "event": {
         "type": "call_enter",
@@ -17,7 +21,10 @@
     {
       "index": 1,
       "line": 2,
-      "focus": ["mut-L2C4", "bind-L1C17"],
+      "focus": [
+        "mut-L2C4",
+        "bind-L1C17"
+      ],
       "bindings": {
         "values": "[9, 2, 3]"
       },
@@ -32,7 +39,9 @@
     {
       "index": 2,
       "line": 3,
-      "focus": ["ret-L3C4"],
+      "focus": [
+        "ret-L3C4"
+      ],
       "bindings": {
         "values": "[9, 2, 3]"
       },

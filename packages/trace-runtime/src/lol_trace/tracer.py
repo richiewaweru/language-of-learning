@@ -530,13 +530,14 @@ class Tracer:
                 result = left != right
             else:
                 raise SandboxViolation("condition", "Unsupported comparison operator.")
-            operation = self._operation_node(test)
-            self.trace.emit(
-                test.lineno,
-                [operation["id"]],
-                self.trace.snapshot(self.env),
-                {"type": "condition_eval", "branch": operation["id"], "result": result},
-            )
+            operation = self._operation_node_or_none(test)
+            if operation is not None:
+                self.trace.emit(
+                    test.lineno,
+                    [operation["id"]],
+                    self.trace.snapshot(self.env),
+                    {"type": "condition_eval", "branch": operation["id"], "result": result},
+                )
             return result
         raise SandboxViolation("condition", "Unsupported branch condition.")
 
@@ -760,6 +761,15 @@ class Tracer:
         )
 
     def _operation_node(self, expr: ast.AST) -> dict[str, Any]:
+        operation = self._operation_node_or_none(expr)
+        if operation is not None:
+            return operation
+        raise SandboxViolation(
+            "operation",
+            f"No operation node resolves to line {expr.lineno} col {expr.col_offset}.",
+        )
+
+    def _operation_node_or_none(self, expr: ast.AST) -> dict[str, Any] | None:
         for operation in self.graph.operations.values():
             source_range = operation["sourceRange"]
             if (
@@ -767,10 +777,7 @@ class Tracer:
                 and source_range["startCol"] == expr.col_offset
             ):
                 return operation
-        raise SandboxViolation(
-            "operation",
-            f"No operation node resolves to line {expr.lineno} col {expr.col_offset}.",
-        )
+        return None
 
     def _call_for_expr(self, expr: ast.Call) -> dict[str, Any]:
         for call in self.graph.calls:

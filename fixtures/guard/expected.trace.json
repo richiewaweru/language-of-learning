@@ -38,6 +38,22 @@
       "index": 2,
       "line": 3,
       "focus": [
+        "op-L3C7"
+      ],
+      "bindings": {
+        "amount": "100",
+        "rate": "0.16"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "op-L3C7",
+        "result": false
+      }
+    },
+    {
+      "index": 3,
+      "line": 3,
+      "focus": [
         "branch-L3C4"
       ],
       "bindings": {
@@ -51,7 +67,7 @@
       }
     },
     {
-      "index": 3,
+      "index": 4,
       "line": 5,
       "focus": [
         "ret-L5C4"

@@ -15,6 +15,7 @@ const SIZE: Record<string, { w: number; h: number }> = {
   mutation: { w: 4 * GRID, h: GRID },
   return: { w: 4 * GRID, h: GRID },
   call: { w: 4 * GRID, h: GRID },
+  'builtin-call': { w: 6 * GRID, h: 2 * GRID },
   sequence: { w: 8 * GRID, h: GRID },
   effect: { w: 4 * GRID, h: GRID },
 };
@@ -107,17 +108,18 @@ function layoutSubtree(
   const width = Math.max(size.w, maxChildRight - originX + pad);
   const height = Math.max(size.h, contentBottom - originY + pad / 2);
 
+  const isContainer = ['function', 'loop', 'branch', 'builtin-call'].includes(node.kind);
   out.push({
     id: node.id,
     kind: node.kind,
     x: originX,
     y: originY,
     width,
-    height: node.kind === 'function' || node.kind === 'loop' || node.kind === 'branch' ? height : size.h,
+    height: isContainer ? height : size.h,
     depth,
   });
 
-  return { width, height: node.kind === 'function' || node.kind === 'loop' || node.kind === 'branch' ? height : size.h };
+  return { width, height: isContainer ? height : size.h };
 }
 
 /** AABB overlap: siblings must not overlap; containment nesting is allowed. */

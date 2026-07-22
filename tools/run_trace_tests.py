@@ -88,7 +88,8 @@ class TraceFixtureTests(unittest.TestCase):
         graph = analyze_source(source)
         trace = run_trace(source, graph, ["1"])
         self.assertEqual(trace["violation"]["construct"], "Call")
-        self.assertEqual(trace["steps"][-1]["event"]["type"], "unsupported")
+        self.assertEqual(trace["steps"], [], "unsupported execution must not retain verified steps")
+        self.assertNotIn("result", trace)
 
     def test_all_fixture_traces_match_expected(self) -> None:
         matched = 0
@@ -138,7 +139,7 @@ class TraceFixtureTests(unittest.TestCase):
         self.assertIn("supported_call", events)
         self.assertIn("indexed_selection", events)
 
-    def test_recursion_is_an_explicit_unsupported_event(self) -> None:
+    def test_recursion_is_an_atomic_unsupported_result(self) -> None:
         source = (
             "def countdown(value):\n"
             "    if value <= 0:\n"
@@ -149,7 +150,8 @@ class TraceFixtureTests(unittest.TestCase):
         self.assertTrue(any(region["construct"] == "recursion" for region in graph["unsupported"]))
         trace = run_trace(source, graph, ["2"])
         self.assertEqual(trace["violation"]["construct"], "recursion")
-        self.assertEqual(trace["steps"][-1]["event"]["type"], "unsupported")
+        self.assertEqual(trace["steps"], [], "unsupported execution must not retain verified steps")
+        self.assertNotIn("result", trace)
 
 
 class HostileFixtureTests(unittest.TestCase):

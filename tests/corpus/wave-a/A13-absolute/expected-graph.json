@@ -1,0 +1,129 @@
+{
+  "version": "0.1",
+  "source": "def distance(left, right):\n    return abs(left - right)",
+  "nodes": [
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 2,
+        "endCol": 28
+      },
+      "name": "distance",
+      "params": [
+        "bind-L1C13",
+        "bind-L1C19"
+      ]
+    },
+    {
+      "id": "bind-L1C13",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 13,
+        "endLine": 1,
+        "endCol": 17
+      },
+      "name": "left",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-L1C19",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 19,
+        "endLine": 1,
+        "endCol": 24
+      },
+      "name": "right",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "builtin-L2C11",
+      "kind": "builtin-call",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 11,
+        "endLine": 2,
+        "endCol": 28
+      },
+      "builtin": "abs",
+      "inputs": [
+        "bind-L1C13",
+        "bind-L1C19"
+      ],
+      "expansion": "collapsed",
+      "label": "Find absolute value"
+    },
+    {
+      "id": "op-L2C15",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 15,
+        "endLine": 2,
+        "endCol": 26
+      },
+      "expr": "left - right"
+    },
+    {
+      "id": "ret-L2C4",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 2,
+        "endCol": 28
+      },
+      "valueRef": "builtin-L2C11"
+    }
+  ],
+  "relations": [
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "builtin-L2C11"
+    },
+    {
+      "from": "builtin-L2C11",
+      "type": "reads",
+      "to": "bind-L1C13"
+    },
+    {
+      "from": "builtin-L2C11",
+      "type": "reads",
+      "to": "bind-L1C19"
+    },
+    {
+      "from": "builtin-L2C11",
+      "type": "contains",
+      "to": "op-L2C15"
+    },
+    {
+      "from": "op-L2C15",
+      "type": "reads",
+      "to": "bind-L1C13"
+    },
+    {
+      "from": "op-L2C15",
+      "type": "reads",
+      "to": "bind-L1C19"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "ret-L2C4"
+    },
+    {
+      "from": "ret-L2C4",
+      "type": "returns",
+      "to": "builtin-L2C11"
+    }
+  ],
+  "unsupported": []
+}

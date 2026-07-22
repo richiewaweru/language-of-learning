@@ -1,0 +1,199 @@
+{
+  "runs": [
+    {
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "75"
+        ]
+      },
+      "steps": [
+        {
+          "index": 0,
+          "line": 1,
+          "focus": [
+            "fn-L1C0"
+          ],
+          "bindings": {},
+          "event": {
+            "type": "call_enter",
+            "functionId": "fn-L1C0"
+          }
+        },
+        {
+          "index": 1,
+          "line": 2,
+          "focus": [
+            "op-L2C11"
+          ],
+          "bindings": {
+            "score": "75"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L2C11",
+            "result": true
+          }
+        },
+        {
+          "index": 2,
+          "line": 2,
+          "focus": [
+            "op-L2C26"
+          ],
+          "bindings": {
+            "score": "75"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L2C26",
+            "result": true
+          }
+        },
+        {
+          "index": 3,
+          "line": 2,
+          "focus": [
+            "ret-L2C4"
+          ],
+          "bindings": {
+            "score": "75"
+          },
+          "event": {
+            "type": "return_exit",
+            "repr": "True"
+          }
+        }
+      ],
+      "truncated": false,
+      "result": {
+        "repr": "True"
+      }
+    },
+    {
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "-1"
+        ]
+      },
+      "steps": [
+        {
+          "index": 0,
+          "line": 1,
+          "focus": [
+            "fn-L1C0"
+          ],
+          "bindings": {},
+          "event": {
+            "type": "call_enter",
+            "functionId": "fn-L1C0"
+          }
+        },
+        {
+          "index": 1,
+          "line": 2,
+          "focus": [
+            "op-L2C11"
+          ],
+          "bindings": {
+            "score": "-1"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L2C11",
+            "result": false
+          }
+        },
+        {
+          "index": 2,
+          "line": 2,
+          "focus": [
+            "ret-L2C4"
+          ],
+          "bindings": {
+            "score": "-1"
+          },
+          "event": {
+            "type": "return_exit",
+            "repr": "False"
+          }
+        }
+      ],
+      "truncated": false,
+      "result": {
+        "repr": "False"
+      }
+    },
+    {
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "120"
+        ]
+      },
+      "steps": [
+        {
+          "index": 0,
+          "line": 1,
+          "focus": [
+            "fn-L1C0"
+          ],
+          "bindings": {},
+          "event": {
+            "type": "call_enter",
+            "functionId": "fn-L1C0"
+          }
+        },
+        {
+          "index": 1,
+          "line": 2,
+          "focus": [
+            "op-L2C11"
+          ],
+          "bindings": {
+            "score": "120"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L2C11",
+            "result": true
+          }
+        },
+        {
+          "index": 2,
+          "line": 2,
+          "focus": [
+            "op-L2C26"
+          ],
+          "bindings": {
+            "score": "120"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L2C26",
+            "result": false
+          }
+        },
+        {
+          "index": 3,
+          "line": 2,
+          "focus": [
+            "ret-L2C4"
+          ],
+          "bindings": {
+            "score": "120"
+          },
+          "event": {
+            "type": "return_exit",
+            "repr": "False"
+          }
+        }
+      ],
+      "truncated": false,
+      "result": {
+        "repr": "False"
+      }
+    }
+  ]
+}

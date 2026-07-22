@@ -1,0 +1,191 @@
+{
+  "version": "0.1",
+  "source": "def first_or_default(values, default):\n    if not len(values) == 0:\n        return values[0]\n    return default",
+  "nodes": [
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 4,
+        "endCol": 18
+      },
+      "name": "first_or_default",
+      "params": [
+        "bind-L1C21",
+        "bind-L1C29"
+      ]
+    },
+    {
+      "id": "bind-L1C21",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 21,
+        "endLine": 1,
+        "endCol": 27
+      },
+      "name": "values",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-L1C29",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 29,
+        "endLine": 1,
+        "endCol": 36
+      },
+      "name": "default",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "branch-L2C4",
+      "kind": "branch",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 3,
+        "endCol": 24
+      },
+      "conditionExpr": "not len(values) == 0",
+      "trueBody": "ret-L3C8"
+    },
+    {
+      "id": "op-L2C7",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 7,
+        "endLine": 2,
+        "endCol": 27
+      },
+      "expr": "not len(values) == 0"
+    },
+    {
+      "id": "op-L2C11",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 11,
+        "endLine": 2,
+        "endCol": 27
+      },
+      "expr": "len(values) == 0"
+    },
+    {
+      "id": "call-L2C11",
+      "kind": "call",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 11,
+        "endLine": 2,
+        "endCol": 22
+      },
+      "callee": "len",
+      "args": [
+        "values"
+      ]
+    },
+    {
+      "id": "ret-L3C8",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 8,
+        "endLine": 3,
+        "endCol": 24
+      },
+      "valueRef": "op-L3C15"
+    },
+    {
+      "id": "op-L3C15",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 15,
+        "endLine": 3,
+        "endCol": 24
+      },
+      "expr": "values[0]"
+    },
+    {
+      "id": "ret-L4C4",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 4,
+        "endLine": 4,
+        "endCol": 18
+      },
+      "valueRef": "bind-L1C29"
+    }
+  ],
+  "relations": [
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "branch-L2C4"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "op-L2C7"
+    },
+    {
+      "from": "op-L2C7",
+      "type": "reads",
+      "to": "bind-L1C21"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "op-L2C11"
+    },
+    {
+      "from": "op-L2C11",
+      "type": "reads",
+      "to": "bind-L1C21"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "call-L2C11"
+    },
+    {
+      "from": "call-L2C11",
+      "type": "reads",
+      "to": "bind-L1C21"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "ret-L3C8"
+    },
+    {
+      "from": "ret-L3C8",
+      "type": "returns",
+      "to": "op-L3C15"
+    },
+    {
+      "from": "op-L3C15",
+      "type": "reads",
+      "to": "bind-L1C21"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "ret-L4C4"
+    },
+    {
+      "from": "ret-L4C4",
+      "type": "returns",
+      "to": "bind-L1C29"
+    }
+  ],
+  "unsupported": []
+}

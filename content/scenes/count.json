@@ -12,10 +12,18 @@
       "height": 56
     },
     {
-      "id": "op-L5C20",
+      "id": "op-L4C11",
       "kind": "operation",
       "x": 112,
       "y": 308,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "op-L5C20",
+      "kind": "operation",
+      "x": 112,
+      "y": 350,
       "width": 168,
       "height": 28
     },
@@ -25,7 +33,7 @@
       "x": 84,
       "y": 238,
       "width": 308,
-      "height": 112
+      "height": 154
     },
     {
       "id": "loop-L3C4",
@@ -33,13 +41,13 @@
       "x": 56,
       "y": 168,
       "width": 364,
-      "height": 196
+      "height": 238
     },
     {
       "id": "ret-L6C4",
       "kind": "return",
       "x": 56,
-      "y": 378,
+      "y": 420,
       "width": 140,
       "height": 28
     },
@@ -49,7 +57,7 @@
       "x": 28,
       "y": 28,
       "width": 476,
-      "height": 392
+      "height": 434
     },
     {
       "id": "bind-L1C19",
@@ -76,7 +84,7 @@
       "kind": "control",
       "path": {
         "x1": 266,
-        "y1": 224,
+        "y1": 245,
         "x2": 140,
         "y2": 126
       }
@@ -88,9 +96,9 @@
       "kind": "control",
       "path": {
         "x1": 266,
-        "y1": 224,
+        "y1": 245,
         "x2": 238,
-        "y2": 266
+        "y2": 287
       }
     },
     {
@@ -100,7 +108,7 @@
       "kind": "repeat",
       "path": {
         "x1": 238,
-        "y1": 266,
+        "y1": 287,
         "x2": 112,
         "y2": 70
       }
@@ -112,9 +120,33 @@
       "kind": "control",
       "path": {
         "x1": 238,
-        "y1": 266,
+        "y1": 287,
         "x2": 238,
-        "y2": 294
+        "y2": 315
+      }
+    },
+    {
+      "id": "edge-branch-L4C8-op-L4C11-contains",
+      "fromNode": "branch-L4C8",
+      "toNode": "op-L4C11",
+      "kind": "control",
+      "path": {
+        "x1": 238,
+        "y1": 315,
+        "x2": 196,
+        "y2": 322
+      }
+    },
+    {
+      "id": "edge-op-L4C11-bind-L3C8-reads",
+      "fromNode": "op-L4C11",
+      "toNode": "bind-L3C8",
+      "kind": "data",
+      "path": {
+        "x1": 196,
+        "y1": 322,
+        "x2": 238,
+        "y2": 70
       }
     },
     {
@@ -124,9 +156,9 @@
       "kind": "control",
       "path": {
         "x1": 238,
-        "y1": 294,
+        "y1": 315,
         "x2": 196,
-        "y2": 322
+        "y2": 364
       }
     },
     {
@@ -136,7 +168,7 @@
       "kind": "data",
       "path": {
         "x1": 196,
-        "y1": 322,
+        "y1": 364,
         "x2": 140,
         "y2": 126
       }
@@ -148,7 +180,7 @@
       "kind": "data",
       "path": {
         "x1": 196,
-        "y1": 322,
+        "y1": 364,
         "x2": 140,
         "y2": 126
       }
@@ -160,9 +192,9 @@
       "kind": "control",
       "path": {
         "x1": 266,
-        "y1": 224,
+        "y1": 245,
         "x2": 126,
-        "y2": 392
+        "y2": 434
       }
     },
     {
@@ -172,7 +204,7 @@
       "kind": "return",
       "path": {
         "x1": 126,
-        "y1": 392,
+        "y1": 434,
         "x2": 140,
         "y2": 126
       }
@@ -253,6 +285,27 @@
     {
       "index": 3,
       "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
         "branch-L4C8"
       ],
       "line": 4,
@@ -272,7 +325,7 @@
       }
     },
     {
-      "index": 4,
+      "index": 5,
       "focus": [
         "loop-L3C4"
       ],
@@ -283,7 +336,7 @@
           "loop": "loop-L3C4",
           "itemIndex": 1,
           "itemRepr": "2",
-          "tokenId": "tok-S4-loop_advance-0",
+          "tokenId": "tok-S5-loop_advance-0",
           "collection": "bind-L1C19"
         }
       ],
@@ -295,7 +348,28 @@
       }
     },
     {
-      "index": 5,
+      "index": 6,
+      "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 7,
       "focus": [
         "branch-L4C8"
       ],
@@ -316,7 +390,7 @@
       }
     },
     {
-      "index": 6,
+      "index": 8,
       "focus": [
         "op-L5C20"
       ],
@@ -327,7 +401,7 @@
           "cell": "bind-L2C4",
           "oldRepr": "0",
           "newRepr": "1",
-          "inputTokenId": "tok-S6-state_change-0"
+          "inputTokenId": "tok-S8-state_change-0"
         }
       ],
       "caption": {
@@ -336,50 +410,6 @@
           "name": "count",
           "old": "0",
           "new": "1"
-        }
-      }
-    },
-    {
-      "index": 7,
-      "focus": [
-        "loop-L3C4"
-      ],
-      "line": 3,
-      "actions": [
-        {
-          "type": "advance_item",
-          "loop": "loop-L3C4",
-          "itemIndex": 2,
-          "itemRepr": "0",
-          "tokenId": "tok-S7-loop_advance-0",
-          "collection": "bind-L1C19"
-        }
-      ],
-      "caption": {
-        "key": "loop.advance",
-        "params": {
-          "item": "0"
-        }
-      }
-    },
-    {
-      "index": 8,
-      "focus": [
-        "branch-L4C8"
-      ],
-      "line": 4,
-      "actions": [
-        {
-          "type": "evaluate",
-          "branch": "branch-L4C8",
-          "result": false
-        }
-      ],
-      "caption": {
-        "key": "branch.evaluate",
-        "params": {
-          "branch": "branch-L4C8",
-          "result": "false"
         }
       }
     },
@@ -393,9 +423,74 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
+          "itemIndex": 2,
+          "itemRepr": "0",
+          "tokenId": "tok-S9-loop_advance-0",
+          "collection": "bind-L1C19"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "0"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "focus": [
+        "branch-L4C8"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L4C8",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
           "itemIndex": 3,
           "itemRepr": "3",
-          "tokenId": "tok-S9-loop_advance-0",
+          "tokenId": "tok-S12-loop_advance-0",
           "collection": "bind-L1C19"
         }
       ],
@@ -407,7 +502,28 @@
       }
     },
     {
-      "index": 10,
+      "index": 13,
+      "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 14,
       "focus": [
         "branch-L4C8"
       ],
@@ -428,7 +544,7 @@
       }
     },
     {
-      "index": 11,
+      "index": 15,
       "focus": [
         "op-L5C20"
       ],
@@ -439,7 +555,7 @@
           "cell": "bind-L2C4",
           "oldRepr": "1",
           "newRepr": "2",
-          "inputTokenId": "tok-S11-state_change-0"
+          "inputTokenId": "tok-S15-state_change-0"
         }
       ],
       "caption": {
@@ -452,7 +568,7 @@
       }
     },
     {
-      "index": 12,
+      "index": 16,
       "focus": [
         "ret-L6C4"
       ],
@@ -462,7 +578,7 @@
           "type": "exit_return",
           "repr": "2",
           "port": "ret-L6C4",
-          "tokenId": "tok-S12-return_exit-0",
+          "tokenId": "tok-S16-return_exit-0",
           "returnNode": "ret-L6C4",
           "functionNode": "fn-L1C0"
         }

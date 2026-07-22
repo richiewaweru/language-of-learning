@@ -1,0 +1,67 @@
+{
+  "runs": [
+    {
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "[3, 9, 4]"
+        ]
+      },
+      "steps": [
+        {
+          "index": 0,
+          "line": 1,
+          "focus": [
+            "fn-L1C0"
+          ],
+          "bindings": {},
+          "event": {
+            "type": "call_enter",
+            "functionId": "fn-L1C0"
+          }
+        },
+        {
+          "index": 1,
+          "line": 2,
+          "focus": [
+            "builtin-L2C11"
+          ],
+          "bindings": {
+            "values": "[3, 9, 4]"
+          },
+          "event": {
+            "type": "builtin-evaluated",
+            "builtin": "sum",
+            "inputs": [
+              [
+                3,
+                9,
+                4
+              ]
+            ],
+            "result": 16,
+            "expansion": "collapsed"
+          }
+        },
+        {
+          "index": 2,
+          "line": 2,
+          "focus": [
+            "ret-L2C4"
+          ],
+          "bindings": {
+            "values": "[3, 9, 4]"
+          },
+          "event": {
+            "type": "return_exit",
+            "repr": "16"
+          }
+        }
+      ],
+      "truncated": false,
+      "result": {
+        "repr": "16"
+      }
+    }
+  ]
+}

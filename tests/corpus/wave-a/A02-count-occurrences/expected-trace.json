@@ -1,0 +1,348 @@
+{
+  "runs": [
+    {
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "[3, 1, 3, 3]",
+          "3"
+        ]
+      },
+      "steps": [
+        {
+          "index": 0,
+          "line": 1,
+          "focus": [
+            "fn-L1C0"
+          ],
+          "bindings": {},
+          "event": {
+            "type": "call_enter",
+            "functionId": "fn-L1C0"
+          }
+        },
+        {
+          "index": 1,
+          "line": 2,
+          "focus": [
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "count": "0",
+            "target": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "state_init",
+            "binding": "bind-L2C4",
+            "repr": "0"
+          }
+        },
+        {
+          "index": 2,
+          "line": 3,
+          "focus": [
+            "loop-L3C4"
+          ],
+          "bindings": {
+            "count": "0",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "loop_advance",
+            "loop": "loop-L3C4",
+            "itemIndex": 0,
+            "itemRepr": "3"
+          }
+        },
+        {
+          "index": 3,
+          "line": 4,
+          "focus": [
+            "op-L4C11"
+          ],
+          "bindings": {
+            "count": "0",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L4C11",
+            "result": true
+          }
+        },
+        {
+          "index": 4,
+          "line": 4,
+          "focus": [
+            "branch-L4C8"
+          ],
+          "bindings": {
+            "count": "0",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "branch-L4C8",
+            "result": true
+          }
+        },
+        {
+          "index": 5,
+          "line": 5,
+          "focus": [
+            "op-L5C12",
+            "mut-L5C12",
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "count": "1",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "state_change",
+            "binding": "bind-L2C4",
+            "oldRepr": "0",
+            "newRepr": "1"
+          }
+        },
+        {
+          "index": 6,
+          "line": 3,
+          "focus": [
+            "loop-L3C4"
+          ],
+          "bindings": {
+            "count": "1",
+            "target": "3",
+            "value": "1",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "loop_advance",
+            "loop": "loop-L3C4",
+            "itemIndex": 1,
+            "itemRepr": "1"
+          }
+        },
+        {
+          "index": 7,
+          "line": 4,
+          "focus": [
+            "op-L4C11"
+          ],
+          "bindings": {
+            "count": "1",
+            "target": "3",
+            "value": "1",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L4C11",
+            "result": false
+          }
+        },
+        {
+          "index": 8,
+          "line": 4,
+          "focus": [
+            "branch-L4C8"
+          ],
+          "bindings": {
+            "count": "1",
+            "target": "3",
+            "value": "1",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "branch-L4C8",
+            "result": false
+          }
+        },
+        {
+          "index": 9,
+          "line": 3,
+          "focus": [
+            "loop-L3C4"
+          ],
+          "bindings": {
+            "count": "1",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "loop_advance",
+            "loop": "loop-L3C4",
+            "itemIndex": 2,
+            "itemRepr": "3"
+          }
+        },
+        {
+          "index": 10,
+          "line": 4,
+          "focus": [
+            "op-L4C11"
+          ],
+          "bindings": {
+            "count": "1",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L4C11",
+            "result": true
+          }
+        },
+        {
+          "index": 11,
+          "line": 4,
+          "focus": [
+            "branch-L4C8"
+          ],
+          "bindings": {
+            "count": "1",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "branch-L4C8",
+            "result": true
+          }
+        },
+        {
+          "index": 12,
+          "line": 5,
+          "focus": [
+            "op-L5C12",
+            "mut-L5C12",
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "count": "2",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "state_change",
+            "binding": "bind-L2C4",
+            "oldRepr": "1",
+            "newRepr": "2"
+          }
+        },
+        {
+          "index": 13,
+          "line": 3,
+          "focus": [
+            "loop-L3C4"
+          ],
+          "bindings": {
+            "count": "2",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "loop_advance",
+            "loop": "loop-L3C4",
+            "itemIndex": 3,
+            "itemRepr": "3"
+          }
+        },
+        {
+          "index": 14,
+          "line": 4,
+          "focus": [
+            "op-L4C11"
+          ],
+          "bindings": {
+            "count": "2",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "op-L4C11",
+            "result": true
+          }
+        },
+        {
+          "index": 15,
+          "line": 4,
+          "focus": [
+            "branch-L4C8"
+          ],
+          "bindings": {
+            "count": "2",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "condition_eval",
+            "branch": "branch-L4C8",
+            "result": true
+          }
+        },
+        {
+          "index": 16,
+          "line": 5,
+          "focus": [
+            "op-L5C12",
+            "mut-L5C12",
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "count": "3",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "state_change",
+            "binding": "bind-L2C4",
+            "oldRepr": "2",
+            "newRepr": "3"
+          }
+        },
+        {
+          "index": 17,
+          "line": 6,
+          "focus": [
+            "ret-L6C4"
+          ],
+          "bindings": {
+            "count": "3",
+            "target": "3",
+            "value": "3",
+            "values": "[3, 1, 3, 3]"
+          },
+          "event": {
+            "type": "return_exit",
+            "repr": "3"
+          }
+        }
+      ],
+      "truncated": false,
+      "result": {
+        "repr": "3"
+      }
+    }
+  ]
+}

@@ -32,7 +32,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-L3C4",
+          "branch": "op-L3C7",
           "result": false
         }
       ]
@@ -41,10 +41,20 @@
       "index": 3,
       "actions": [
         {
+          "type": "evaluate",
+          "branch": "branch-L3C4",
+          "result": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "actions": [
+        {
           "type": "exit_return",
           "repr": "16.0",
           "port": "ret-L5C4",
-          "tokenId": "tok-S3-return_exit-0",
+          "tokenId": "tok-S4-return_exit-0",
           "returnNode": "ret-L5C4",
           "functionNode": "fn-L1C0"
         }

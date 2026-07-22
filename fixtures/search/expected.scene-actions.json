@@ -33,26 +33,13 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-L3C8",
+          "branch": "op-L3C11",
           "result": false
         }
       ]
     },
     {
       "index": 3,
-      "actions": [
-        {
-          "type": "advance_item",
-          "loop": "loop-L2C4",
-          "itemIndex": 1,
-          "itemRepr": "-1",
-          "tokenId": "tok-S3-loop_advance-0",
-          "collection": "bind-L1C24"
-        }
-      ]
-    },
-    {
-      "index": 4,
       "actions": [
         {
           "type": "evaluate",
@@ -62,15 +49,25 @@
       ]
     },
     {
-      "index": 5,
+      "index": 4,
       "actions": [
         {
           "type": "advance_item",
           "loop": "loop-L2C4",
-          "itemIndex": 2,
-          "itemRepr": "4",
-          "tokenId": "tok-S5-loop_advance-0",
+          "itemIndex": 1,
+          "itemRepr": "-1",
+          "tokenId": "tok-S4-loop_advance-0",
           "collection": "bind-L1C24"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L3C11",
+          "result": false
         }
       ]
     },
@@ -80,7 +77,7 @@
         {
           "type": "evaluate",
           "branch": "branch-L3C8",
-          "result": true
+          "result": false
         }
       ]
     },
@@ -88,10 +85,43 @@
       "index": 7,
       "actions": [
         {
+          "type": "advance_item",
+          "loop": "loop-L2C4",
+          "itemIndex": 2,
+          "itemRepr": "4",
+          "tokenId": "tok-S7-loop_advance-0",
+          "collection": "bind-L1C24"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L3C11",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L3C8",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "actions": [
+        {
           "type": "exit_return",
           "repr": "4",
           "port": "ret-L4C12",
-          "tokenId": "tok-S7-return_exit-0",
+          "tokenId": "tok-S10-return_exit-0",
           "returnNode": "ret-L4C12",
           "functionNode": "fn-L1C0"
         }

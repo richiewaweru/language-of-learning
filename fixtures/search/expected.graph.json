@@ -68,6 +68,17 @@
       "trueBody": "ret-L4C12"
     },
     {
+      "id": "op-L3C11",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 11,
+        "endLine": 3,
+        "endCol": 16
+      },
+      "expr": "n > 0"
+    },
+    {
       "id": "ret-L4C12",
       "kind": "return",
       "sourceRange": {
@@ -117,6 +128,16 @@
       "from": "loop-L2C4",
       "type": "contains",
       "to": "branch-L3C8"
+    },
+    {
+      "from": "branch-L3C8",
+      "type": "contains",
+      "to": "op-L3C11"
+    },
+    {
+      "from": "op-L3C11",
+      "type": "reads",
+      "to": "bind-L2C8"
     },
     {
       "from": "branch-L3C8",

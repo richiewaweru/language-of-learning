@@ -45,7 +45,7 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-L4C8",
+          "branch": "op-L4C11",
           "result": false
         }
       ]
@@ -54,17 +54,37 @@
       "index": 4,
       "actions": [
         {
-          "type": "advance_item",
-          "loop": "loop-L3C4",
-          "itemIndex": 1,
-          "itemRepr": "2",
-          "tokenId": "tok-S4-loop_advance-0",
-          "collection": "bind-L1C19"
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": false
         }
       ]
     },
     {
       "index": 5,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 1,
+          "itemRepr": "2",
+          "tokenId": "tok-S5-loop_advance-0",
+          "collection": "bind-L1C19"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 7,
       "actions": [
         {
           "type": "evaluate",
@@ -74,37 +94,14 @@
       ]
     },
     {
-      "index": 6,
+      "index": 8,
       "actions": [
         {
           "type": "change_state",
           "cell": "bind-L2C4",
           "oldRepr": "0",
           "newRepr": "1",
-          "inputTokenId": "tok-S6-state_change-0"
-        }
-      ]
-    },
-    {
-      "index": 7,
-      "actions": [
-        {
-          "type": "advance_item",
-          "loop": "loop-L3C4",
-          "itemIndex": 2,
-          "itemRepr": "0",
-          "tokenId": "tok-S7-loop_advance-0",
-          "collection": "bind-L1C19"
-        }
-      ]
-    },
-    {
-      "index": 8,
-      "actions": [
-        {
-          "type": "evaluate",
-          "branch": "branch-L4C8",
-          "result": false
+          "inputTokenId": "tok-S8-state_change-0"
         }
       ]
     },
@@ -114,8 +111,8 @@
         {
           "type": "advance_item",
           "loop": "loop-L3C4",
-          "itemIndex": 3,
-          "itemRepr": "3",
+          "itemIndex": 2,
+          "itemRepr": "0",
           "tokenId": "tok-S9-loop_advance-0",
           "collection": "bind-L1C19"
         }
@@ -126,8 +123,8 @@
       "actions": [
         {
           "type": "evaluate",
-          "branch": "branch-L4C8",
-          "result": true
+          "branch": "op-L4C11",
+          "result": false
         }
       ]
     },
@@ -135,11 +132,9 @@
       "index": 11,
       "actions": [
         {
-          "type": "change_state",
-          "cell": "bind-L2C4",
-          "oldRepr": "1",
-          "newRepr": "2",
-          "inputTokenId": "tok-S11-state_change-0"
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": false
         }
       ]
     },
@@ -147,10 +142,55 @@
       "index": 12,
       "actions": [
         {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 3,
+          "itemRepr": "3",
+          "tokenId": "tok-S12-loop_advance-0",
+          "collection": "bind-L1C19"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": true
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "1",
+          "newRepr": "2",
+          "inputTokenId": "tok-S15-state_change-0"
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "actions": [
+        {
           "type": "exit_return",
           "repr": "2",
           "port": "ret-L6C4",
-          "tokenId": "tok-S12-return_exit-0",
+          "tokenId": "tok-S16-return_exit-0",
           "returnNode": "ret-L6C4",
           "functionNode": "fn-L1C0"
         }

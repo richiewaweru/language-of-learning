@@ -1,13 +1,17 @@
 {
   "call": {
     "functionId": "fn-L1C0",
-    "argsRepr": ["[-3, -1, 4, 2]"]
+    "argsRepr": [
+      "[-3, -1, 4, 2]"
+    ]
   },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": ["fn-L1C0"],
+      "focus": [
+        "fn-L1C0"
+      ],
       "bindings": {},
       "event": {
         "type": "call_enter",
@@ -17,7 +21,9 @@
     {
       "index": 1,
       "line": 2,
-      "focus": ["loop-L2C4"],
+      "focus": [
+        "loop-L2C4"
+      ],
       "bindings": {
         "n": "-3",
         "numbers": "[-3, -1, 4, 2]"
@@ -32,7 +38,25 @@
     {
       "index": 2,
       "line": 3,
-      "focus": ["branch-L3C8"],
+      "focus": [
+        "op-L3C11"
+      ],
+      "bindings": {
+        "n": "-3",
+        "numbers": "[-3, -1, 4, 2]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "op-L3C11",
+        "result": false
+      }
+    },
+    {
+      "index": 3,
+      "line": 3,
+      "focus": [
+        "branch-L3C8"
+      ],
       "bindings": {
         "n": "-3",
         "numbers": "[-3, -1, 4, 2]"
@@ -44,9 +68,11 @@
       }
     },
     {
-      "index": 3,
+      "index": 4,
       "line": 2,
-      "focus": ["loop-L2C4"],
+      "focus": [
+        "loop-L2C4"
+      ],
       "bindings": {
         "n": "-1",
         "numbers": "[-3, -1, 4, 2]"
@@ -59,9 +85,27 @@
       }
     },
     {
-      "index": 4,
+      "index": 5,
       "line": 3,
-      "focus": ["branch-L3C8"],
+      "focus": [
+        "op-L3C11"
+      ],
+      "bindings": {
+        "n": "-1",
+        "numbers": "[-3, -1, 4, 2]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "op-L3C11",
+        "result": false
+      }
+    },
+    {
+      "index": 6,
+      "line": 3,
+      "focus": [
+        "branch-L3C8"
+      ],
       "bindings": {
         "n": "-1",
         "numbers": "[-3, -1, 4, 2]"
@@ -73,9 +117,11 @@
       }
     },
     {
-      "index": 5,
+      "index": 7,
       "line": 2,
-      "focus": ["loop-L2C4"],
+      "focus": [
+        "loop-L2C4"
+      ],
       "bindings": {
         "n": "4",
         "numbers": "[-3, -1, 4, 2]"
@@ -88,9 +134,27 @@
       }
     },
     {
-      "index": 6,
+      "index": 8,
       "line": 3,
-      "focus": ["branch-L3C8"],
+      "focus": [
+        "op-L3C11"
+      ],
+      "bindings": {
+        "n": "4",
+        "numbers": "[-3, -1, 4, 2]"
+      },
+      "event": {
+        "type": "condition_eval",
+        "branch": "op-L3C11",
+        "result": true
+      }
+    },
+    {
+      "index": 9,
+      "line": 3,
+      "focus": [
+        "branch-L3C8"
+      ],
       "bindings": {
         "n": "4",
         "numbers": "[-3, -1, 4, 2]"
@@ -102,9 +166,11 @@
       }
     },
     {
-      "index": 7,
+      "index": 10,
       "line": 4,
-      "focus": ["ret-L4C12"],
+      "focus": [
+        "ret-L4C12"
+      ],
       "bindings": {
         "n": "4",
         "numbers": "[-3, -1, 4, 2]"

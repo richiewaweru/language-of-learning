@@ -1,0 +1,146 @@
+{
+  "version": "0.1",
+  "source": "def get_middle(values):\n    index = len(values) // 2\n    return values[index]",
+  "nodes": [
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 3,
+        "endCol": 24
+      },
+      "name": "get_middle",
+      "params": [
+        "bind-L1C15"
+      ]
+    },
+    {
+      "id": "bind-L1C15",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 15,
+        "endLine": 1,
+        "endCol": 21
+      },
+      "name": "values",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-L2C4",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 2,
+        "endCol": 28
+      },
+      "name": "index",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "op-L2C12",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 12,
+        "endLine": 2,
+        "endCol": 27
+      },
+      "expr": "len(values) // 2"
+    },
+    {
+      "id": "call-L2C12",
+      "kind": "call",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 12,
+        "endLine": 2,
+        "endCol": 23
+      },
+      "callee": "len",
+      "args": [
+        "values"
+      ]
+    },
+    {
+      "id": "ret-L3C4",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 4,
+        "endLine": 3,
+        "endCol": 24
+      },
+      "valueRef": "op-L3C11"
+    },
+    {
+      "id": "op-L3C11",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 11,
+        "endLine": 3,
+        "endCol": 24
+      },
+      "expr": "values[index]"
+    }
+  ],
+  "relations": [
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "op-L2C12"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "call-L2C12"
+    },
+    {
+      "from": "call-L2C12",
+      "type": "reads",
+      "to": "bind-L1C15"
+    },
+    {
+      "from": "op-L2C12",
+      "type": "reads",
+      "to": "bind-L1C15"
+    },
+    {
+      "from": "op-L2C12",
+      "type": "writes",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "ret-L3C4"
+    },
+    {
+      "from": "ret-L3C4",
+      "type": "returns",
+      "to": "op-L3C11"
+    },
+    {
+      "from": "op-L3C11",
+      "type": "reads",
+      "to": "bind-L1C15"
+    },
+    {
+      "from": "op-L3C11",
+      "type": "reads",
+      "to": "bind-L2C4"
+    }
+  ],
+  "unsupported": []
+}

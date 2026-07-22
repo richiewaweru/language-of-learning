@@ -1,13 +1,17 @@
 {
   "call": {
     "functionId": "fn-L1C0",
-    "argsRepr": ["[2, 4, 6, 8]"]
+    "argsRepr": [
+      "[2, 4, 6, 8]"
+    ]
   },
   "steps": [
     {
       "index": 0,
       "line": 1,
-      "focus": ["fn-L1C0"],
+      "focus": [
+        "fn-L1C0"
+      ],
       "bindings": {},
       "event": {
         "type": "call_enter",
@@ -17,7 +21,9 @@
     {
       "index": 1,
       "line": 2,
-      "focus": ["bind-L2C4"],
+      "focus": [
+        "bind-L2C4"
+      ],
       "bindings": {
         "numbers": "[2, 4, 6, 8]",
         "total": "0"
@@ -31,7 +37,9 @@
     {
       "index": 2,
       "line": 3,
-      "focus": ["loop-L3C4"],
+      "focus": [
+        "loop-L3C4"
+      ],
       "bindings": {
         "number": "2",
         "numbers": "[2, 4, 6, 8]",
@@ -47,7 +55,9 @@
     {
       "index": 3,
       "line": 4,
-      "focus": ["op-L4C16"],
+      "focus": [
+        "op-L4C16"
+      ],
       "bindings": {
         "number": "2",
         "numbers": "[2, 4, 6, 8]",
@@ -63,7 +73,9 @@
     {
       "index": 4,
       "line": 3,
-      "focus": ["loop-L3C4"],
+      "focus": [
+        "loop-L3C4"
+      ],
       "bindings": {
         "number": "4",
         "numbers": "[2, 4, 6, 8]",
@@ -79,7 +91,9 @@
     {
       "index": 5,
       "line": 4,
-      "focus": ["op-L4C16"],
+      "focus": [
+        "op-L4C16"
+      ],
       "bindings": {
         "number": "4",
         "numbers": "[2, 4, 6, 8]",
@@ -95,7 +109,9 @@
     {
       "index": 6,
       "line": 3,
-      "focus": ["loop-L3C4"],
+      "focus": [
+        "loop-L3C4"
+      ],
       "bindings": {
         "number": "6",
         "numbers": "[2, 4, 6, 8]",
@@ -111,7 +127,9 @@
     {
       "index": 7,
       "line": 4,
-      "focus": ["op-L4C16"],
+      "focus": [
+        "op-L4C16"
+      ],
       "bindings": {
         "number": "6",
         "numbers": "[2, 4, 6, 8]",
@@ -127,7 +145,9 @@
     {
       "index": 8,
       "line": 3,
-      "focus": ["loop-L3C4"],
+      "focus": [
+        "loop-L3C4"
+      ],
       "bindings": {
         "number": "8",
         "numbers": "[2, 4, 6, 8]",
@@ -143,7 +163,9 @@
     {
       "index": 9,
       "line": 4,
-      "focus": ["op-L4C16"],
+      "focus": [
+        "op-L4C16"
+      ],
       "bindings": {
         "number": "8",
         "numbers": "[2, 4, 6, 8]",
@@ -159,7 +181,9 @@
     {
       "index": 10,
       "line": 5,
-      "focus": ["ret-L5C4"],
+      "focus": [
+        "ret-L5C4"
+      ],
       "bindings": {
         "number": "8",
         "numbers": "[2, 4, 6, 8]",

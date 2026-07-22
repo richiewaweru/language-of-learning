@@ -69,8 +69,13 @@ class WaveACorpusTests(unittest.TestCase):
                         any(all(node.get(key) == value for key, value in requirement.items()) for node in graph["nodes"]),
                         requirement,
                     )
+                frozen_graph = case_dir / "expected-graph.json"
+                if frozen_graph.exists():
+                    self.assertEqual(graph, load_json(frozen_graph), f"{case_dir.name} graph regression lock")
+                actual_traces = []
                 for run_index, run in enumerate(inputs):
                     trace = run_trace(source, graph, run["argsRepr"])
+                    actual_traces.append(trace)
                     self.assertNotIn("violation", trace, f"{case_dir.name} run {run_index}")
                     actual_types = [step["event"]["type"] for step in trace["steps"]]
                     event_expectation = expected_events[run_index]
@@ -87,6 +92,9 @@ class WaveACorpusTests(unittest.TestCase):
                     for name, expected_value in result_expectation.get("finalBindings", {}).items():
                         self.assertIn(name, final_bindings)
                         self.assertEqual(value_from_repr(final_bindings[name]), expected_value)
+                frozen_trace = case_dir / "expected-trace.json"
+                if frozen_trace.exists():
+                    self.assertEqual({"runs": actual_traces}, load_json(frozen_trace), f"{case_dir.name} trace regression lock")
                 checked += 1
         self.assertEqual(checked, 15)
 

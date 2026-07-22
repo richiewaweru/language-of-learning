@@ -1,0 +1,319 @@
+{
+  "version": "0.1",
+  "source": "def fibonacci(n):\n    if n <= 1:\n        return n\n\n    previous = 0\n    current = 1\n\n    for _ in range(2, n + 1):\n        next_value = previous + current\n        previous = current\n        current = next_value\n\n    return current",
+  "nodes": [
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 13,
+        "endCol": 18
+      },
+      "name": "fibonacci",
+      "params": [
+        "bind-L1C14"
+      ]
+    },
+    {
+      "id": "bind-L1C14",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 14,
+        "endLine": 1,
+        "endCol": 15
+      },
+      "name": "n",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "branch-L2C4",
+      "kind": "branch",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 3,
+        "endCol": 16
+      },
+      "conditionExpr": "n <= 1",
+      "trueBody": "ret-L3C8"
+    },
+    {
+      "id": "op-L2C7",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 7,
+        "endLine": 2,
+        "endCol": 13
+      },
+      "expr": "n <= 1"
+    },
+    {
+      "id": "ret-L3C8",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 8,
+        "endLine": 3,
+        "endCol": 16
+      },
+      "valueRef": "bind-L1C14"
+    },
+    {
+      "id": "bind-L5C4",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 4,
+        "endLine": 5,
+        "endCol": 16
+      },
+      "name": "previous",
+      "role": "state",
+      "mutable": true,
+      "initialRepr": "0"
+    },
+    {
+      "id": "val-L5C15",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 15,
+        "endLine": 5,
+        "endCol": 16
+      },
+      "repr": "0",
+      "pyType": "int"
+    },
+    {
+      "id": "bind-L6C4",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 6,
+        "startCol": 4,
+        "endLine": 6,
+        "endCol": 15
+      },
+      "name": "current",
+      "role": "state",
+      "mutable": true,
+      "initialRepr": "1"
+    },
+    {
+      "id": "val-L6C14",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 6,
+        "startCol": 14,
+        "endLine": 6,
+        "endCol": 15
+      },
+      "repr": "1",
+      "pyType": "int"
+    },
+    {
+      "id": "call-L8C13",
+      "kind": "call",
+      "sourceRange": {
+        "startLine": 8,
+        "startCol": 13,
+        "endLine": 8,
+        "endCol": 28
+      },
+      "callee": "range",
+      "args": [
+        "2",
+        "n + 1"
+      ]
+    },
+    {
+      "id": "op-L8C22",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 8,
+        "startCol": 22,
+        "endLine": 8,
+        "endCol": 26
+      },
+      "expr": "n + 1"
+    },
+    {
+      "id": "loop-L8C4",
+      "kind": "loop",
+      "sourceRange": {
+        "startLine": 8,
+        "startCol": 4,
+        "endLine": 11,
+        "endCol": 27
+      },
+      "iteratorName": "_",
+      "collectionRef": "call-L8C13",
+      "body": "op-L9C21"
+    },
+    {
+      "id": "bind-L8C8",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 8,
+        "startCol": 8,
+        "endLine": 8,
+        "endCol": 9
+      },
+      "name": "_",
+      "role": "iterator",
+      "mutable": false
+    },
+    {
+      "id": "bind-L9C8",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 9,
+        "startCol": 8,
+        "endLine": 9,
+        "endCol": 39
+      },
+      "name": "next_value",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "op-L9C21",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 9,
+        "startCol": 21,
+        "endLine": 9,
+        "endCol": 38
+      },
+      "expr": "previous + current"
+    },
+    {
+      "id": "ret-L13C4",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 13,
+        "startCol": 4,
+        "endLine": 13,
+        "endCol": 18
+      },
+      "valueRef": "bind-L6C4"
+    }
+  ],
+  "relations": [
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "branch-L2C4"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "op-L2C7"
+    },
+    {
+      "from": "op-L2C7",
+      "type": "reads",
+      "to": "bind-L1C14"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "ret-L3C8"
+    },
+    {
+      "from": "ret-L3C8",
+      "type": "returns",
+      "to": "bind-L1C14"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L5C4"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L6C4"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "call-L8C13"
+    },
+    {
+      "from": "call-L8C13",
+      "type": "reads",
+      "to": "bind-L1C14"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "op-L8C22"
+    },
+    {
+      "from": "op-L8C22",
+      "type": "reads",
+      "to": "bind-L1C14"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "loop-L8C4"
+    },
+    {
+      "from": "loop-L8C4",
+      "type": "iterates",
+      "to": "call-L8C13"
+    },
+    {
+      "from": "loop-L8C4",
+      "type": "contains",
+      "to": "bind-L9C8"
+    },
+    {
+      "from": "loop-L8C4",
+      "type": "contains",
+      "to": "op-L9C21"
+    },
+    {
+      "from": "op-L9C21",
+      "type": "reads",
+      "to": "bind-L5C4"
+    },
+    {
+      "from": "op-L9C21",
+      "type": "reads",
+      "to": "bind-L6C4"
+    },
+    {
+      "from": "op-L9C21",
+      "type": "writes",
+      "to": "bind-L9C8"
+    },
+    {
+      "from": "bind-L5C4",
+      "type": "reads",
+      "to": "bind-L6C4"
+    },
+    {
+      "from": "bind-L6C4",
+      "type": "reads",
+      "to": "bind-L9C8"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "ret-L13C4"
+    },
+    {
+      "from": "ret-L13C4",
+      "type": "returns",
+      "to": "bind-L6C4"
+    }
+  ],
+  "unsupported": []
+}

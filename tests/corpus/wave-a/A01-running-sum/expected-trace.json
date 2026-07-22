@@ -1,0 +1,176 @@
+{
+  "runs": [
+    {
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "[2, 4, 6]"
+        ]
+      },
+      "steps": [
+        {
+          "index": 0,
+          "line": 1,
+          "focus": [
+            "fn-L1C0"
+          ],
+          "bindings": {},
+          "event": {
+            "type": "call_enter",
+            "functionId": "fn-L1C0"
+          }
+        },
+        {
+          "index": 1,
+          "line": 2,
+          "focus": [
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "total": "0",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "state_init",
+            "binding": "bind-L2C4",
+            "repr": "0"
+          }
+        },
+        {
+          "index": 2,
+          "line": 3,
+          "focus": [
+            "loop-L3C4"
+          ],
+          "bindings": {
+            "total": "0",
+            "value": "2",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "loop_advance",
+            "loop": "loop-L3C4",
+            "itemIndex": 0,
+            "itemRepr": "2"
+          }
+        },
+        {
+          "index": 3,
+          "line": 4,
+          "focus": [
+            "op-L4C8",
+            "mut-L4C8",
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "total": "2",
+            "value": "2",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "state_change",
+            "binding": "bind-L2C4",
+            "oldRepr": "0",
+            "newRepr": "2"
+          }
+        },
+        {
+          "index": 4,
+          "line": 3,
+          "focus": [
+            "loop-L3C4"
+          ],
+          "bindings": {
+            "total": "2",
+            "value": "4",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "loop_advance",
+            "loop": "loop-L3C4",
+            "itemIndex": 1,
+            "itemRepr": "4"
+          }
+        },
+        {
+          "index": 5,
+          "line": 4,
+          "focus": [
+            "op-L4C8",
+            "mut-L4C8",
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "total": "6",
+            "value": "4",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "state_change",
+            "binding": "bind-L2C4",
+            "oldRepr": "2",
+            "newRepr": "6"
+          }
+        },
+        {
+          "index": 6,
+          "line": 3,
+          "focus": [
+            "loop-L3C4"
+          ],
+          "bindings": {
+            "total": "6",
+            "value": "6",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "loop_advance",
+            "loop": "loop-L3C4",
+            "itemIndex": 2,
+            "itemRepr": "6"
+          }
+        },
+        {
+          "index": 7,
+          "line": 4,
+          "focus": [
+            "op-L4C8",
+            "mut-L4C8",
+            "bind-L2C4"
+          ],
+          "bindings": {
+            "total": "12",
+            "value": "6",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "state_change",
+            "binding": "bind-L2C4",
+            "oldRepr": "6",
+            "newRepr": "12"
+          }
+        },
+        {
+          "index": 8,
+          "line": 5,
+          "focus": [
+            "ret-L5C4"
+          ],
+          "bindings": {
+            "total": "12",
+            "value": "6",
+            "values": "[2, 4, 6]"
+          },
+          "event": {
+            "type": "return_exit",
+            "repr": "12"
+          }
+        }
+      ],
+      "truncated": false,
+      "result": {
+        "repr": "12"
+      }
+    }
+  ]
+}

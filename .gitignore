@@ -14,5 +14,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .codex-tmp/
+.playwright-cli/
+output/playwright/
 .DS_Store
 data/
