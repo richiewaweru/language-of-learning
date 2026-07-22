@@ -100,6 +100,7 @@ function entitiesFromGraph(graph: SemanticGraph, trace: Trace): SemanticEntity[]
       ...(node.role ? { bindingRole: node.role } : {}),
       ...(node.expr ? { expression: node.expr } : {}),
       ...(node.mutationType ? { mutationType: node.mutationType } : {}),
+      ...(node.controlFlow ? { controlFlow: node.controlFlow, loopRef: node.loopRef } : {}),
     },
   }));
 
@@ -147,6 +148,10 @@ function eventType(event: TraceEvent): SemanticEventType {
       return 'call';
     case 'loop_test':
       return 'repeat';
+    case 'loop-exit':
+      return 'exit';
+    case 'loop-skip':
+      return 'skip';
     case 'effect_fire':
       return 'effect';
     case 'unsupported':
@@ -202,6 +207,9 @@ function eventPayload(event: TraceEvent, step: TraceStep): Record<string, unknow
       return { callee: event.callee, args: event.argsRepr, value: event.resultRepr };
     case 'loop_test':
       return { loop: event.loop, iteration: event.iteration, result: event.result };
+    case 'loop-exit':
+    case 'loop-skip':
+      return { loop: event.loopId, reason: event.reason, iteration: event.iteration };
     case 'effect_fire':
       return { effect: event.effect, value: event.repr };
     case 'unsupported':
@@ -238,6 +246,7 @@ function activeEntityIds(graph: SemanticGraph, step: TraceStep): string[] {
   if (event.type === 'collection_append') add(event.collection);
   if (event.type === 'indexed_selection' || event.type === 'indexed_mutation') add(event.collection);
   if (event.type === 'loop_test') add(event.loop);
+  if (event.type === 'loop-exit' || event.type === 'loop-skip') add(event.loopId);
   if (event.type === 'unsupported') {
     const regionIndex = graph.unsupported.findIndex((region) => {
       const candidate = region as { construct?: string };

@@ -82,6 +82,7 @@ class Analyzer:
         # name -> id maps so relations can resolve by identifier, never by guess.
         self.binding_ids: dict[str, str] = {}
         self.collection_ids: dict[str, str] = {}
+        self.loop_stack: list[str] = []
 
     def analyze(self) -> dict[str, Any]:
         rejection = self.canonical_rejection()
@@ -229,10 +230,31 @@ class Analyzer:
             self.visit_if(stmt, parent_id)
         elif isinstance(stmt, ast.Return):
             self.visit_return(stmt, parent_id)
+        elif isinstance(stmt, (ast.Break, ast.Continue)):
+            self.visit_loop_control(stmt, parent_id)
         elif isinstance(stmt, ast.Expr):
             self.visit_expr_stmt(stmt, parent_id)
         else:
             self.add_unsupported(stmt, type(stmt).__name__)
+
+    def visit_loop_control(self, stmt: ast.Break | ast.Continue, parent_id: str) -> None:
+        if not self.loop_stack:
+            self.add_unsupported(stmt, "loop control outside a loop")
+            return
+        control = "break" if isinstance(stmt, ast.Break) else "continue"
+        operation_id = self.alloc_id("op", stmt)
+        self.nodes.append(
+            {
+                "id": operation_id,
+                "kind": "operation",
+                "sourceRange": self.range_for(stmt),
+                "expr": control,
+                "controlFlow": control,
+                "loopRef": self.loop_stack[-1],
+            }
+        )
+        self.node_ids.add(operation_id)
+        self.rel(parent_id, "contains", operation_id)
 
     def visit_aug_assign(self, stmt: ast.AugAssign, parent_id: str) -> None:
         operators = {
@@ -431,8 +453,12 @@ class Analyzer:
             self.node_ids.add(iter_id)
         self.rel(parent_id, "contains", loop_id)
         self.rel(loop_id, "iterates", collection_ref)
-        for child in stmt.body:
-            self.visit_stmt(child, parent_id=loop_id)
+        self.loop_stack.append(loop_id)
+        try:
+            for child in stmt.body:
+                self.visit_stmt(child, parent_id=loop_id)
+        finally:
+            self.loop_stack.pop()
 
     def visit_while(self, stmt: ast.While, parent_id: str) -> None:
         if stmt.orelse:
@@ -469,8 +495,12 @@ class Analyzer:
         self.node_ids.add(loop_id)
         self.rel(parent_id, "contains", loop_id)
         self.rel(loop_id, "reads", condition_id)
-        for child in stmt.body:
-            self.visit_stmt(child, parent_id=loop_id)
+        self.loop_stack.append(loop_id)
+        try:
+            for child in stmt.body:
+                self.visit_stmt(child, parent_id=loop_id)
+        finally:
+            self.loop_stack.pop()
 
     def visit_if(self, stmt: ast.If, parent_id: str) -> None:
         branch_id = self.alloc_id("branch", stmt)
@@ -623,6 +653,8 @@ class Analyzer:
             return self.alloc_id("loop", first)
         if isinstance(first, ast.Return):
             return self.alloc_id("ret", first)
+        if isinstance(first, (ast.Break, ast.Continue)):
+            return self.alloc_id("op", first)
         if isinstance(first, ast.Assign) and isinstance(first.value, ast.BinOp):
             return self.alloc_id("op", first.value)
         if isinstance(first, ast.AugAssign):

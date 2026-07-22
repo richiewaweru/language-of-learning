@@ -15,6 +15,8 @@ export type GraphNode = {
   conditionExpr?: string;
   targetRef?: string;
   mutationType?: string;
+  controlFlow?: 'break' | 'continue';
+  loopRef?: string;
   effectType?: string;
   valueRef?: string;
   params?: string[];
@@ -50,6 +52,8 @@ export type TraceEvent =
   | { type: 'indexed_mutation'; collection: string; indexRepr: string; oldRepr: string; newRepr: string }
   | { type: 'supported_call'; callee: 'len' | 'range'; argsRepr: string[]; resultRepr: string }
   | { type: 'loop_test'; loop: string; iteration: number; result: boolean }
+  | { type: 'loop-exit'; loopId: string; reason: 'break'; iteration: number }
+  | { type: 'loop-skip'; loopId: string; reason: 'continue'; iteration: number }
   | { type: 'effect_fire'; effect: string; repr: string }
   | { type: 'unsupported'; construct: string; message: string }
   | { type: 'return_exit'; repr: string };

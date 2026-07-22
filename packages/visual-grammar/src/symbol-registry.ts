@@ -107,6 +107,8 @@ export function symbolIdForSemantic(
     swap: 'mutation',
     calculate: 'generic-operation',
     call: 'call-frame',
+    exit: 'loop',
+    skip: 'loop',
   };
   return aliases[roleOrEvent] ?? roleOrEvent;
 }

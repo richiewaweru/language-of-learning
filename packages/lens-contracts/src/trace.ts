@@ -51,6 +51,18 @@ export const TraceEventSchema = z.discriminatedUnion('type', [
     iteration: z.number().int().nonnegative(),
     result: z.boolean(),
   }),
+  z.object({
+    type: z.literal('loop-exit'),
+    loopId: z.string(),
+    reason: z.literal('break'),
+    iteration: z.number().int().nonnegative(),
+  }),
+  z.object({
+    type: z.literal('loop-skip'),
+    loopId: z.string(),
+    reason: z.literal('continue'),
+    iteration: z.number().int().nonnegative(),
+  }),
   z.object({ type: z.literal('effect_fire'), effect: z.string(), repr: z.string() }),
   z.object({
     type: z.literal('unsupported'),

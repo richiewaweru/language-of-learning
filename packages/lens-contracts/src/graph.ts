@@ -83,6 +83,8 @@ export const CallNodeSchema = NodeBaseSchema.extend({
 export const OperationNodeSchema = NodeBaseSchema.extend({
   kind: z.literal('operation'),
   expr: z.string(),
+  controlFlow: z.enum(['break', 'continue']).optional(),
+  loopRef: z.string().optional(),
 });
 
 export const SequenceNodeSchema = NodeBaseSchema.extend({

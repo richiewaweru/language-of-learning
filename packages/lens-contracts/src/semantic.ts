@@ -33,6 +33,8 @@ export const SemanticEventTypeSchema = z.enum([
   'compare',
   'branch',
   'repeat',
+  'exit',
+  'skip',
   'update',
   'insert',
   'remove',

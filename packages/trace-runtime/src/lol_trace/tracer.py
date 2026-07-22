@@ -116,6 +116,7 @@ class Tracer:
         self.env: dict[str, Any] = {}
         self.trace = TraceBuilder(self.graph, args_repr)
         self.loop_counters: dict[str, int] = {}
+        self.loop_stack: list[dict[str, int | str]] = []
         self.start_time = time.monotonic()
 
     def run(self) -> dict[str, Any]:
@@ -138,8 +139,11 @@ class Tracer:
                 {"type": "call_enter", "functionId": self.graph.function_id},
             )
             for stmt in self.function.body:
-                if self._exec_stmt(stmt):
+                signal = self._exec_stmt(stmt)
+                if signal == "return":
                     break
+                if signal in {"break", "continue"}:
+                    raise SandboxViolation("loop_control", "Loop control must be inside a loop.")
             return self.trace.finish()
         except SandboxViolation as exc:
             self.trace.violation = exc.as_dict()
@@ -151,14 +155,14 @@ class Tracer:
     def _tick(self) -> None:
         self.sandbox.tick_step(time.monotonic())
 
-    def _exec_stmt(self, stmt: ast.stmt) -> bool:
+    def _exec_stmt(self, stmt: ast.stmt) -> str | None:
         self._tick()
         if isinstance(stmt, ast.Assign):
             self._exec_assign(stmt)
-            return False
+            return None
         if isinstance(stmt, ast.AugAssign):
             self._exec_aug_assign(stmt)
-            return False
+            return None
         if isinstance(stmt, ast.For):
             return self._exec_for(stmt)
         if isinstance(stmt, ast.While):
@@ -167,11 +171,34 @@ class Tracer:
             return self._exec_if(stmt)
         if isinstance(stmt, ast.Return):
             self._exec_return(stmt)
-            return True
+            return "return"
+        if isinstance(stmt, ast.Break):
+            return self._exec_loop_control(stmt, "break")
+        if isinstance(stmt, ast.Continue):
+            return self._exec_loop_control(stmt, "continue")
         if isinstance(stmt, ast.Expr):
             self._exec_expr(stmt)
-            return False
+            return None
         raise SandboxViolation(type(stmt).__name__, f"Unsupported statement: {type(stmt).__name__}")
+
+    def _exec_loop_control(self, stmt: ast.Break | ast.Continue, control: str) -> str:
+        if not self.loop_stack:
+            raise SandboxViolation("loop_control", f"{control} requires an enclosing loop.")
+        current = self.loop_stack[-1]
+        loop_id = str(current["loopId"])
+        iteration = int(current["iteration"])
+        self.trace.emit(
+            stmt.lineno,
+            [loop_id],
+            self.trace.snapshot(self.env),
+            {
+                "type": "loop-exit" if control == "break" else "loop-skip",
+                "loopId": loop_id,
+                "reason": control,
+                "iteration": iteration,
+            },
+        )
+        return control
 
     def _exec_assign(self, stmt: ast.Assign) -> None:
         if len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Subscript):
@@ -323,7 +350,7 @@ class Tracer:
             },
         )
 
-    def _exec_for(self, stmt: ast.For) -> bool:
+    def _exec_for(self, stmt: ast.For) -> str | None:
         if not isinstance(stmt.target, ast.Name) or not (
             isinstance(stmt.iter, ast.Name) or self._is_range_call(stmt.iter)
         ):
@@ -335,52 +362,72 @@ class Tracer:
             raise SandboxViolation("for", "Loop target must be a list or bounded range.")
         loop_id = loop["id"]
         self.loop_counters.setdefault(loop_id, 0)
-        for index, item in enumerate(collection):
-            self._tick()
-            self.env[iterator_name] = item
-            self.trace.emit(
-                loop["sourceRange"]["startLine"],
-                [loop_id],
-                self.trace.snapshot(self.env),
-                {
-                    "type": "loop_advance",
-                    "loop": loop_id,
-                    "itemIndex": index,
-                    "itemRepr": value_repr(item),
-                },
-            )
-            for child in stmt.body:
-                if self._exec_stmt(child):
-                    return True
-        return False
+        self.loop_stack.append({"loopId": loop_id, "iteration": 0})
+        try:
+            for index, item in enumerate(collection):
+                self._tick()
+                self.loop_stack[-1]["iteration"] = index
+                self.env[iterator_name] = item
+                self.trace.emit(
+                    loop["sourceRange"]["startLine"],
+                    [loop_id],
+                    self.trace.snapshot(self.env),
+                    {
+                        "type": "loop_advance",
+                        "loop": loop_id,
+                        "itemIndex": index,
+                        "itemRepr": value_repr(item),
+                    },
+                )
+                for child in stmt.body:
+                    signal = self._exec_stmt(child)
+                    if signal == "return":
+                        return signal
+                    if signal == "break":
+                        return None
+                    if signal == "continue":
+                        break
+            return None
+        finally:
+            self.loop_stack.pop()
 
-    def _exec_while(self, stmt: ast.While) -> bool:
+    def _exec_while(self, stmt: ast.While) -> str | None:
         if stmt.orelse:
             raise SandboxViolation("while_else", "While-else is not supported.")
         loop = self._loop_for_line(stmt.lineno)
         iteration = 0
-        while True:
-            self._tick()
-            result = self._eval_condition(stmt.test)
-            self.trace.emit(
-                loop["sourceRange"]["startLine"],
-                [loop["id"]],
-                self.trace.snapshot(self.env),
-                {
-                    "type": "loop_test",
-                    "loop": loop["id"],
-                    "iteration": iteration,
-                    "result": result,
-                },
-            )
-            if not result:
-                return False
-            for child in stmt.body:
-                if self._exec_stmt(child):
-                    return True
-            iteration += 1
+        self.loop_stack.append({"loopId": loop["id"], "iteration": 0})
+        try:
+            while True:
+                self._tick()
+                self.loop_stack[-1]["iteration"] = iteration
+                result = self._eval_condition(stmt.test)
+                self.trace.emit(
+                    loop["sourceRange"]["startLine"],
+                    [loop["id"]],
+                    self.trace.snapshot(self.env),
+                    {
+                        "type": "loop_test",
+                        "loop": loop["id"],
+                        "iteration": iteration,
+                        "result": result,
+                    },
+                )
+                if not result:
+                    return None
+                for child in stmt.body:
+                    signal = self._exec_stmt(child)
+                    if signal == "return":
+                        return signal
+                    if signal == "break":
+                        return None
+                    if signal == "continue":
+                        break
+                iteration += 1
+        finally:
+            self.loop_stack.pop()
 
-    def _exec_if(self, stmt: ast.If) -> bool:
+    def _exec_if(self, stmt: ast.If) -> str | None:
         branch = self._branch_for_line(stmt.lineno)
         result = self._eval_condition(stmt.test)
         self.trace.emit(
@@ -391,9 +438,10 @@ class Tracer:
         )
         body = stmt.body if result else stmt.orelse
         for child in body:
-            if self._exec_stmt(child):
-                return True
-        return False
+            signal = self._exec_stmt(child)
+            if signal is not None:
+                return signal
+        return None
 
     def _exec_return(self, stmt: ast.Return) -> None:
         ret = self._return_for_stmt(stmt)
