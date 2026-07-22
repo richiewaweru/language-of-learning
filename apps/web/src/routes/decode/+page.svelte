@@ -369,7 +369,10 @@
 
   <footer class="scope-strip surface-card">
     <p>
-      <strong>Scope:</strong> We currently support core Python loop patterns.
+      <strong>Scope:</strong> Lens currently explains single-function programs built from variables, arithmetic,
+      comparisons, Boolean guards, loops, lists, state updates, selected built-ins, and returns. It does not yet
+      expand recursion, helper functions, objects, dictionaries, comprehensions, exceptions, imports, generators,
+      or async code.
       {#if unsupported.length}
         {unsupported.length} unsupported region(s) detected.
       {:else if graph}

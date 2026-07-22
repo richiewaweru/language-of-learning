@@ -378,6 +378,9 @@ class Analyzer:
             for ref in self.read_refs(value):
                 self.rel(op_id, "reads", ref)
             self.rel(op_id, "writes", binding_id)
+        elif self.is_builtin_call(value):
+            builtin_id = self.ensure_builtin_node(value, parent_id)
+            self.rel(builtin_id, "writes", binding_id)
         elif self.is_supported_call(value):
             call_id = self.ensure_call_node(value, parent_id)
             self.rel(call_id, "writes", binding_id)
@@ -582,6 +585,8 @@ class Analyzer:
                 for ref in self.read_refs(value):
                     self.rel(value_ref, "reads", ref)
             self.ensure_expression_facts(value, ret_id)
+        elif self.is_builtin_call(value):
+            self.ensure_builtin_node(value, ret_id)
         elif self.is_supported_call(value):
             self.ensure_call_node(value, parent_id)
 
@@ -689,6 +694,9 @@ class Analyzer:
             return self.alloc_id("val", value)
         if isinstance(value, (ast.BinOp, ast.BoolOp, ast.Compare, ast.UnaryOp, ast.Subscript)):
             return self.alloc_id("op", value)
+        if self.is_builtin_call(value):
+            assert isinstance(value, ast.Call)
+            return self.ensure_builtin_node(value, self.alloc_id("fn", self.current_function))
         if self.is_supported_call(value):
             assert isinstance(value, ast.Call)
             return self.ensure_call_node(value, self.alloc_id("fn", self.current_function))
@@ -707,7 +715,7 @@ class Analyzer:
         refs: list[str] = []
         for node in ast.walk(value):
             if isinstance(node, ast.Name):
-                if node.id in {"len", "range"}:
+                if node.id in {"len", "range", "min", "max", "sum", "abs"}:
                     continue
                 refs.append(self.binding_or_collection_id(node.id))
         return refs
@@ -808,6 +816,42 @@ class Analyzer:
     def is_range_call(self, value: ast.AST) -> bool:
         return self.is_supported_call(value) and isinstance(value, ast.Call) and value.func.id == "range"
 
+    def is_builtin_call(self, value: ast.AST | None) -> bool:
+        return (
+            isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id in {"min", "max", "sum", "abs"}
+            and len(value.args) == 1
+            and not value.keywords
+        )
+
+    def ensure_builtin_node(self, call: ast.Call, parent_id: str) -> str:
+        builtin_id = self.alloc_id("builtin", call)
+        if builtin_id not in self.node_ids:
+            assert isinstance(call.func, ast.Name)
+            labels = {"min": "Find minimum", "max": "Find maximum", "sum": "Calculate sum", "abs": "Find absolute value"}
+            inputs = []
+            for arg in call.args:
+                inputs.extend(self.read_refs(arg))
+            self.nodes.append(
+                {
+                    "id": builtin_id,
+                    "kind": "builtin-call",
+                    "sourceRange": self.range_for(call),
+                    "builtin": call.func.id,
+                    "inputs": list(dict.fromkeys(inputs)),
+                    "expansion": "collapsed",
+                    "label": labels[call.func.id],
+                }
+            )
+            self.node_ids.add(builtin_id)
+            self.rel(parent_id, "contains", builtin_id)
+            for ref in inputs:
+                self.rel(builtin_id, "reads", ref)
+            for arg in call.args:
+                self.ensure_expression_facts(arg, builtin_id)
+        return builtin_id
+
     def ensure_call_node(self, call: ast.Call, parent_id: str) -> str:
         call_id = self.alloc_id("call", call)
         if call_id not in self.node_ids:
@@ -830,7 +874,7 @@ class Analyzer:
 
     def ensure_expression_facts(self, expr: ast.AST, parent_id: str) -> None:
         for node in ast.walk(expr):
-            if isinstance(node, (ast.Subscript, ast.Compare, ast.BoolOp)) or (
+            if isinstance(node, (ast.BinOp, ast.Subscript, ast.Compare, ast.BoolOp)) or (
                 isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)
             ):
                 operation_id = self.alloc_id("op", node)
@@ -850,6 +894,9 @@ class Analyzer:
             elif self.is_supported_call(node):
                 assert isinstance(node, ast.Call)
                 self.ensure_call_node(node, parent_id)
+            elif self.is_builtin_call(node):
+                assert isinstance(node, ast.Call)
+                self.ensure_builtin_node(node, parent_id)
 
     def expr_text(self, value: ast.AST) -> str:
         return ast.unparse(value)

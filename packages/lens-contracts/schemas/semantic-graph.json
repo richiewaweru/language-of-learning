@@ -320,6 +320,82 @@
                   },
                   "kind": {
                     "type": "string",
+                    "const": "builtin-call"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "builtin": {
+                    "type": "string",
+                    "enum": [
+                      "min",
+                      "max",
+                      "sum",
+                      "abs"
+                    ]
+                  },
+                  "inputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "output": {
+                    "type": "string"
+                  },
+                  "expansion": {
+                    "type": "string",
+                    "const": "collapsed"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "builtin",
+                  "inputs",
+                  "expansion",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
                     "const": "operation"
                   },
                   "sourceRange": {
@@ -351,6 +427,16 @@
                     "additionalProperties": false
                   },
                   "expr": {
+                    "type": "string"
+                  },
+                  "controlFlow": {
+                    "type": "string",
+                    "enum": [
+                      "break",
+                      "continue"
+                    ]
+                  },
+                  "loopRef": {
                     "type": "string"
                   }
                 },
@@ -628,6 +714,16 @@
                   },
                   "mutationType": {
                     "type": "string"
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "+",
+                      "-",
+                      "*",
+                      "//",
+                      "%"
+                    ]
                   }
                 },
                 "required": [
@@ -758,17 +854,25 @@
                 ],
                 "additionalProperties": false
               },
+              "code": {
+                "type": "string"
+              },
               "construct": {
                 "type": "string"
               },
               "message": {
                 "type": "string"
+              },
+              "diagnostic": {
+                "type": "string"
               }
             },
             "required": [
               "sourceRange",
+              "code",
               "construct",
-              "message"
+              "message",
+              "diagnostic"
             ],
             "additionalProperties": false
           },

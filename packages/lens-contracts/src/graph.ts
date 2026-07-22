@@ -15,6 +15,7 @@ export const NodeKindSchema = z.enum([
   'collection',
   'function',
   'call',
+  'builtin-call',
   'operation',
   'sequence',
   'branch',
@@ -80,6 +81,15 @@ export const CallNodeSchema = NodeBaseSchema.extend({
   args: z.array(z.string()),
 });
 
+export const BuiltinCallNodeSchema = NodeBaseSchema.extend({
+  kind: z.literal('builtin-call'),
+  builtin: z.enum(['min', 'max', 'sum', 'abs']),
+  inputs: z.array(z.string()),
+  output: z.string().optional(),
+  expansion: z.literal('collapsed'),
+  label: z.string(),
+});
+
 export const OperationNodeSchema = NodeBaseSchema.extend({
   kind: z.literal('operation'),
   expr: z.string(),
@@ -129,6 +139,7 @@ export const SemanticNodeSchema = z.discriminatedUnion('kind', [
   CollectionNodeSchema,
   FunctionNodeSchema,
   CallNodeSchema,
+  BuiltinCallNodeSchema,
   OperationNodeSchema,
   SequenceNodeSchema,
   BranchNodeSchema,

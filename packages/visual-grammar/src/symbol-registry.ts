@@ -46,6 +46,7 @@ const rendererRegistrations: Record<string, SymbolDefinition['renderers']> = {
   return: { flow: 'ReturnPort', state: 'ReturnPort', trace: 'ReturnPort' },
   effect: { flow: 'EffectPulse', trace: 'EffectPulse' },
   'generic-operation': { flow: 'GenericOperationSymbol', trace: 'GenericOperationSymbol' },
+  'builtin-call': { flow: 'GenericOperationSymbol', trace: 'GenericOperationSymbol' },
   unsupported: { flow: 'UnsupportedRegion', state: 'UnsupportedRegion', trace: 'UnsupportedRegion' },
 };
 
@@ -105,7 +106,7 @@ export function symbolIdForSemantic(
     update: 'mutation',
     insert: 'mutation',
     swap: 'mutation',
-    calculate: 'generic-operation',
+    calculate: 'builtin-call',
     call: 'call-frame',
     exit: 'loop',
     skip: 'loop',

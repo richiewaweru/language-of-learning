@@ -1,0 +1,264 @@
+[
+  {
+    "construct": "unsupported-path-hardening",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "N01",
+      "N02",
+      "N03",
+      "N04",
+      "N05",
+      "N06",
+      "N07",
+      "N08",
+      "N09",
+      "N10"
+    ]
+  },
+  {
+    "construct": "augmented-assignment-simple-name",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A01",
+      "A02",
+      "A05"
+    ]
+  },
+  {
+    "construct": "boolean-and-or-not",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A06",
+      "A07"
+    ]
+  },
+  {
+    "construct": "direct-indexed-return",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A03",
+      "A07",
+      "A08"
+    ]
+  },
+  {
+    "construct": "comparison-return",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A06",
+      "A09"
+    ]
+  },
+  {
+    "construct": "break",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A04"
+    ]
+  },
+  {
+    "construct": "continue",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A05"
+    ]
+  },
+  {
+    "construct": "builtin-min-collapsed",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A11"
+    ]
+  },
+  {
+    "construct": "builtin-max-collapsed",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A10"
+    ]
+  },
+  {
+    "construct": "builtin-sum-collapsed",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A12"
+    ]
+  },
+  {
+    "construct": "builtin-abs-collapsed",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A13"
+    ]
+  },
+  {
+    "construct": "enumerate",
+    "wave": "B",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "tuple-unpacking",
+    "wave": "B",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "swap",
+    "wave": "B",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "membership",
+    "wave": "B",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "list-pop-insert-remove",
+    "wave": "B",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "list-literal-return",
+    "wave": "B",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "true-division-augmented-assignment",
+    "wave": "B",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "nested-lists",
+    "wave": "C",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "helper-functions",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "recursion",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "dictionaries",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "comprehensions",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "classes",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "exceptions",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "imports",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "generators",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  },
+  {
+    "construct": "async",
+    "wave": "later",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": []
+  }
+]
+

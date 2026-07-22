@@ -36,6 +36,7 @@ function entityRole(
   if (node.kind === 'value') return 'value';
   if (node.kind === 'collection') return 'collection';
   if (node.kind === 'function') return 'call-frame';
+  if (node.kind === 'builtin-call') return 'builtin-call';
   if (node.kind === 'return') return 'result';
   if (node.kind === 'loop') return 'range';
   if (node.kind === 'binding') {
@@ -49,6 +50,9 @@ function entityRole(
 }
 
 function entityLabel(node: GraphNode): string {
+  if (node.kind === 'builtin-call' && node.label) {
+    return `${node.label} — Result verified. Internal steps not expanded.`;
+  }
   if (node.name) return node.name;
   if (node.iteratorName) return node.iteratorName;
   if (node.expr) return node.expr;
@@ -101,6 +105,7 @@ function entitiesFromGraph(graph: SemanticGraph, trace: Trace): SemanticEntity[]
       ...(node.expr ? { expression: node.expr } : {}),
       ...(node.mutationType ? { mutationType: node.mutationType } : {}),
       ...(node.controlFlow ? { controlFlow: node.controlFlow, loopRef: node.loopRef } : {}),
+      ...(node.expansion ? { expansion: node.expansion, builtin: node.builtin, collapseMarker: true } : {}),
     },
   }));
 
@@ -152,6 +157,8 @@ function eventType(event: TraceEvent): SemanticEventType {
       return 'exit';
     case 'loop-skip':
       return 'skip';
+    case 'builtin-evaluated':
+      return 'calculate';
     case 'effect_fire':
       return 'effect';
     case 'unsupported':
@@ -210,6 +217,8 @@ function eventPayload(event: TraceEvent, step: TraceStep): Record<string, unknow
     case 'loop-exit':
     case 'loop-skip':
       return { loop: event.loopId, reason: event.reason, iteration: event.iteration };
+    case 'builtin-evaluated':
+      return { builtin: event.builtin, inputs: event.inputs, value: event.result, expansion: event.expansion };
     case 'effect_fire':
       return { effect: event.effect, value: event.repr };
     case 'unsupported':
@@ -247,6 +256,7 @@ function activeEntityIds(graph: SemanticGraph, step: TraceStep): string[] {
   if (event.type === 'indexed_selection' || event.type === 'indexed_mutation') add(event.collection);
   if (event.type === 'loop_test') add(event.loop);
   if (event.type === 'loop-exit' || event.type === 'loop-skip') add(event.loopId);
+  if (event.type === 'builtin-evaluated') add(graph.nodes.find((node) => node.kind === 'builtin-call' && node.builtin === event.builtin)?.id);
   if (event.type === 'unsupported') {
     const regionIndex = graph.unsupported.findIndex((region) => {
       const candidate = region as { construct?: string };

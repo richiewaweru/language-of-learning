@@ -18,6 +18,7 @@ export const SemanticRoleSchema = z.enum([
   'cursor',
   'range',
   'call-frame',
+  'builtin-call',
   'reference',
   'result',
   'generic',

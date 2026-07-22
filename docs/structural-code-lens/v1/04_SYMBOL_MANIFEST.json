@@ -162,6 +162,13 @@
       "status": "required"
     },
     {
+      "id": "builtin-call",
+      "type": "entity",
+      "family": "work",
+      "views": ["flow", "trace"],
+      "status": "required"
+    },
+    {
       "id": "unsupported",
       "type": "fallback",
       "family": "limit",

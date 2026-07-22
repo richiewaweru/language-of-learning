@@ -21,6 +21,10 @@ export type GraphNode = {
   valueRef?: string;
   params?: string[];
   repr?: string;
+  builtin?: 'min' | 'max' | 'sum' | 'abs';
+  inputs?: string[];
+  expansion?: 'collapsed';
+  label?: string;
   items?: string[];
   sourceRange: {
     startLine: number;
@@ -54,6 +58,7 @@ export type TraceEvent =
   | { type: 'loop_test'; loop: string; iteration: number; result: boolean }
   | { type: 'loop-exit'; loopId: string; reason: 'break'; iteration: number }
   | { type: 'loop-skip'; loopId: string; reason: 'continue'; iteration: number }
+  | { type: 'builtin-evaluated'; builtin: 'min' | 'max' | 'sum' | 'abs'; inputs: unknown[]; result: unknown; expansion: 'collapsed' }
   | { type: 'effect_fire'; effect: string; repr: string }
   | { type: 'unsupported'; construct: string; message: string }
   | { type: 'return_exit'; repr: string };

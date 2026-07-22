@@ -63,6 +63,13 @@ export const TraceEventSchema = z.discriminatedUnion('type', [
     reason: z.literal('continue'),
     iteration: z.number().int().nonnegative(),
   }),
+  z.object({
+    type: z.literal('builtin-evaluated'),
+    builtin: z.enum(['min', 'max', 'sum', 'abs']),
+    inputs: z.array(z.unknown()),
+    result: z.unknown(),
+    expansion: z.literal('collapsed'),
+  }),
   z.object({ type: z.literal('effect_fire'), effect: z.string(), repr: z.string() }),
   z.object({
     type: z.literal('unsupported'),

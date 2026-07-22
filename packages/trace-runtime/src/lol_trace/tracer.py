@@ -23,6 +23,7 @@ class GraphIndex:
     mutations: list[dict[str, Any]]
     effects: list[dict[str, Any]]
     calls: list[dict[str, Any]]
+    builtins: list[dict[str, Any]]
     operations: dict[str, dict[str, Any]]
     node_line: dict[str, int]
 
@@ -38,6 +39,7 @@ def index_graph(graph: dict[str, Any]) -> GraphIndex:
     mutations = [node for node in nodes if node["kind"] == "mutation"]
     effects = [node for node in nodes if node["kind"] == "effect"]
     calls = [node for node in nodes if node["kind"] == "call"]
+    builtins = [node for node in nodes if node["kind"] == "builtin-call"]
     operations = {node["id"]: node for node in nodes if node["kind"] == "operation"}
     node_line = {node["id"]: node["sourceRange"]["startLine"] for node in nodes}
     param_names = []
@@ -56,6 +58,7 @@ def index_graph(graph: dict[str, Any]) -> GraphIndex:
         mutations=mutations,
         effects=effects,
         calls=calls,
+        builtins=builtins,
         operations=operations,
         node_line=node_line,
     )
@@ -583,6 +586,39 @@ class Tracer:
         if isinstance(expr, ast.Call):
             if isinstance(expr.func, ast.Name) and expr.func.id == self.graph.function_name:
                 raise SandboxViolation("recursion", "Recursive calls are explicitly unsupported in v1.")
+            if isinstance(expr.func, ast.Name) and expr.func.id in {"min", "max", "sum", "abs"}:
+                args = [self._eval_expr(arg) for arg in expr.args]
+                if len(args) != 1:
+                    raise SandboxViolation(expr.func.id, f"{expr.func.id} requires exactly one input.")
+                argument = args[0]
+                if expr.func.id in {"min", "max", "sum"} and not isinstance(argument, list):
+                    raise SandboxViolation(expr.func.id, f"{expr.func.id} requires a list input.")
+                if expr.func.id in {"min", "max"} and not argument:
+                    raise SandboxViolation(expr.func.id, f"{expr.func.id} requires a non-empty list.")
+                if expr.func.id == "min":
+                    value = min(argument)
+                elif expr.func.id == "max":
+                    value = max(argument)
+                elif expr.func.id == "sum":
+                    value = sum(argument)
+                elif expr.func.id == "abs" and isinstance(argument, (int, float)) and not isinstance(argument, bool):
+                    value = abs(argument)
+                else:
+                    raise SandboxViolation(expr.func.id, f"Unsupported arguments for {expr.func.id}.")
+                builtin = self._builtin_for_expr(expr)
+                self.trace.emit(
+                    builtin["sourceRange"]["startLine"],
+                    [builtin["id"]],
+                    self.trace.snapshot(self.env),
+                    {
+                        "type": "builtin-evaluated",
+                        "builtin": expr.func.id,
+                        "inputs": args,
+                        "result": value,
+                        "expansion": "collapsed",
+                    },
+                )
+                return value
             if not isinstance(expr.func, ast.Name) or expr.func.id not in {"len", "range"}:
                 raise SandboxViolation("call", "Only len and range calls are supported.")
             args = [self._eval_expr(arg) for arg in expr.args]
@@ -742,6 +778,13 @@ class Tracer:
             if source_range["startLine"] == expr.lineno and source_range["startCol"] == expr.col_offset:
                 return call
         raise SandboxViolation("call", f"No call node resolves to line {expr.lineno} col {expr.col_offset}.")
+
+    def _builtin_for_expr(self, expr: ast.Call) -> dict[str, Any]:
+        for builtin in self.graph.builtins:
+            source_range = builtin["sourceRange"]
+            if source_range["startLine"] == expr.lineno and source_range["startCol"] == expr.col_offset:
+                return builtin
+        raise SandboxViolation("builtin", f"No builtin-call node resolves to line {expr.lineno} col {expr.col_offset}.")
 
     def _is_literal(self, node: ast.AST) -> bool:
         return isinstance(node, ast.Constant) and isinstance(
