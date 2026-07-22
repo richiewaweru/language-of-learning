@@ -538,7 +538,7 @@ class Analyzer:
                     }
                 )
                 self.node_ids.add(value_ref)
-        elif isinstance(value, (ast.BinOp, ast.BoolOp, ast.UnaryOp)):
+        elif isinstance(value, (ast.BinOp, ast.BoolOp, ast.UnaryOp, ast.Subscript)):
             if value_ref not in self.node_ids:
                 self.nodes.append(
                     {
@@ -655,7 +655,7 @@ class Analyzer:
             and isinstance(value.operand, ast.Constant)
         ):
             return self.alloc_id("val", value)
-        if isinstance(value, (ast.BinOp, ast.BoolOp, ast.UnaryOp)):
+        if isinstance(value, (ast.BinOp, ast.BoolOp, ast.UnaryOp, ast.Subscript)):
             return self.alloc_id("op", value)
         if self.is_supported_call(value):
             assert isinstance(value, ast.Call)
