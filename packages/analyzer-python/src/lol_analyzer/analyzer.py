@@ -538,7 +538,7 @@ class Analyzer:
                     }
                 )
                 self.node_ids.add(value_ref)
-        elif isinstance(value, ast.BinOp):
+        elif isinstance(value, (ast.BinOp, ast.BoolOp, ast.UnaryOp)):
             if value_ref not in self.node_ids:
                 self.nodes.append(
                     {
@@ -551,7 +551,7 @@ class Analyzer:
                 self.node_ids.add(value_ref)
                 for ref in self.read_refs(value):
                     self.rel(value_ref, "reads", ref)
-            self.ensure_expression_facts(value, parent_id)
+            self.ensure_expression_facts(value, ret_id)
         elif self.is_supported_call(value):
             self.ensure_call_node(value, parent_id)
 
@@ -655,7 +655,7 @@ class Analyzer:
             and isinstance(value.operand, ast.Constant)
         ):
             return self.alloc_id("val", value)
-        if isinstance(value, ast.BinOp):
+        if isinstance(value, (ast.BinOp, ast.BoolOp, ast.UnaryOp)):
             return self.alloc_id("op", value)
         if self.is_supported_call(value):
             assert isinstance(value, ast.Call)
@@ -798,7 +798,9 @@ class Analyzer:
 
     def ensure_expression_facts(self, expr: ast.AST, parent_id: str) -> None:
         for node in ast.walk(expr):
-            if isinstance(node, ast.Subscript):
+            if isinstance(node, (ast.Subscript, ast.Compare, ast.BoolOp)) or (
+                isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not)
+            ):
                 operation_id = self.alloc_id("op", node)
                 if operation_id not in self.node_ids:
                     self.nodes.append(

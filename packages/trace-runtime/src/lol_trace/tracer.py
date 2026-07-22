@@ -448,22 +448,45 @@ class Tracer:
         self.sandbox.track_allocation(max(64, len(old) * 8))
 
     def _eval_condition(self, test: ast.AST) -> bool:
+        if isinstance(test, ast.BoolOp):
+            if isinstance(test.op, ast.And):
+                for value in test.values:
+                    if not self._eval_condition(value):
+                        return False
+                return True
+            if isinstance(test.op, ast.Or):
+                for value in test.values:
+                    if self._eval_condition(value):
+                        return True
+                return False
+        if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+            return not self._eval_condition(test.operand)
         if isinstance(test, ast.Compare) and len(test.ops) == 1 and len(test.comparators) == 1:
             left = self._eval_expr(test.left)
             right = self._eval_expr(test.comparators[0])
             op = test.ops[0]
             if isinstance(op, ast.Gt):
-                return left > right
-            if isinstance(op, ast.Lt):
-                return left < right
-            if isinstance(op, ast.GtE):
-                return left >= right
-            if isinstance(op, ast.LtE):
-                return left <= right
-            if isinstance(op, ast.Eq):
-                return left == right
-            if isinstance(op, ast.NotEq):
-                return left != right
+                result = left > right
+            elif isinstance(op, ast.Lt):
+                result = left < right
+            elif isinstance(op, ast.GtE):
+                result = left >= right
+            elif isinstance(op, ast.LtE):
+                result = left <= right
+            elif isinstance(op, ast.Eq):
+                result = left == right
+            elif isinstance(op, ast.NotEq):
+                result = left != right
+            else:
+                raise SandboxViolation("condition", "Unsupported comparison operator.")
+            operation = self._operation_node(test)
+            self.trace.emit(
+                test.lineno,
+                [operation["id"]],
+                self.trace.snapshot(self.env),
+                {"type": "condition_eval", "branch": operation["id"], "result": result},
+            )
+            return result
         raise SandboxViolation("condition", "Unsupported branch condition.")
 
     def _eval_expr(self, expr: ast.AST | None) -> Any:
@@ -475,6 +498,10 @@ class Tracer:
             return self._literal_value(expr)
         if isinstance(expr, ast.BinOp):
             return self._eval_binop(expr)
+        if isinstance(expr, (ast.BoolOp, ast.Compare)) or (
+            isinstance(expr, ast.UnaryOp) and isinstance(expr.op, ast.Not)
+        ):
+            return self._eval_condition(expr)
         if isinstance(expr, ast.Subscript):
             if not isinstance(expr.value, ast.Name):
                 raise SandboxViolation("indexed_selection", "Indexed selection requires a named list.")
