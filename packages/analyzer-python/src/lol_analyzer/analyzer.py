@@ -219,6 +219,8 @@ class Analyzer:
     def visit_stmt(self, stmt: ast.stmt, parent_id: str) -> None:
         if isinstance(stmt, ast.Assign):
             self.visit_assign(stmt, parent_id)
+        elif isinstance(stmt, ast.AugAssign):
+            self.visit_aug_assign(stmt, parent_id)
         elif isinstance(stmt, ast.For):
             self.visit_for(stmt, parent_id)
         elif isinstance(stmt, ast.While):
@@ -231,6 +233,52 @@ class Analyzer:
             self.visit_expr_stmt(stmt, parent_id)
         else:
             self.add_unsupported(stmt, type(stmt).__name__)
+
+    def visit_aug_assign(self, stmt: ast.AugAssign, parent_id: str) -> None:
+        operators = {
+            ast.Add: "+",
+            ast.Sub: "-",
+            ast.Mult: "*",
+            ast.FloorDiv: "//",
+            ast.Mod: "%",
+        }
+        if not isinstance(stmt.target, ast.Name) or type(stmt.op) not in operators:
+            self.add_unsupported(stmt, "augmented assignment target or operator")
+            return
+        target_id = self.binding_or_collection_id(stmt.target.id)
+        if target_id.startswith("unsupported-ref-"):
+            self.add_unsupported(stmt, "augmented assignment before binding")
+            return
+        operator = operators[type(stmt.op)]
+        operation_id = self.alloc_id("op", stmt)
+        mutation_id = self.alloc_id("mut", stmt)
+        self.nodes.extend(
+            [
+                {
+                    "id": operation_id,
+                    "kind": "operation",
+                    "sourceRange": self.range_for(stmt),
+                    "expr": f"{stmt.target.id} {operator} {self.expr_text(stmt.value)}",
+                },
+                {
+                    "id": mutation_id,
+                    "kind": "mutation",
+                    "sourceRange": self.range_for(stmt),
+                    "targetRef": target_id,
+                    "mutationType": "augmented-assignment",
+                    "operator": operator,
+                },
+            ]
+        )
+        self.node_ids.update({operation_id, mutation_id})
+        self.rel(parent_id, "contains", operation_id)
+        self.rel(parent_id, "contains", mutation_id)
+        self.rel(operation_id, "reads", target_id)
+        for ref in self.read_refs(stmt.value):
+            self.rel(operation_id, "reads", ref)
+        self.rel(operation_id, "feeds", mutation_id)
+        self.rel(mutation_id, "mutates", target_id)
+        self.ensure_expression_facts(stmt.value, operation_id)
 
     def visit_assign(self, stmt: ast.Assign, parent_id: str) -> None:
         if len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Subscript):
@@ -577,6 +625,8 @@ class Analyzer:
             return self.alloc_id("ret", first)
         if isinstance(first, ast.Assign) and isinstance(first.value, ast.BinOp):
             return self.alloc_id("op", first.value)
+        if isinstance(first, ast.AugAssign):
+            return self.alloc_id("op", first)
         if isinstance(first, ast.Assign) and isinstance(first.targets[0], ast.Subscript):
             return self.alloc_id("mut", first)
         if (

@@ -113,6 +113,7 @@ export const MutationNodeSchema = NodeBaseSchema.extend({
   kind: z.literal('mutation'),
   targetRef: z.string(),
   mutationType: z.string(),
+  operator: z.enum(['+', '-', '*', '//', '%']).optional(),
 });
 
 export const EffectNodeSchema = NodeBaseSchema.extend({

@@ -156,6 +156,9 @@ class Tracer:
         if isinstance(stmt, ast.Assign):
             self._exec_assign(stmt)
             return False
+        if isinstance(stmt, ast.AugAssign):
+            self._exec_aug_assign(stmt)
+            return False
         if isinstance(stmt, ast.For):
             return self._exec_for(stmt)
         if isinstance(stmt, ast.While):
@@ -257,6 +260,33 @@ class Tracer:
                 )
             return
         raise SandboxViolation(type(stmt.value).__name__, "Unsupported assignment value.")
+
+    def _exec_aug_assign(self, stmt: ast.AugAssign) -> None:
+        if not isinstance(stmt.target, ast.Name):
+            raise SandboxViolation("augmented_assignment", "Augmented assignment requires a simple name.")
+        name = stmt.target.id
+        if name not in self.env:
+            raise SandboxViolation("augmented_assignment", f"{name} must be bound before augmented assignment.")
+        old_value = self.env[name]
+        right = self._eval_expr(stmt.value)
+        new_value = self._apply_operator(stmt.op, old_value, right)
+        self.env[name] = new_value
+        binding = self.graph.bindings.get(name)
+        if binding is None:
+            raise SandboxViolation("augmented_assignment", f"No binding resolves to {name}.")
+        operation = self._operation_node(stmt)
+        mutation = self._mutation_for_aug_assign(stmt)
+        self.trace.emit(
+            stmt.lineno,
+            [operation["id"], mutation["id"], binding["id"]],
+            self.trace.snapshot(self.env),
+            {
+                "type": "state_change",
+                "binding": binding["id"],
+                "oldRepr": value_repr(old_value),
+                "newRepr": value_repr(new_value),
+            },
+        )
 
     def _exec_indexed_assign(self, stmt: ast.Assign) -> None:
         target = stmt.targets[0]
@@ -522,7 +552,22 @@ class Tracer:
             return left / right
         if isinstance(expr.op, ast.FloorDiv):
             return left // right
+        if isinstance(expr.op, ast.Mod):
+            return left % right
         raise SandboxViolation("operation", "Unsupported binary operation.")
+
+    def _apply_operator(self, operator: ast.operator, left: Any, right: Any) -> Any:
+        if isinstance(operator, ast.Add):
+            return left + right
+        if isinstance(operator, ast.Sub):
+            return left - right
+        if isinstance(operator, ast.Mult):
+            return left * right
+        if isinstance(operator, ast.FloorDiv):
+            return left // right
+        if isinstance(operator, ast.Mod):
+            return left % right
+        raise SandboxViolation("augmented_assignment", "This augmented assignment operator is unsupported.")
 
     def _loop_for_line(self, line: int) -> dict[str, Any]:
         for loop in self.graph.loops:
@@ -587,6 +632,20 @@ class Tracer:
         raise SandboxViolation(
             "indexed_assignment",
             f"No mutation node resolves to line {stmt.lineno} col {stmt.col_offset}.",
+        )
+
+    def _mutation_for_aug_assign(self, stmt: ast.AugAssign) -> dict[str, Any]:
+        for mutation in self.graph.mutations:
+            source_range = mutation["sourceRange"]
+            if (
+                mutation.get("mutationType") == "augmented-assignment"
+                and source_range["startLine"] == stmt.lineno
+                and source_range["startCol"] == stmt.col_offset
+            ):
+                return mutation
+        raise SandboxViolation(
+            "augmented_assignment",
+            f"No augmented-assignment mutation resolves to line {stmt.lineno} col {stmt.col_offset}.",
         )
 
     def _operation_node(self, expr: ast.AST) -> dict[str, Any]:
