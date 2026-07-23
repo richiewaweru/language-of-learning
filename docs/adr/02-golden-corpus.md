@@ -384,219 +384,140 @@ The visual must expose start, stop, step, and current cursor.
 def matrix_sum(matrix):
     total = 0
 
-    for row in range(len(matrix))…1246 tokens truncated…tinue
+    for row in range(len(matrix)):
+        for column in range(len(matrix[row])):
+            total += matrix[row][column]
 
-### Meaning
-
-Skip the rest of the current iteration and begin the next one.
-
-### Visual rule
-
-- originate from the triggering branch;
-- route back to the loop iteration boundary;
-- label once: `Next iteration`;
-- dim skipped statements for that iteration;
-- advance the cursor only after the skip event.
-
-### Prohibited treatment
-
-Do not route `continue` to the loop exit.
-
-## 5. Collapsed built-in box
-
-Applies initially to:
-
-```text
-min
-max
-sum
-abs
-membership
+    return total
 ```
 
-### Anatomy
-
-```text
-┌─────────────────────────────┐
-│ Find maximum                │
-│ Result verified             │
-│ Internal steps not expanded │
-└─────────────────────────────┘
-```
-
-### Rules
-
-- use the same overall operation family as other calculations;
-- add a collapse marker or secondary caption;
-- show inputs entering and result leaving;
-- never animate hidden comparisons or traversal;
-- never display fake intermediate state.
-
-### Learner interaction
-
-A later “show equivalent loop” affordance may be added, but it must generate a separate pedagogical expansion rather than pretend to reveal the exact runtime internals of Python's built-in.
-
-## 6. Boolean guards
-
-### Rules
-
-- show each comparison as a separate comparison unit;
-- join them with `AND` or `OR`;
-- show `NOT` as inversion of the following Boolean result;
-- preserve short-circuit order;
-- dim unevaluated clauses when short-circuiting occurs.
-
-Example:
+### C02 — Matrix update
 
 ```python
-value > 0 and value < 10
+def mark_cell(matrix, row, column, value):
+    matrix[row][column] = value
+    return matrix
 ```
 
-becomes:
-
-```text
-[value > 0] --AND--> [value < 10]
-```
-
-If the first comparison is false, the second remains visibly unevaluated.
-
-## 7. Paired binding and enumerate
-
-### Enumerate layout
-
-```text
-collection item focus
-        │
-        ├── cursor position → index
-        └── selected value  → value
-```
-
-The two bindings must appear as a coordinated pair, not unrelated assignments.
-
-### Tuple binding
-
-This applies to both name targets and declared indexed targets.
-
-Before applying targets:
-
-```text
-Captured values
-[old right] [old left]
-```
-
-Then bind simultaneously:
-
-```text
-left  ← old right
-right ← old left
-```
-
-No intermediate frame may show both variables holding the same value unless the source code genuinely produces that state.
-
-## 8. Range exposure
-
-For `range(start, stop, step)`, display:
-
-```text
-start
-stop (exclusive)
-step
-current
-```
-
-Negative steps must visually reverse the movement direction.
-
-The stop boundary must be shown as exclusive.
-
-## 9. List-literal return
-
-For:
+### C03 — Count target in grid
 
 ```python
-return [left, right]
+def count_in_grid(matrix, target):
+    count = 0
+
+    for row in range(len(matrix)):
+        for column in range(len(matrix[row])):
+            if matrix[row][column] == target:
+                count += 1
+
+    return count
 ```
 
-show:
+### C04 — Basic DP table
 
-1. a collection-construction moment;
-2. item placement in source order;
-3. the constructed collection entering the return channel.
+```python
+def stair_ways(n):
+    ways = [0] * (n + 1)
+    ways[0] = 1
 
-Do not show an unexplained collection appearing at the return node.
+    for step in range(1, n + 1):
+        ways[step] = ways[step - 1]
 
-## 10. Pop
+        if step >= 2:
+            ways[step] += ways[step - 2]
 
-### Required sequence
-
-1. highlight selected index;
-2. detach the item;
-3. show removed value separately;
-4. shift remaining items left when needed;
-5. update length;
-6. route removed value to its binding or return destination.
-
-## 11. Insert
-
-### Required sequence
-
-1. identify insertion index;
-2. create space;
-3. shift affected items right;
-4. place new value;
-5. update length.
-
-## 12. Remove
-
-### Required sequence
-
-1. show collapsed or explicit first-match selection according to the semantic contract;
-2. highlight the matched item;
-3. remove it;
-4. shift later items left;
-5. update length.
-
-For the first implementation, locating the first matching value may be treated as a collapsed part of the method call. The actual removal and shift must be explicit.
-
-## 13. Nested collection selection
-
-Wave C.
-
-For `matrix[row][column]`:
-
-1. focus the outer collection;
-2. select the row;
-3. establish the selected row as the active inner collection;
-4. select the column;
-5. read or mutate the final value.
-
-The selection path must remain visible:
-
-```text
-matrix → row 2 → column 1
+    return ways[n]
 ```
 
-A one-step generic index animation is prohibited.
+This case may require list repetition support. If that is outside Wave C, initialize the fixed example explicitly in the corpus or add list repetition as a separately declared contract.
 
-## 14. Unsupported state
+## 5. Negative corpus
 
-Unsupported output should be calm, precise, and educational.
+Each case must assert the exact learner-facing message and that no verified graph is rendered.
 
-Required structure:
+### N01 — Multiple top-level functions
 
-```text
-What Lens encountered
-Why it is not yet visualized
-Current supported boundary
-Nearest supported rewrite, when appropriate
-```
+Expected error code: `UNSUPPORTED_MULTIPLE_FUNCTIONS`
 
-All learner-facing unsupported messages must use the canonical copy table in ADR §7.1.
+Expected learner message: use the canonical copy in ADR §7.1.
 
-Do not expose raw AST names as the main message.
+### N02 — Recursion
 
-## 15. Density guardrail
+Expected error code: `UNSUPPORTED_RECURSION`
 
-No screen should introduce more than one unfamiliar visual primitive at a time during the Wave A pilot.
+Expected learner message: use the canonical copy in ADR §7.1.
 
-Where a feature can be expressed by composition, prefer composition over a new permanent symbol.
+### N03 — Class
 
+Expected error code: `UNSUPPORTED_CLASS`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+### N04 — Dictionary
+
+Expected error code: `UNSUPPORTED_DICTIONARY`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+### N05 — Comprehension
+
+Expected error code: `UNSUPPORTED_COMPREHENSION`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+### N06 — Exception handling
+
+Expected error code: `UNSUPPORTED_EXCEPTION_FLOW`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+### N07 — Import
+
+Expected error code: `UNSUPPORTED_IMPORT`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+### N08 — Generator
+
+Expected error code: `UNSUPPORTED_GENERATOR`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+### N09 — Async function
+
+Expected error code: `UNSUPPORTED_ASYNC`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+### N10 — Nested function
+
+Expected error code: `UNSUPPORTED_NESTED_FUNCTION`
+
+Expected learner message: use the canonical copy in ADR §7.1.
+
+## 6. Snapshot policy
+
+During active development inside a wave, tests assert structural invariants rather than full byte-exact graph snapshots:
+
+- required node kinds;
+- key edges and relationships;
+- required and forbidden event ordering;
+- final bindings and return value;
+- support/unsupported status;
+- canonical error code and message.
+
+Full `expected-graph.json` and byte-exact trace goldens are generated and frozen only at the wave review gate.
+
+After a wave is accepted, its frozen full snapshots become regression locks for all later waves.
+
+## 7. Golden-corpus CI gates
+
+A pull request fails when:
+
+- a positive case changes its final result;
+- an expected event disappears;
+- a forbidden event appears;
+- analyzer and tracer disagree on supported status;
+- an unsupported message changes without ADR approval;
+- a construct falls back to a generic node despite a declared semantic node;
+- a Wave A change breaks a frozen Wave A case during Wave B or C.
