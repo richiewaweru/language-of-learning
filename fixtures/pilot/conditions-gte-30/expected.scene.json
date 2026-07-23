@@ -1,0 +1,351 @@
+{
+  "id": "pilot-conditions-gte-30",
+  "graphRef": "0.1",
+  "motionVersion": "0.2",
+  "layout": [
+    {
+      "id": "bind-L1C25",
+      "kind": "binding",
+      "x": 84,
+      "y": 168,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "op-L2C7",
+      "kind": "operation",
+      "x": 112,
+      "y": 280,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "ret-L3C8",
+      "kind": "return",
+      "x": 112,
+      "y": 322,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "ret-L5C8",
+      "kind": "return",
+      "x": 112,
+      "y": 364,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "branch-L2C4",
+      "kind": "branch",
+      "x": 84,
+      "y": 210,
+      "width": 308,
+      "height": 196
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "x": 56,
+      "y": 98,
+      "width": 476,
+      "height": 322
+    },
+    {
+      "id": "bind-L7C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 434,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "call-L7C9",
+      "kind": "call",
+      "x": 56,
+      "y": 476,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "module:main",
+      "kind": "module",
+      "x": 28,
+      "y": 28,
+      "width": 532,
+      "height": 490
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-module:main-fn-L1C0-contains",
+      "fromNode": "module:main",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 273,
+        "x2": 294,
+        "y2": 259
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L1C25-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L1C25",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 259,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-branch-L2C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "branch-L2C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 259,
+        "x2": 238,
+        "y2": 308
+      }
+    },
+    {
+      "id": "edge-branch-L2C4-op-L2C7-contains",
+      "fromNode": "branch-L2C4",
+      "toNode": "op-L2C7",
+      "kind": "control",
+      "path": {
+        "x1": 238,
+        "y1": 308,
+        "x2": 196,
+        "y2": 294
+      }
+    },
+    {
+      "id": "edge-op-L2C7-bind-L1C25-reads",
+      "fromNode": "op-L2C7",
+      "toNode": "bind-L1C25",
+      "kind": "data",
+      "path": {
+        "x1": 196,
+        "y1": 294,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-branch-L2C4-ret-L3C8-contains",
+      "fromNode": "branch-L2C4",
+      "toNode": "ret-L3C8",
+      "kind": "control",
+      "path": {
+        "x1": 238,
+        "y1": 308,
+        "x2": 182,
+        "y2": 336
+      }
+    },
+    {
+      "id": "edge-branch-L2C4-ret-L5C8-contains",
+      "fromNode": "branch-L2C4",
+      "toNode": "ret-L5C8",
+      "kind": "control",
+      "path": {
+        "x1": 238,
+        "y1": 308,
+        "x2": 182,
+        "y2": 378
+      }
+    },
+    {
+      "id": "edge-module:main-bind-L7C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L7C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 273,
+        "x2": 126,
+        "y2": 448
+      }
+    },
+    {
+      "id": "edge-module:main-call-L7C9-contains",
+      "fromNode": "module:main",
+      "toNode": "call-L7C9",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 273,
+        "x2": 126,
+        "y2": 490
+      }
+    },
+    {
+      "id": "edge-call-L7C9-fn-L1C0-invokes",
+      "fromNode": "call-L7C9",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 126,
+        "y1": 490,
+        "x2": 294,
+        "y2": 259
+      }
+    },
+    {
+      "id": "edge-call-L7C9-bind-L7C0-writes",
+      "fromNode": "call-L7C9",
+      "toNode": "bind-L7C0",
+      "kind": "data",
+      "path": {
+        "x1": 126,
+        "y1": 490,
+        "x2": 126,
+        "y2": 448
+      }
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "call-L7C9",
+        "fn-L1C0"
+      ],
+      "line": 7,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "30",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "classify_temperature"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "bind-L1C25"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "bind_value",
+          "tokenId": "tok-S1-bind_param-0",
+          "bindingNode": "bind-L1C25",
+          "repr": "30"
+        }
+      ],
+      "caption": {
+        "key": "bind.param",
+        "params": {
+          "name": "temp",
+          "repr": "30"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "op-L2C7"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L2C7",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L2C7",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "branch-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L2C4",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L2C4",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "ret-L3C8"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "'hot'",
+          "port": "ret-L3C8",
+          "tokenId": "tok-S4-return_exit-0",
+          "returnNode": "ret-L3C8",
+          "functionNode": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "'hot'"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "bind-L7C0"
+      ],
+      "line": 7,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L7C0",
+          "oldRepr": "—",
+          "newRepr": "'hot'",
+          "inputTokenId": "tok-S5-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "result",
+          "repr": "'hot'"
+        }
+      }
+    }
+  ]
+}

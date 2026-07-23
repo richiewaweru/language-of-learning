@@ -27,9 +27,14 @@ class ModuleExecutionAcceptanceTests(unittest.TestCase):
                 trace = run_trace(case["source"], graph, [])
                 self.assertEqual(trace["scope"]["kind"], "module")
                 self.assertNotIn("call", trace)
-                self.assertTrue(
-                    all(step["frameId"] == "frame:module" for step in trace["steps"])
-                )
+                if case.get("expectedFunctionCall"):
+                    frame_ids = {step["frameId"] for step in trace["steps"]}
+                    self.assertIn("frame:module", frame_ids)
+                    self.assertTrue(any(frame.startswith("frame:fn-") for frame in frame_ids))
+                else:
+                    self.assertTrue(
+                        all(step["frameId"] == "frame:module" for step in trace["steps"])
+                    )
 
                 if case.get("expectedEmpty"):
                     self.assertEqual(trace["steps"], [])

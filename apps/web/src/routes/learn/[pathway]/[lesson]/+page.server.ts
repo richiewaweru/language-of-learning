@@ -1,80 +1,43 @@
-import { loadPathway, loadLesson, loadScene, loadExample } from '$lib/content';
-import { loadVariationPack } from '$lib/product/loadVariationPack';
 import { error } from '@sveltejs/kit';
-import { normalizeSemanticScene, renderCaption } from '@lol/lens-scenes';
-import type { DemoPack } from '$lib/product/loadDemoPack';
-import type { VariationPack } from '$lib/product/loadVariationPack';
+import { normalizeSemanticScene } from '@lol/lens-scenes';
+import {
+  course,
+  examples,
+  executableExampleIdsForLesson,
+  lessons,
+  lessonsById,
+} from '$lib/pilot/course';
+import '$lib/pilot/validation';
+import { loadPilotExamplePack } from '$lib/pilot/server';
 
 export async function load({ params }: { params: { pathway: string; lesson: string } }) {
-  try {
-    const pathway = await loadPathway(params.pathway);
-    if (!pathway.lessonSlugs.includes(params.lesson)) {
-      error(404, 'Lesson not in pathway');
-    }
-    const lesson = await loadLesson(params.lesson);
-    const idx = pathway.lessonSlugs.indexOf(params.lesson);
-    const prevSlug = idx > 0 ? pathway.lessonSlugs[idx - 1] : null;
-    const nextSlug = idx < pathway.lessonSlugs.length - 1 ? pathway.lessonSlugs[idx + 1] : null;
-
-    const sceneBlocks: Array<{
-      sceneId: string;
-      scene: Awaited<ReturnType<typeof loadScene>>;
-      example: Awaited<ReturnType<typeof loadExample>>;
-      initialCaption: string;
-    }> = [];
-
-    const executionPacks: Record<string, DemoPack> = {};
-    const variationPacks: Record<string, VariationPack> = {};
-
-    for (const block of lesson.blocks) {
-      if (block.type === 'scene' || block.type === 'staticPreview' || block.type === 'execution') {
-        const sceneId =
-          block.type === 'scene' || block.type === 'staticPreview' || block.type === 'execution'
-            ? block.sceneId
-            : '';
-        if (!sceneId || sceneBlocks.some((s) => s.sceneId === sceneId)) continue;
-        const scene = await loadScene(sceneId);
-        const example = await loadExample(sceneId);
-        const initialCaption = scene.steps[0] ? renderCaption(scene.steps[0].caption) : '';
-        sceneBlocks.push({ sceneId, scene, example, initialCaption });
-      }
-      if (block.type === 'execution') {
-        const example = await loadExample(block.sceneId);
-        const scene = await loadScene(block.sceneId);
-        executionPacks[block.sceneId] = {
-          id: block.sceneId,
-          title: lesson.title,
-          source: example.source,
-          argsRepr: example.argsRepr,
-          graph: example.graph,
-          trace: example.trace,
-          scene,
-          semanticScene: normalizeSemanticScene(example.graph, example.trace, {
-            sceneId: 'semantic-' + block.sceneId,
-          }),
-        };
-      }
-      if (block.type === 'variation' || block.type === 'transferCheck') {
-        const vid = block.type === 'variation' ? block.variationId : block.variationId;
-        if (!variationPacks[vid]) {
-          variationPacks[vid] = loadVariationPack(vid);
-        }
-      }
-    }
-
-    return {
-      pathway,
-      lesson,
-      sceneBlocks,
-      executionPacks,
-      variationPacks,
-      prevSlug,
-      nextSlug,
-      lessonIndex: idx + 1,
-      lessonCount: pathway.lessonSlugs.length,
-    };
-  } catch (err) {
-    if (err && typeof err === 'object' && 'status' in err) throw err;
-    error(404, 'Lesson not found');
-  }
+  if (params.pathway !== course.id) error(404, 'Pathway not found');
+  const lesson = lessonsById[params.lesson];
+  if (!lesson) error(404, 'Lesson not found');
+  const index = lessons.findIndex((entry) => entry.id === lesson.id);
+  const packs = Object.fromEntries(
+    await Promise.all(
+      executableExampleIdsForLesson(lesson.id).map(async (id) => {
+        const pack = await loadPilotExamplePack(id);
+        return [
+          id,
+          {
+            ...pack,
+            semanticScene: normalizeSemanticScene(pack.graph, pack.trace, {
+              sceneId: `semantic-pilot-${id}`,
+            }),
+          },
+        ];
+      }),
+    ),
+  );
+  return {
+    course,
+    lesson,
+    lessons,
+    examples,
+    packs,
+    previousLessonId: lessons[index - 1]?.id ?? null,
+    nextLessonId: lessons[index + 1]?.id ?? null,
+  };
 }

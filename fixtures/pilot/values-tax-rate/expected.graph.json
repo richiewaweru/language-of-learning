@@ -1,0 +1,180 @@
+{
+  "version": "0.1",
+  "source": "price = 100\ntax_rate = 0.16\ntax = price * tax_rate\ntotal = price + tax",
+  "nodes": [
+    {
+      "id": "module:main",
+      "kind": "module",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 4,
+        "endCol": 19
+      },
+      "name": "Program"
+    },
+    {
+      "id": "bind-L1C0",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 1,
+        "endCol": 11
+      },
+      "name": "price",
+      "role": "constant",
+      "mutable": false,
+      "initialRepr": "100"
+    },
+    {
+      "id": "val-L1C8",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 8,
+        "endLine": 1,
+        "endCol": 11
+      },
+      "repr": "100",
+      "pyType": "int"
+    },
+    {
+      "id": "bind-L2C0",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 0,
+        "endLine": 2,
+        "endCol": 15
+      },
+      "name": "tax_rate",
+      "role": "constant",
+      "mutable": false,
+      "initialRepr": "0.16"
+    },
+    {
+      "id": "val-L2C11",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 11,
+        "endLine": 2,
+        "endCol": 15
+      },
+      "repr": "0.16",
+      "pyType": "float"
+    },
+    {
+      "id": "bind-L3C0",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 0,
+        "endLine": 3,
+        "endCol": 22
+      },
+      "name": "tax",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "op-L3C6",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 6,
+        "endLine": 3,
+        "endCol": 21
+      },
+      "expr": "price * tax_rate"
+    },
+    {
+      "id": "bind-L4C0",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 0,
+        "endLine": 4,
+        "endCol": 19
+      },
+      "name": "total",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "op-L4C8",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 8,
+        "endLine": 4,
+        "endCol": 18
+      },
+      "expr": "price + tax"
+    }
+  ],
+  "relations": [
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "bind-L1C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "bind-L2C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "bind-L3C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "op-L3C6"
+    },
+    {
+      "from": "op-L3C6",
+      "type": "reads",
+      "to": "bind-L1C0"
+    },
+    {
+      "from": "op-L3C6",
+      "type": "reads",
+      "to": "bind-L2C0"
+    },
+    {
+      "from": "op-L3C6",
+      "type": "writes",
+      "to": "bind-L3C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "bind-L4C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "op-L4C8"
+    },
+    {
+      "from": "op-L4C8",
+      "type": "reads",
+      "to": "bind-L1C0"
+    },
+    {
+      "from": "op-L4C8",
+      "type": "reads",
+      "to": "bind-L3C0"
+    },
+    {
+      "from": "op-L4C8",
+      "type": "writes",
+      "to": "bind-L4C0"
+    }
+  ],
+  "unsupported": []
+}

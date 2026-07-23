@@ -53,19 +53,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A01",
-      "A02",
-      "A03",
-      "A04",
-      "A05",
-      "A06",
-      "A07",
-      "A08",
-      "A09",
-      "A14",
-      "A15"
-    ]
+    "corpusCases": ["A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "A14", "A15"]
   },
   {
     "construct": "list-literal-assignment",
@@ -73,12 +61,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "P01",
-      "P02",
-      "P03",
-      "P04"
-    ]
+    "corpusCases": ["P01", "P02", "P03", "P04"]
   },
   {
     "construct": "simple-assignment",
@@ -86,15 +69,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A01",
-      "A02",
-      "A04",
-      "A05",
-      "A08",
-      "A14",
-      "A15"
-    ]
+    "corpusCases": ["A01", "A02", "A04", "A05", "A08", "A14", "A15"]
   },
   {
     "construct": "state-reassignment",
@@ -102,10 +77,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A14",
-      "A15"
-    ]
+    "corpusCases": ["A14", "A15"]
   },
   {
     "construct": "arithmetic-binop",
@@ -113,12 +85,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A08",
-      "A13",
-      "A14",
-      "A15"
-    ]
+    "corpusCases": ["A08", "A13", "A14", "A15"]
   },
   {
     "construct": "comparisons",
@@ -126,17 +93,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A02",
-      "A03",
-      "A04",
-      "A05",
-      "A06",
-      "A07",
-      "A09",
-      "A14",
-      "A15"
-    ]
+    "corpusCases": ["A02", "A03", "A04", "A05", "A06", "A07", "A09", "A14", "A15"]
   },
   {
     "construct": "if-else",
@@ -144,9 +101,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A15"
-    ]
+    "corpusCases": ["A15"]
   },
   {
     "construct": "for-named-collection",
@@ -154,12 +109,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A01",
-      "A02",
-      "A04",
-      "A05"
-    ]
+    "corpusCases": ["A01", "A02", "A04", "A05"]
   },
   {
     "construct": "for-range",
@@ -167,10 +117,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A03",
-      "A14"
-    ]
+    "corpusCases": ["A03", "A14"]
   },
   {
     "construct": "while-loop",
@@ -178,9 +125,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A15"
-    ]
+    "corpusCases": ["A15"]
   },
   {
     "construct": "range-one-arg",
@@ -188,9 +133,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A03"
-    ]
+    "corpusCases": ["A03"]
   },
   {
     "construct": "range-two-arg",
@@ -198,9 +141,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A14"
-    ]
+    "corpusCases": ["A14"]
   },
   {
     "construct": "range-three-arg",
@@ -216,12 +157,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A03",
-      "A07",
-      "A08",
-      "A15"
-    ]
+    "corpusCases": ["A03", "A07", "A08", "A15"]
   },
   {
     "construct": "list-index-write",
@@ -229,9 +165,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "array-update"
-    ]
+    "corpusCases": ["array-update"]
   },
   {
     "construct": "list-append",
@@ -239,11 +173,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "filter",
-      "transform",
-      "alias-mutation"
-    ]
+    "corpusCases": ["filter", "transform", "alias-mutation"]
   },
   {
     "construct": "len",
@@ -251,12 +181,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A03",
-      "A07",
-      "A08",
-      "A15"
-    ]
+    "corpusCases": ["A03", "A07", "A08", "A15"]
   },
   {
     "construct": "print",
@@ -264,9 +189,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "print_total"
-    ]
+    "corpusCases": ["print_total"]
   },
   {
     "construct": "early-return",
@@ -274,13 +197,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A03",
-      "A06",
-      "A07",
-      "A14",
-      "A15"
-    ]
+    "corpusCases": ["A03", "A06", "A07", "A14", "A15"]
   },
   {
     "construct": "ordinary-return",
@@ -306,15 +223,20 @@
     ]
   },
   {
+    "construct": "single-authored-function-call-in-module",
+    "wave": "pilot",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": ["MOD-CALL-001", "functions-watch", "conditions-watch", "loops-watch"]
+  },
+  {
     "construct": "builtin-shadowing",
     "wave": "A",
     "analyzer": "unsupported",
     "tracer": "unsupported",
     "renderer": "unsupported",
-    "corpusCases": [
-      "P06",
-      "P07"
-    ]
+    "corpusCases": ["P06", "P07"]
   },
   {
     "construct": "unsupported-path-hardening",
@@ -322,18 +244,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "N01",
-      "N02",
-      "N03",
-      "N04",
-      "N05",
-      "N06",
-      "N07",
-      "N08",
-      "N09",
-      "N10"
-    ]
+    "corpusCases": ["N01", "N02", "N03", "N04", "N05", "N06", "N07", "N08", "N09", "N10"]
   },
   {
     "construct": "augmented-assignment-simple-name",
@@ -341,11 +252,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A01",
-      "A02",
-      "A05"
-    ]
+    "corpusCases": ["A01", "A02", "A05"]
   },
   {
     "construct": "boolean-and-or-not",
@@ -353,10 +260,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A06",
-      "A07"
-    ]
+    "corpusCases": ["A06", "A07"]
   },
   {
     "construct": "direct-indexed-return",
@@ -364,11 +268,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A03",
-      "A07",
-      "A08"
-    ]
+    "corpusCases": ["A03", "A07", "A08"]
   },
   {
     "construct": "comparison-return",
@@ -376,10 +276,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A06",
-      "A09"
-    ]
+    "corpusCases": ["A06", "A09"]
   },
   {
     "construct": "break",
@@ -387,9 +284,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A04"
-    ]
+    "corpusCases": ["A04"]
   },
   {
     "construct": "continue",
@@ -397,9 +292,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A05"
-    ]
+    "corpusCases": ["A05"]
   },
   {
     "construct": "builtin-min-collapsed",
@@ -407,9 +300,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A11"
-    ]
+    "corpusCases": ["A11"]
   },
   {
     "construct": "builtin-max-collapsed",
@@ -417,9 +308,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A10"
-    ]
+    "corpusCases": ["A10"]
   },
   {
     "construct": "builtin-sum-collapsed",
@@ -427,9 +316,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A12"
-    ]
+    "corpusCases": ["A12"]
   },
   {
     "construct": "builtin-abs-collapsed",
@@ -437,9 +324,7 @@
     "analyzer": "verified",
     "tracer": "verified",
     "renderer": "verified",
-    "corpusCases": [
-      "A13"
-    ]
+    "corpusCases": ["A13"]
   },
   {
     "construct": "enumerate",

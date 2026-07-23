@@ -1,0 +1,8 @@
+{
+  "lessonId": "loops-over-lists",
+  "exampleId": "loops-strict-boundary",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "result": "2"
+  }
+}

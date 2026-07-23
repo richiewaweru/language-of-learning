@@ -1,0 +1,738 @@
+{
+  "id": "pilot-loops-initial-total",
+  "graphRef": "0.1",
+  "motionVersion": "0.2",
+  "layout": [
+    {
+      "id": "bind-L1C18",
+      "kind": "binding",
+      "x": 84,
+      "y": 168,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "bind-L2C4",
+      "kind": "binding",
+      "x": 84,
+      "y": 210,
+      "width": 168,
+      "height": 56
+    },
+    {
+      "id": "op-L4C11",
+      "kind": "operation",
+      "x": 140,
+      "y": 420,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "op-L5C20",
+      "kind": "operation",
+      "x": 140,
+      "y": 462,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "branch-L4C8",
+      "kind": "branch",
+      "x": 112,
+      "y": 350,
+      "width": 308,
+      "height": 154
+    },
+    {
+      "id": "loop-L3C4",
+      "kind": "loop",
+      "x": 84,
+      "y": 280,
+      "width": 364,
+      "height": 238
+    },
+    {
+      "id": "ret-L6C4",
+      "kind": "return",
+      "x": 84,
+      "y": 532,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "x": 56,
+      "y": 98,
+      "width": 476,
+      "height": 476
+    },
+    {
+      "id": "bind-L8C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 588,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "call-L8C9",
+      "kind": "call",
+      "x": 56,
+      "y": 630,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "module:main",
+      "kind": "module",
+      "x": 28,
+      "y": 28,
+      "width": 532,
+      "height": 644
+    },
+    {
+      "id": "bind-L3C8",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-module:main-fn-L1C0-contains",
+      "fromNode": "module:main",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 350,
+        "x2": 294,
+        "y2": 336
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L1C18-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L1C18",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 336,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L2C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L2C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 336,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-loop-L3C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "loop-L3C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 336,
+        "x2": 266,
+        "y2": 399
+      }
+    },
+    {
+      "id": "edge-loop-L3C4-bind-L1C18-iterates",
+      "fromNode": "loop-L3C4",
+      "toNode": "bind-L1C18",
+      "kind": "repeat",
+      "path": {
+        "x1": 266,
+        "y1": 399,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-loop-L3C4-branch-L4C8-contains",
+      "fromNode": "loop-L3C4",
+      "toNode": "branch-L4C8",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 399,
+        "x2": 266,
+        "y2": 427
+      }
+    },
+    {
+      "id": "edge-branch-L4C8-op-L4C11-contains",
+      "fromNode": "branch-L4C8",
+      "toNode": "op-L4C11",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 427,
+        "x2": 224,
+        "y2": 434
+      }
+    },
+    {
+      "id": "edge-op-L4C11-bind-L3C8-reads",
+      "fromNode": "op-L4C11",
+      "toNode": "bind-L3C8",
+      "kind": "data",
+      "path": {
+        "x1": 224,
+        "y1": 434,
+        "x2": 112,
+        "y2": 70
+      }
+    },
+    {
+      "id": "edge-branch-L4C8-op-L5C20-contains",
+      "fromNode": "branch-L4C8",
+      "toNode": "op-L5C20",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 427,
+        "x2": 224,
+        "y2": 476
+      }
+    },
+    {
+      "id": "edge-op-L5C20-bind-L2C4-reads",
+      "fromNode": "op-L5C20",
+      "toNode": "bind-L2C4",
+      "kind": "data",
+      "path": {
+        "x1": 224,
+        "y1": 476,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-op-L5C20-bind-L2C4-writes",
+      "fromNode": "op-L5C20",
+      "toNode": "bind-L2C4",
+      "kind": "data",
+      "path": {
+        "x1": 224,
+        "y1": 476,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-ret-L6C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "ret-L6C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 336,
+        "x2": 154,
+        "y2": 546
+      }
+    },
+    {
+      "id": "edge-ret-L6C4-bind-L2C4-returns",
+      "fromNode": "ret-L6C4",
+      "toNode": "bind-L2C4",
+      "kind": "return",
+      "path": {
+        "x1": 154,
+        "y1": 546,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-module:main-bind-L8C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L8C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 350,
+        "x2": 126,
+        "y2": 602
+      }
+    },
+    {
+      "id": "edge-module:main-call-L8C9-contains",
+      "fromNode": "module:main",
+      "toNode": "call-L8C9",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 350,
+        "x2": 126,
+        "y2": 644
+      }
+    },
+    {
+      "id": "edge-call-L8C9-fn-L1C0-invokes",
+      "fromNode": "call-L8C9",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 126,
+        "y1": 644,
+        "x2": 294,
+        "y2": 336
+      }
+    },
+    {
+      "id": "edge-call-L8C9-bind-L8C0-writes",
+      "fromNode": "call-L8C9",
+      "toNode": "bind-L8C0",
+      "kind": "data",
+      "path": {
+        "x1": 126,
+        "y1": 644,
+        "x2": 126,
+        "y2": 602
+      }
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "call-L8C9",
+        "fn-L1C0"
+      ],
+      "line": 8,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[72, 41, 65, 38]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "count_passing"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "bind-L1C18"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "bind_value",
+          "tokenId": "tok-S1-bind_param-0",
+          "bindingNode": "bind-L1C18",
+          "repr": "[72, 41, 65, 38]"
+        }
+      ],
+      "caption": {
+        "key": "bind.param",
+        "params": {
+          "name": "scores",
+          "repr": "[72, 41, 65, 38]"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "bind-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "—",
+          "newRepr": "10",
+          "inputTokenId": "tok-S2-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "total",
+          "repr": "10"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 0,
+          "itemRepr": "72",
+          "tokenId": "tok-S3-loop_advance-0",
+          "collection": "bind-L1C18"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "72"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "branch-L4C8"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L4C8",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "op-L5C20",
+        "bind-L2C4"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "10",
+          "newRepr": "11",
+          "inputTokenId": "tok-S6-state_change-0"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "10",
+          "new": "11"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 1,
+          "itemRepr": "41",
+          "tokenId": "tok-S7-loop_advance-0",
+          "collection": "bind-L1C18"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "41"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "focus": [
+        "branch-L4C8"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L4C8",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 2,
+          "itemRepr": "65",
+          "tokenId": "tok-S10-loop_advance-0",
+          "collection": "bind-L1C18"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "65"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "focus": [
+        "branch-L4C8"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": true
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L4C8",
+          "result": "true"
+        }
+      }
+    },
+    {
+      "index": 13,
+      "focus": [
+        "op-L5C20",
+        "bind-L2C4"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "11",
+          "newRepr": "12",
+          "inputTokenId": "tok-S13-state_change-0"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "11",
+          "new": "12"
+        }
+      }
+    },
+    {
+      "index": 14,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 3,
+          "itemRepr": "38",
+          "tokenId": "tok-S14-loop_advance-0",
+          "collection": "bind-L1C18"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "38"
+        }
+      }
+    },
+    {
+      "index": 15,
+      "focus": [
+        "op-L4C11"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "op-L4C11",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "op-L4C11",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 16,
+      "focus": [
+        "branch-L4C8"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "evaluate",
+          "branch": "branch-L4C8",
+          "result": false
+        }
+      ],
+      "caption": {
+        "key": "branch.evaluate",
+        "params": {
+          "branch": "branch-L4C8",
+          "result": "false"
+        }
+      }
+    },
+    {
+      "index": 17,
+      "focus": [
+        "ret-L6C4"
+      ],
+      "line": 6,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "12",
+          "port": "ret-L6C4",
+          "tokenId": "tok-S17-return_exit-0",
+          "returnNode": "ret-L6C4",
+          "functionNode": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "12"
+        }
+      }
+    },
+    {
+      "index": 18,
+      "focus": [
+        "bind-L8C0"
+      ],
+      "line": 8,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L8C0",
+          "oldRepr": "—",
+          "newRepr": "12",
+          "inputTokenId": "tok-S18-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "result",
+          "repr": "12"
+        }
+      }
+    }
+  ]
+}

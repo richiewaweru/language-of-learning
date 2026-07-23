@@ -1,0 +1,8 @@
+{
+  "lessonId": "loops-over-lists",
+  "exampleId": "loops-add-score",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "result": "3"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "scope": {
+    "kind": "module",
+    "id": "module:main",
+    "label": "Program"
+  },
+  "steps": [
+    {
+      "index": 0,
+      "line": 1,
+      "focus": [
+        "bind-L1C0"
+      ],
+      "bindings": {
+        "price": "200"
+      },
+      "frameId": "frame:module",
+      "event": {
+        "type": "state_init",
+        "binding": "bind-L1C0",
+        "repr": "200"
+      }
+    },
+    {
+      "index": 1,
+      "line": 2,
+      "focus": [
+        "op-L2C6",
+        "bind-L2C0"
+      ],
+      "bindings": {
+        "price": "200",
+        "tax": "32.0"
+      },
+      "frameId": "frame:module",
+      "event": {
+        "type": "state_init",
+        "binding": "bind-L2C0",
+        "repr": "32.0"
+      }
+    },
+    {
+      "index": 2,
+      "line": 3,
+      "focus": [
+        "op-L3C8",
+        "bind-L3C0"
+      ],
+      "bindings": {
+        "price": "200",
+        "tax": "32.0",
+        "total": "232.0"
+      },
+      "frameId": "frame:module",
+      "event": {
+        "type": "state_init",
+        "binding": "bind-L3C0",
+        "repr": "232.0"
+      }
+    }
+  ],
+  "truncated": false
+}

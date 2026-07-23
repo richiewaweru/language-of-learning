@@ -2,7 +2,9 @@ import type { LayoutNode } from '@lol/lens-contracts';
 import type { GraphNode, GraphRelation, LayoutResult, SemanticGraph } from './types.js';
 
 export const GRID = 28;
-export const MAX_NESTING = 3;
+// A module that calls a function containing a loop and branch needs four
+// semantic containment levels before its leaf operation.
+export const MAX_NESTING = 4;
 
 const SIZE: Record<string, { w: number; h: number }> = {
   module: { w: 16 * GRID, h: 2 * GRID },
@@ -152,7 +154,16 @@ export function assertNoOverlap(layout: LayoutNode[]): void {
 }
 
 export function layoutGraph(graph: SemanticGraph): LayoutResult {
-  const roots = graph.nodes.filter((n) => n.kind === 'module' || n.kind === 'function');
+  const contained = new Set(
+    graph.relations
+      .filter((relation) => relation.type === 'contains')
+      .map((relation) => relation.to),
+  );
+  const roots = graph.nodes.filter(
+    (node) =>
+      (node.kind === 'module' || node.kind === 'function') &&
+      !contained.has(node.id),
+  );
   if (roots.length !== 1) {
     throw new LayoutError('Layout requires exactly one execution-scope node');
   }

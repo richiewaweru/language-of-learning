@@ -1,0 +1,110 @@
+{
+  "scope": {
+    "kind": "module",
+    "id": "module:main",
+    "label": "Program"
+  },
+  "steps": [
+    {
+      "index": 0,
+      "line": 7,
+      "focus": [
+        "call-L7C9",
+        "fn-L1C0"
+      ],
+      "bindings": {},
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-L1C0",
+        "callId": "call-L7C9",
+        "argsRepr": [
+          "35"
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "line": 1,
+      "focus": [
+        "bind-L1C25"
+      ],
+      "bindings": {
+        "temp": "35"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "bind_param",
+        "name": "temp",
+        "repr": "35"
+      }
+    },
+    {
+      "index": 2,
+      "line": 2,
+      "focus": [
+        "op-L2C7"
+      ],
+      "bindings": {
+        "temp": "35"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "condition_eval",
+        "branch": "op-L2C7",
+        "result": true
+      }
+    },
+    {
+      "index": 3,
+      "line": 2,
+      "focus": [
+        "branch-L2C4"
+      ],
+      "bindings": {
+        "temp": "35"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "condition_eval",
+        "branch": "branch-L2C4",
+        "result": true
+      }
+    },
+    {
+      "index": 4,
+      "line": 3,
+      "focus": [
+        "ret-L3C8"
+      ],
+      "bindings": {
+        "temp": "35"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "return_exit",
+        "repr": "'hot'"
+      }
+    },
+    {
+      "index": 5,
+      "line": 7,
+      "focus": [
+        "bind-L7C0"
+      ],
+      "bindings": {
+        "result": "'hot'"
+      },
+      "frameId": "frame:module",
+      "event": {
+        "type": "state_init",
+        "binding": "bind-L7C0",
+        "repr": "'hot'"
+      }
+    }
+  ],
+  "truncated": false,
+  "result": {
+    "repr": "'hot'"
+  }
+}

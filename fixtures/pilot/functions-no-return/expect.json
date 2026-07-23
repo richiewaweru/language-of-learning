@@ -1,0 +1,8 @@
+{
+  "lessonId": "functions-and-returns",
+  "exampleId": "functions-no-return",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "result": "None"
+  }
+}

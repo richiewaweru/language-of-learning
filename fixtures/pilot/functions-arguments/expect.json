@@ -1,0 +1,8 @@
+{
+  "lessonId": "functions-and-returns",
+  "exampleId": "functions-arguments",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "result": "40.0"
+  }
+}

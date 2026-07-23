@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
 export const TraceEventSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('call_enter'), functionId: z.string() }),
+  z.object({
+    type: z.literal('call_enter'),
+    functionId: z.string(),
+    callId: z.string().optional(),
+    argsRepr: z.array(z.string()).optional(),
+  }),
   z.object({ type: z.literal('bind_param'), name: z.string(), repr: z.string() }),
   z.object({ type: z.literal('state_init'), binding: z.string(), repr: z.string() }),
   z.object({

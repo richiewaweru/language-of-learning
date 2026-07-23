@@ -1,0 +1,8 @@
+{
+  "lessonId": "loops-over-lists",
+  "exampleId": "loops-initial-total",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "result": "12"
+  }
+}

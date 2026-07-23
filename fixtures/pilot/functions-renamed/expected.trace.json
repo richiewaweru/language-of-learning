@@ -1,0 +1,117 @@
+{
+  "scope": {
+    "kind": "module",
+    "id": "module:main",
+    "label": "Program"
+  },
+  "steps": [
+    {
+      "index": 0,
+      "line": 5,
+      "focus": [
+        "call-L5C9",
+        "fn-L1C0"
+      ],
+      "bindings": {},
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-L1C0",
+        "callId": "call-L5C9",
+        "argsRepr": [
+          "100",
+          "0.16"
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "line": 1,
+      "focus": [
+        "bind-L1C12"
+      ],
+      "bindings": {
+        "price": "100"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "bind_param",
+        "name": "price",
+        "repr": "100"
+      }
+    },
+    {
+      "index": 2,
+      "line": 1,
+      "focus": [
+        "bind-L1C19"
+      ],
+      "bindings": {
+        "price": "100",
+        "rate": "0.16"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "bind_param",
+        "name": "rate",
+        "repr": "0.16"
+      }
+    },
+    {
+      "index": 3,
+      "line": 2,
+      "focus": [
+        "op-L2C10",
+        "bind-L2C4"
+      ],
+      "bindings": {
+        "price": "100",
+        "rate": "0.16",
+        "tax": "16.0"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "state_init",
+        "binding": "bind-L2C4",
+        "repr": "16.0"
+      }
+    },
+    {
+      "index": 4,
+      "line": 3,
+      "focus": [
+        "ret-L3C4"
+      ],
+      "bindings": {
+        "price": "100",
+        "rate": "0.16",
+        "tax": "16.0"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "return_exit",
+        "repr": "16.0"
+      }
+    },
+    {
+      "index": 5,
+      "line": 5,
+      "focus": [
+        "bind-L5C0"
+      ],
+      "bindings": {
+        "result": "16.0"
+      },
+      "frameId": "frame:module",
+      "event": {
+        "type": "state_init",
+        "binding": "bind-L5C0",
+        "repr": "16.0"
+      }
+    }
+  ],
+  "truncated": false,
+  "result": {
+    "repr": "16.0"
+  }
+}

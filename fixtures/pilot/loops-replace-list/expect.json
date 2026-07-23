@@ -1,0 +1,8 @@
+{
+  "lessonId": "loops-over-lists",
+  "exampleId": "loops-replace-list",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "result": "2"
+  }
+}

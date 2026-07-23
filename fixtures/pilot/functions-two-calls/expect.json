@@ -1,0 +1,9 @@
+{
+  "lessonId": "functions-and-returns",
+  "exampleId": "functions-two-calls",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "first_tax": "16.0",
+    "second_tax": "40.0"
+  }
+}

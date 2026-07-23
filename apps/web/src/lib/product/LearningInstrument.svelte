@@ -68,7 +68,11 @@
     if (showTruthDrawer && (next.nodeId || next.line)) drawerOpen = true;
   }
 
-  const callDisplay = $derived(pack.argsRepr[0] ?? '[2, 4, 6, 8]');
+  const callExpression = $derived(
+    pack.trace.scope.kind === 'function' && pack.argsRepr.length
+      ? `${pack.trace.scope.label}(${pack.argsRepr.join(', ')})`
+      : '',
+  );
 </script>
 
 <section class="instrument" class:compact data-testid="learning-instrument">
@@ -107,7 +111,7 @@
           trace={pack.trace}
           {selection}
           onLineSelect={handleLineSelect}
-          callArgs={callDisplay}
+          {callExpression}
         />
       </div>
       <div class="panel visual" class:hidden={compact && mobileTab !== 'visual'}>

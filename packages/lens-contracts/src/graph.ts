@@ -42,6 +42,7 @@ export const RelationTypeSchema = z.enum([
   'returns',
   'iterates',
   'mutates',
+  'invokes',
 ]);
 
 export const NodeBaseSchema = z.object({

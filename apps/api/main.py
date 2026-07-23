@@ -106,7 +106,17 @@ def validate_analysis_contracts(graph: dict[str, Any], trace: dict[str, Any]) ->
     if len(node_ids) != len(nodes) or None in node_ids:
         raise ValueError("Semantic graph contains an invalid or duplicate node.")
     if not unsupported:
-        roots = [node for node in nodes if node.get("kind") in {"module", "function"}]
+        contained = {
+            relation.get("to")
+            for relation in relations
+            if relation.get("type") == "contains"
+        }
+        roots = [
+            node
+            for node in nodes
+            if node.get("kind") in {"module", "function"}
+            and node.get("id") not in contained
+        ]
         if len(roots) != 1:
             raise ValueError("Semantic graph must contain one execution scope.")
     for relation in relations:

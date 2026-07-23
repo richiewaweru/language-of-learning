@@ -1,0 +1,10 @@
+{
+  "lessonId": "values-and-variables",
+  "exampleId": "values-total-dependency",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "price": "150",
+    "tax": "24.0",
+    "total": "174.0"
+  }
+}

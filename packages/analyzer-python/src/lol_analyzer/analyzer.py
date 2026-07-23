@@ -138,8 +138,7 @@ class Analyzer:
             return self.graph()
 
         if module_mode:
-            executable_tree = ast.Module(body=module_statements, type_ignores=[])
-            self.precollect(executable_tree)
+            self.precollect(self.tree)
             module_id = "module:main"
             self.used_ids.add(module_id)
             self.nodes.append(
@@ -160,6 +159,38 @@ class Analyzer:
                 }
             )
             self.node_ids.add(module_id)
+            if functions:
+                function = functions[0]
+                self.current_function = function
+                function_id = self.alloc_id("fn", function)
+                param_ids = [self.define_binding_id(arg.arg, arg) for arg in function.args.args]
+                self.nodes.append(
+                    {
+                        "id": function_id,
+                        "kind": "function",
+                        "sourceRange": self.range_for(function),
+                        "name": function.name,
+                        "params": param_ids,
+                    }
+                )
+                self.node_ids.add(function_id)
+                self.rel(module_id, "contains", function_id)
+                for arg in function.args.args:
+                    binding_id = self.binding_ids[arg.arg]
+                    self.nodes.append(
+                        {
+                            "id": binding_id,
+                            "kind": "binding",
+                            "sourceRange": self.range_for(arg),
+                            "name": arg.arg,
+                            "role": "parameter",
+                            "mutable": False,
+                        }
+                    )
+                    self.node_ids.add(binding_id)
+                    self.rel(function_id, "contains", binding_id)
+                for stmt in function.body:
+                    self.visit_stmt(stmt, parent_id=function_id)
             for stmt in module_statements:
                 self.visit_stmt(stmt, parent_id=module_id)
             return self.graph()
@@ -244,7 +275,7 @@ class Analyzer:
             ("UNSUPPORTED_ASYNC", next((node for node in ast.walk(checked_root) if isinstance(node, (ast.AsyncFunctionDef, ast.AsyncFor, ast.AsyncWith, ast.Await))), None)),
             ("UNSUPPORTED_IMPORT", next((node for node in ast.walk(checked_root) if isinstance(node, (ast.Import, ast.ImportFrom))), None)),
         ]
-        if not module_mode and len(top_functions) > 1:
+        if len(top_functions) > 1:
             checks.insert(0, ("UNSUPPORTED_MULTIPLE_FUNCTIONS", top_functions[1]))
         function = top_functions[0] if not module_mode and len(top_functions) == 1 else None
         if function is not None:
@@ -625,7 +656,7 @@ class Analyzer:
         elif self.is_builtin_call(value):
             builtin_id = self.ensure_builtin_node(value, parent_id)
             self.rel(builtin_id, "writes", binding_id)
-        elif self.is_supported_call(value):
+        elif self.is_supported_call(value) or self.is_user_function_call(value):
             call_id = self.ensure_call_node(value, parent_id)
             self.rel(call_id, "writes", binding_id)
         elif isinstance(value, ast.Name):
@@ -984,6 +1015,14 @@ class Analyzer:
             and isinstance(node.func, ast.Name)
             and node.func.id in SPECIAL_BUILTIN_NAMES
         }
+        if self.current_function is not None:
+            special_callee_nodes.update(
+                id(node.func)
+                for node in ast.walk(value)
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == self.current_function.name
+            )
         for node in ast.walk(value):
             if isinstance(node, ast.Name):
                 if id(node) in special_callee_nodes:
@@ -1095,6 +1134,15 @@ class Analyzer:
             and not value.keywords
         )
 
+    def is_user_function_call(self, value: ast.AST | None) -> bool:
+        return (
+            self.current_function is not None
+            and isinstance(value, ast.Call)
+            and isinstance(value.func, ast.Name)
+            and value.func.id == self.current_function.name
+            and not value.keywords
+        )
+
     def is_range_call(self, value: ast.AST) -> bool:
         return self.is_supported_call(value) and isinstance(value, ast.Call) and value.func.id == "range"
 
@@ -1149,6 +1197,8 @@ class Analyzer:
             )
             self.node_ids.add(call_id)
             self.rel(parent_id, "contains", call_id)
+            if self.current_function is not None and call.func.id == self.current_function.name:
+                self.rel(call_id, "invokes", self.alloc_id("fn", self.current_function))
             for arg in call.args:
                 for ref in self.read_refs(arg):
                     self.rel(call_id, "reads", ref)
@@ -1174,6 +1224,9 @@ class Analyzer:
                     for ref in self.read_refs(node):
                         self.rel(operation_id, "reads", ref)
             elif self.is_supported_call(node):
+                assert isinstance(node, ast.Call)
+                self.ensure_call_node(node, parent_id)
+            elif self.is_user_function_call(node):
                 assert isinstance(node, ast.Call)
                 self.ensure_call_node(node, parent_id)
             elif self.is_builtin_call(node):

@@ -72,9 +72,10 @@ function actionsForStep(graph: SemanticGraph, step: TraceStep, trace: Trace): Sc
       const fnId = event.functionId;
       const params = byId(graph).get(fnId)?.params ?? [];
       const args =
-        trace.scope.kind === 'function'
+        event.argsRepr ??
+        (trace.scope.kind === 'function'
           ? trace.scope.argsRepr
-          : (trace.call?.argsRepr ?? []);
+          : (trace.call?.argsRepr ?? []));
       const count = Math.max(params.length, args.length);
       const actions: SceneAction[] = [];
       for (let i = 0; i < count; i++) {

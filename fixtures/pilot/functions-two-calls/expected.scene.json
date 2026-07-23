@@ -1,0 +1,607 @@
+{
+  "id": "pilot-functions-two-calls",
+  "graphRef": "0.1",
+  "motionVersion": "0.2",
+  "layout": [
+    {
+      "id": "bind-L1C18",
+      "kind": "binding",
+      "x": 84,
+      "y": 168,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "bind-L1C25",
+      "kind": "binding",
+      "x": 84,
+      "y": 210,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "bind-L2C4",
+      "kind": "binding",
+      "x": 84,
+      "y": 252,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "op-L2C10",
+      "kind": "operation",
+      "x": 84,
+      "y": 294,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "ret-L3C4",
+      "kind": "return",
+      "x": 84,
+      "y": 336,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "x": 56,
+      "y": 98,
+      "width": 476,
+      "height": 280
+    },
+    {
+      "id": "bind-L5C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 392,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "call-L5C12",
+      "kind": "call",
+      "x": 56,
+      "y": 434,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "bind-L6C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 476,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "call-L6C13",
+      "kind": "call",
+      "x": 56,
+      "y": 518,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "module:main",
+      "kind": "module",
+      "x": 28,
+      "y": 28,
+      "width": 532,
+      "height": 532
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-module:main-fn-L1C0-contains",
+      "fromNode": "module:main",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 294,
+        "x2": 294,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L1C18-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L1C18",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 238,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L1C25-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L1C25",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 238,
+        "x2": 154,
+        "y2": 224
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L2C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L2C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 238,
+        "x2": 154,
+        "y2": 266
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-op-L2C10-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "op-L2C10",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 238,
+        "x2": 168,
+        "y2": 308
+      }
+    },
+    {
+      "id": "edge-op-L2C10-bind-L1C18-reads",
+      "fromNode": "op-L2C10",
+      "toNode": "bind-L1C18",
+      "kind": "data",
+      "path": {
+        "x1": 168,
+        "y1": 308,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-op-L2C10-bind-L1C25-reads",
+      "fromNode": "op-L2C10",
+      "toNode": "bind-L1C25",
+      "kind": "data",
+      "path": {
+        "x1": 168,
+        "y1": 308,
+        "x2": 154,
+        "y2": 224
+      }
+    },
+    {
+      "id": "edge-op-L2C10-bind-L2C4-writes",
+      "fromNode": "op-L2C10",
+      "toNode": "bind-L2C4",
+      "kind": "data",
+      "path": {
+        "x1": 168,
+        "y1": 308,
+        "x2": 154,
+        "y2": 266
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-ret-L3C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "ret-L3C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 238,
+        "x2": 154,
+        "y2": 350
+      }
+    },
+    {
+      "id": "edge-ret-L3C4-bind-L2C4-returns",
+      "fromNode": "ret-L3C4",
+      "toNode": "bind-L2C4",
+      "kind": "return",
+      "path": {
+        "x1": 154,
+        "y1": 350,
+        "x2": 154,
+        "y2": 266
+      }
+    },
+    {
+      "id": "edge-module:main-bind-L5C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L5C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 294,
+        "x2": 126,
+        "y2": 406
+      }
+    },
+    {
+      "id": "edge-module:main-call-L5C12-contains",
+      "fromNode": "module:main",
+      "toNode": "call-L5C12",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 294,
+        "x2": 126,
+        "y2": 448
+      }
+    },
+    {
+      "id": "edge-call-L5C12-fn-L1C0-invokes",
+      "fromNode": "call-L5C12",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 126,
+        "y1": 448,
+        "x2": 294,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-call-L5C12-bind-L5C0-writes",
+      "fromNode": "call-L5C12",
+      "toNode": "bind-L5C0",
+      "kind": "data",
+      "path": {
+        "x1": 126,
+        "y1": 448,
+        "x2": 126,
+        "y2": 406
+      }
+    },
+    {
+      "id": "edge-module:main-bind-L6C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L6C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 294,
+        "x2": 126,
+        "y2": 490
+      }
+    },
+    {
+      "id": "edge-module:main-call-L6C13-contains",
+      "fromNode": "module:main",
+      "toNode": "call-L6C13",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 294,
+        "x2": 126,
+        "y2": 532
+      }
+    },
+    {
+      "id": "edge-call-L6C13-fn-L1C0-invokes",
+      "fromNode": "call-L6C13",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 126,
+        "y1": 532,
+        "x2": 294,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-call-L6C13-bind-L6C0-writes",
+      "fromNode": "call-L6C13",
+      "toNode": "bind-L6C0",
+      "kind": "data",
+      "path": {
+        "x1": 126,
+        "y1": 532,
+        "x2": 126,
+        "y2": 490
+      }
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "call-L5C12",
+        "fn-L1C0"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "100",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-1",
+          "repr": "0.16",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "calculate_tax"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "bind-L1C18"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "bind_value",
+          "tokenId": "tok-S1-bind_param-0",
+          "bindingNode": "bind-L1C18",
+          "repr": "100"
+        }
+      ],
+      "caption": {
+        "key": "bind.param",
+        "params": {
+          "name": "price",
+          "repr": "100"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "bind-L1C25"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "bind_value",
+          "tokenId": "tok-S2-bind_param-0",
+          "bindingNode": "bind-L1C25",
+          "repr": "0.16"
+        }
+      ],
+      "caption": {
+        "key": "bind.param",
+        "params": {
+          "name": "rate",
+          "repr": "0.16"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "op-L2C10",
+        "bind-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "—",
+          "newRepr": "16.0",
+          "inputTokenId": "tok-S3-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "tax",
+          "repr": "16.0"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "ret-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "16.0",
+          "port": "ret-L3C4",
+          "tokenId": "tok-S4-return_exit-0",
+          "returnNode": "ret-L3C4",
+          "functionNode": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "16.0"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "bind-L5C0"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L5C0",
+          "oldRepr": "—",
+          "newRepr": "16.0",
+          "inputTokenId": "tok-S5-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "first_tax",
+          "repr": "16.0"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "call-L6C13",
+        "fn-L1C0"
+      ],
+      "line": 6,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S6-call_enter-0",
+          "repr": "250",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S6-call_enter-1",
+          "repr": "0.16",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "calculate_tax"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "bind-L1C18"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "bind_value",
+          "tokenId": "tok-S7-bind_param-0",
+          "bindingNode": "bind-L1C18",
+          "repr": "250"
+        }
+      ],
+      "caption": {
+        "key": "bind.param",
+        "params": {
+          "name": "price",
+          "repr": "250"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "focus": [
+        "bind-L1C25"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "bind_value",
+          "tokenId": "tok-S8-bind_param-0",
+          "bindingNode": "bind-L1C25",
+          "repr": "0.16"
+        }
+      ],
+      "caption": {
+        "key": "bind.param",
+        "params": {
+          "name": "rate",
+          "repr": "0.16"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "focus": [
+        "op-L2C10",
+        "bind-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "—",
+          "newRepr": "40.0",
+          "inputTokenId": "tok-S9-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "tax",
+          "repr": "40.0"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "focus": [
+        "ret-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "40.0",
+          "port": "ret-L3C4",
+          "tokenId": "tok-S10-return_exit-0",
+          "returnNode": "ret-L3C4",
+          "functionNode": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "40.0"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "focus": [
+        "bind-L6C0"
+      ],
+      "line": 6,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L6C0",
+          "oldRepr": "—",
+          "newRepr": "40.0",
+          "inputTokenId": "tok-S11-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "second_tax",
+          "repr": "40.0"
+        }
+      }
+    }
+  ]
+}

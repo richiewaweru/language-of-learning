@@ -1,0 +1,16 @@
+{
+  "lessonId": "loops-over-lists",
+  "exampleId": "loops-watch",
+  "expectedNodeKinds": [
+    "module",
+    "function",
+    "call",
+    "loop",
+    "branch",
+    "binding",
+    "return"
+  ],
+  "expectedFinalBindings": {
+    "result": "2"
+  }
+}

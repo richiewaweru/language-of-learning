@@ -1,0 +1,8 @@
+{
+  "lessonId": "conditions-and-branches",
+  "exampleId": "conditions-30",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "result": "'cool'"
+  }
+}

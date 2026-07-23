@@ -105,10 +105,10 @@ export function deriveFlowProjection(
     .filter(
       (entity) =>
         ['binding', 'state', 'reference', 'cursor'].includes(entity.role) &&
-        expression.includes(entity.label),
+        expression.includes(entity.label ?? ''),
     )
     .map((entity) => ({
-      label: entity.label,
+      label: entity.label ?? entity.id,
       value: snapshotValue(step, entity),
     }));
   for (const literal of expression.match(/(?<![\w.])\d+(?:\.\d+)?/g) ?? []) {

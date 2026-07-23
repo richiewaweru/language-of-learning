@@ -45,7 +45,7 @@ export type SemanticGraph = {
 };
 
 export type TraceEvent =
-  | { type: 'call_enter'; functionId: string }
+  | { type: 'call_enter'; functionId: string; callId?: string; argsRepr?: string[] }
   | { type: 'bind_param'; name: string; repr: string }
   | { type: 'state_init'; binding: string; repr: string }
   | { type: 'loop_advance'; loop: string; itemIndex: number; itemRepr: string }

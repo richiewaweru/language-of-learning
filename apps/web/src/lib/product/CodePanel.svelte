@@ -9,14 +9,14 @@
     trace,
     selection,
     onLineSelect,
-    callArgs = '',
+    callExpression = '',
   }: {
     source: string;
     graph: SemanticGraph;
     trace: Trace;
     selection: Selection;
     onLineSelect?: (line: number) => void;
-    callArgs?: string;
+    callExpression?: string;
   } = $props();
 
   const lines = $derived(source.split('\n'));
@@ -24,7 +24,7 @@
   const activeLine = $derived(trace.steps[stepIndex]?.line);
 
   const displaySource = $derived(
-    callArgs ? `${source}\n\n# Call\ncalculate_total(${callArgs.replace(/^\[|\]$/g, '')})` : source,
+    callExpression ? `${source}\n\n# Sample call\n${callExpression}` : source,
   );
   const displayLines = $derived(displaySource.split('\n'));
 

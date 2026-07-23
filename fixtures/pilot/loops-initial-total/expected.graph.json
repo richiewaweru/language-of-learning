@@ -1,0 +1,256 @@
+{
+  "version": "0.1",
+  "source": "def count_passing(scores):\n    total = 10\n    for score in scores:\n        if score >= 50:\n            total = total + 1\n    return total\n\nresult = count_passing([72, 41, 65, 38])",
+  "nodes": [
+    {
+      "id": "module:main",
+      "kind": "module",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 8,
+        "endCol": 40
+      },
+      "name": "Program"
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 6,
+        "endCol": 16
+      },
+      "name": "count_passing",
+      "params": [
+        "bind-L1C18"
+      ]
+    },
+    {
+      "id": "bind-L1C18",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 18,
+        "endLine": 1,
+        "endCol": 24
+      },
+      "name": "scores",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-L2C4",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 2,
+        "endCol": 14
+      },
+      "name": "total",
+      "role": "state",
+      "mutable": true,
+      "initialRepr": "10"
+    },
+    {
+      "id": "val-L2C12",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 12,
+        "endLine": 2,
+        "endCol": 14
+      },
+      "repr": "10",
+      "pyType": "int"
+    },
+    {
+      "id": "loop-L3C4",
+      "kind": "loop",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 4,
+        "endLine": 5,
+        "endCol": 28
+      },
+      "iteratorName": "score",
+      "collectionRef": "bind-L1C18",
+      "body": "branch-L4C8"
+    },
+    {
+      "id": "bind-L3C8",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 8,
+        "endLine": 3,
+        "endCol": 13
+      },
+      "name": "score",
+      "role": "iterator",
+      "mutable": false
+    },
+    {
+      "id": "branch-L4C8",
+      "kind": "branch",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 8,
+        "endLine": 5,
+        "endCol": 29
+      },
+      "conditionExpr": "score >= 50",
+      "trueBody": "op-L5C20"
+    },
+    {
+      "id": "op-L4C11",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 11,
+        "endLine": 4,
+        "endCol": 22
+      },
+      "expr": "score >= 50"
+    },
+    {
+      "id": "op-L5C20",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 20,
+        "endLine": 5,
+        "endCol": 28
+      },
+      "expr": "total + 1"
+    },
+    {
+      "id": "ret-L6C4",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 6,
+        "startCol": 4,
+        "endLine": 6,
+        "endCol": 16
+      },
+      "valueRef": "bind-L2C4"
+    },
+    {
+      "id": "bind-L8C0",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 8,
+        "startCol": 0,
+        "endLine": 8,
+        "endCol": 40
+      },
+      "name": "result",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "call-L8C9",
+      "kind": "call",
+      "sourceRange": {
+        "startLine": 8,
+        "startCol": 9,
+        "endLine": 8,
+        "endCol": 40
+      },
+      "callee": "count_passing",
+      "args": [
+        "[72, 41, 65, 38]"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "fn-L1C0"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L1C18"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "loop-L3C4"
+    },
+    {
+      "from": "loop-L3C4",
+      "type": "iterates",
+      "to": "bind-L1C18"
+    },
+    {
+      "from": "loop-L3C4",
+      "type": "contains",
+      "to": "branch-L4C8"
+    },
+    {
+      "from": "branch-L4C8",
+      "type": "contains",
+      "to": "op-L4C11"
+    },
+    {
+      "from": "op-L4C11",
+      "type": "reads",
+      "to": "bind-L3C8"
+    },
+    {
+      "from": "branch-L4C8",
+      "type": "contains",
+      "to": "op-L5C20"
+    },
+    {
+      "from": "op-L5C20",
+      "type": "reads",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "op-L5C20",
+      "type": "writes",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "ret-L6C4"
+    },
+    {
+      "from": "ret-L6C4",
+      "type": "returns",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "bind-L8C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "call-L8C9"
+    },
+    {
+      "from": "call-L8C9",
+      "type": "invokes",
+      "to": "fn-L1C0"
+    },
+    {
+      "from": "call-L8C9",
+      "type": "writes",
+      "to": "bind-L8C0"
+    }
+  ],
+  "unsupported": []
+}

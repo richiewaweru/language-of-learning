@@ -1,0 +1,250 @@
+{
+  "id": "pilot-values-price-200",
+  "graphRef": "0.1",
+  "motionVersion": "0.2",
+  "layout": [
+    {
+      "id": "bind-L1C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 98,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "bind-L2C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 140,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "op-L2C6",
+      "kind": "operation",
+      "x": 56,
+      "y": 182,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "bind-L3C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 224,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "op-L3C8",
+      "kind": "operation",
+      "x": 56,
+      "y": 266,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "module:main",
+      "kind": "module",
+      "x": 28,
+      "y": 28,
+      "width": 476,
+      "height": 280
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-module:main-bind-L1C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 168,
+        "x2": 126,
+        "y2": 112
+      }
+    },
+    {
+      "id": "edge-module:main-bind-L2C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L2C0",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 168,
+        "x2": 126,
+        "y2": 154
+      }
+    },
+    {
+      "id": "edge-module:main-op-L2C6-contains",
+      "fromNode": "module:main",
+      "toNode": "op-L2C6",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 168,
+        "x2": 140,
+        "y2": 196
+      }
+    },
+    {
+      "id": "edge-op-L2C6-bind-L1C0-reads",
+      "fromNode": "op-L2C6",
+      "toNode": "bind-L1C0",
+      "kind": "data",
+      "path": {
+        "x1": 140,
+        "y1": 196,
+        "x2": 126,
+        "y2": 112
+      }
+    },
+    {
+      "id": "edge-op-L2C6-bind-L2C0-writes",
+      "fromNode": "op-L2C6",
+      "toNode": "bind-L2C0",
+      "kind": "data",
+      "path": {
+        "x1": 140,
+        "y1": 196,
+        "x2": 126,
+        "y2": 154
+      }
+    },
+    {
+      "id": "edge-module:main-bind-L3C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L3C0",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 168,
+        "x2": 126,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-module:main-op-L3C8-contains",
+      "fromNode": "module:main",
+      "toNode": "op-L3C8",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 168,
+        "x2": 140,
+        "y2": 280
+      }
+    },
+    {
+      "id": "edge-op-L3C8-bind-L1C0-reads",
+      "fromNode": "op-L3C8",
+      "toNode": "bind-L1C0",
+      "kind": "data",
+      "path": {
+        "x1": 140,
+        "y1": 280,
+        "x2": 126,
+        "y2": 112
+      }
+    },
+    {
+      "id": "edge-op-L3C8-bind-L2C0-reads",
+      "fromNode": "op-L3C8",
+      "toNode": "bind-L2C0",
+      "kind": "data",
+      "path": {
+        "x1": 140,
+        "y1": 280,
+        "x2": 126,
+        "y2": 154
+      }
+    },
+    {
+      "id": "edge-op-L3C8-bind-L3C0-writes",
+      "fromNode": "op-L3C8",
+      "toNode": "bind-L3C0",
+      "kind": "data",
+      "path": {
+        "x1": 140,
+        "y1": 280,
+        "x2": 126,
+        "y2": 238
+      }
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "bind-L1C0"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L1C0",
+          "oldRepr": "—",
+          "newRepr": "200",
+          "inputTokenId": "tok-S0-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "price",
+          "repr": "200"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "op-L2C6",
+        "bind-L2C0"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C0",
+          "oldRepr": "—",
+          "newRepr": "32.0",
+          "inputTokenId": "tok-S1-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "tax",
+          "repr": "32.0"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "op-L3C8",
+        "bind-L3C0"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L3C0",
+          "oldRepr": "—",
+          "newRepr": "232.0",
+          "inputTokenId": "tok-S2-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "total",
+          "repr": "232.0"
+        }
+      }
+    }
+  ]
+}

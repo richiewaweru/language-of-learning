@@ -1,0 +1,15 @@
+{
+  "lessonId": "conditions-and-branches",
+  "exampleId": "conditions-watch",
+  "expectedNodeKinds": [
+    "module",
+    "function",
+    "call",
+    "branch",
+    "operation",
+    "return"
+  ],
+  "expectedFinalBindings": {
+    "result": "'hot'"
+  }
+}

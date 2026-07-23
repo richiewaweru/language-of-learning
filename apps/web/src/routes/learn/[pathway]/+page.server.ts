@@ -1,12 +1,8 @@
-import { loadPathway, loadLesson } from '$lib/content';
 import { error } from '@sveltejs/kit';
+import { course, lessons } from '$lib/pilot/course';
+import '$lib/pilot/validation';
 
-export async function load({ params }: { params: { pathway: string } }) {
-  try {
-    const pathway = await loadPathway(params.pathway);
-    const lessons = await Promise.all(pathway.lessonSlugs.map((slug) => loadLesson(slug)));
-    return { pathway, lessons };
-  } catch {
-    error(404, 'Pathway not found');
-  }
+export function load({ params }: { params: { pathway: string } }) {
+  if (params.pathway !== course.id) error(404, 'Pathway not found');
+  return { pathway: course, lessons };
 }

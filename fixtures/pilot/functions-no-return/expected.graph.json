@@ -1,0 +1,173 @@
+{
+  "version": "0.1",
+  "source": "def calculate_tax(price, rate):\n    tax = price * rate\n\nresult = calculate_tax(100, 0.16)",
+  "nodes": [
+    {
+      "id": "module:main",
+      "kind": "module",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 4,
+        "endCol": 33
+      },
+      "name": "Program"
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 2,
+        "endCol": 22
+      },
+      "name": "calculate_tax",
+      "params": [
+        "bind-L1C18",
+        "bind-L1C25"
+      ]
+    },
+    {
+      "id": "bind-L1C18",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 18,
+        "endLine": 1,
+        "endCol": 23
+      },
+      "name": "price",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-L1C25",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 25,
+        "endLine": 1,
+        "endCol": 29
+      },
+      "name": "rate",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "bind-L2C4",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 2,
+        "endCol": 22
+      },
+      "name": "tax",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "op-L2C10",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 10,
+        "endLine": 2,
+        "endCol": 21
+      },
+      "expr": "price * rate"
+    },
+    {
+      "id": "bind-L4C0",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 0,
+        "endLine": 4,
+        "endCol": 33
+      },
+      "name": "result",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "call-L4C9",
+      "kind": "call",
+      "sourceRange": {
+        "startLine": 4,
+        "startCol": 9,
+        "endLine": 4,
+        "endCol": 33
+      },
+      "callee": "calculate_tax",
+      "args": [
+        "100",
+        "0.16"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "fn-L1C0"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L1C18"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L1C25"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "op-L2C10"
+    },
+    {
+      "from": "op-L2C10",
+      "type": "reads",
+      "to": "bind-L1C18"
+    },
+    {
+      "from": "op-L2C10",
+      "type": "reads",
+      "to": "bind-L1C25"
+    },
+    {
+      "from": "op-L2C10",
+      "type": "writes",
+      "to": "bind-L2C4"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "bind-L4C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "call-L4C9"
+    },
+    {
+      "from": "call-L4C9",
+      "type": "invokes",
+      "to": "fn-L1C0"
+    },
+    {
+      "from": "call-L4C9",
+      "type": "writes",
+      "to": "bind-L4C0"
+    }
+  ],
+  "unsupported": []
+}

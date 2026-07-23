@@ -1,0 +1,15 @@
+{
+  "lessonId": "functions-and-returns",
+  "exampleId": "functions-watch",
+  "expectedNodeKinds": [
+    "module",
+    "function",
+    "call",
+    "binding",
+    "operation",
+    "return"
+  ],
+  "expectedFinalBindings": {
+    "result": "16.0"
+  }
+}

@@ -11,6 +11,7 @@ const RELATION_EDGE_KIND: Record<string, LayoutEdgeKind> = {
   iterates: 'repeat',
   mutates: 'data',
   returns: 'return',
+  invokes: 'control',
 };
 
 /**

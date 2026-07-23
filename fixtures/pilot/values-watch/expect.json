@@ -1,0 +1,15 @@
+{
+  "lessonId": "values-and-variables",
+  "exampleId": "values-watch",
+  "expectedNodeKinds": [
+    "module",
+    "binding",
+    "operation",
+    "value"
+  ],
+  "expectedFinalBindings": {
+    "price": "100",
+    "tax": "16.0",
+    "total": "116.0"
+  }
+}

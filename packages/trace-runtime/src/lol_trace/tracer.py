@@ -53,7 +53,7 @@ def index_graph(graph: dict[str, Any]) -> GraphIndex:
     operations = {node["id"]: node for node in nodes if node["kind"] == "operation"}
     node_line = {node["id"]: node["sourceRange"]["startLine"] for node in nodes}
     param_names = []
-    if function is not None and module is None:
+    if function is not None:
         for node_id in function["params"]:
             binding = next(node for node in nodes if node["id"] == node_id)
             param_names.append(binding["name"])
@@ -61,8 +61,8 @@ def index_graph(graph: dict[str, Any]) -> GraphIndex:
         scope_kind="module" if module is not None else "function",
         scope_id=module["id"] if module is not None else function["id"],
         scope_label=module["name"] if module is not None else function["name"],
-        function_id=None if module is not None else function["id"],
-        function_name=None if module is not None else function["name"],
+        function_id=function["id"] if function is not None else None,
+        function_name=function["name"] if function is not None else None,
         param_names=param_names,
         bindings=bindings,
         collections=collections,
@@ -86,6 +86,7 @@ class TraceBuilder:
     truncated: bool = False
     result_repr: str | None = None
     violation: dict[str, str] | None = None
+    current_frame_id: str | None = None
 
     def emit(self, line: int, focus: list[str], bindings: dict[str, Any], event: dict[str, Any]) -> None:
         step = {
@@ -96,9 +97,12 @@ class TraceBuilder:
                     name: value_repr(bindings[name]) for name in sorted(bindings)
                 },
                 "frameId": (
-                    "frame:module"
-                    if self.graph.scope_kind == "module"
-                    else f"frame:{self.graph.function_id}"
+                    self.current_frame_id
+                    or (
+                        "frame:module"
+                        if self.graph.scope_kind == "module"
+                        else f"frame:{self.graph.function_id}"
+                    )
                 ),
                 "event": event,
             }
@@ -153,6 +157,7 @@ class Tracer:
         self.trace = TraceBuilder(self.graph, args_repr)
         self.loop_counters: dict[str, int] = {}
         self.loop_stack: list[dict[str, int | str]] = []
+        self.return_value: Any = None
         self.start_time = time.monotonic()
 
     def run(self) -> dict[str, Any]:
@@ -540,6 +545,7 @@ class Tracer:
     def _exec_return(self, stmt: ast.Return) -> None:
         ret = self._return_for_stmt(stmt)
         value = self._eval_expr(stmt.value)
+        self.return_value = value
         self.trace.result_repr = value_repr(value)
         self.trace.emit(
             ret["sourceRange"]["startLine"],
@@ -683,6 +689,13 @@ class Tracer:
             return value
         if isinstance(expr, ast.Call):
             if (
+                self.graph.scope_kind == "module"
+                and self.graph.function_name is not None
+                and isinstance(expr.func, ast.Name)
+                and expr.func.id == self.graph.function_name
+            ):
+                return self._eval_user_function_call(expr)
+            if (
                 self.graph.function_name is not None
                 and isinstance(expr.func, ast.Name)
                 and expr.func.id == self.graph.function_name
@@ -751,6 +764,59 @@ class Tracer:
             value = self._literal_value(expr.operand)
             return -value
         raise SandboxViolation(type(expr).__name__, "Unsupported expression.")
+
+    def _eval_user_function_call(self, expr: ast.Call) -> Any:
+        if self.function is None or self.graph.function_id is None:
+            raise SandboxViolation("call", "The selected function could not be resolved.")
+        if expr.keywords:
+            raise SandboxViolation("call", "Keyword arguments are not supported.")
+        args = [self._eval_expr(arg) for arg in expr.args]
+        if len(args) != len(self.graph.param_names):
+            raise SandboxViolation("call_args", "Call argument count does not match function parameters.")
+        call = self._call_for_expr(expr)
+        module_env = self.env
+        module_frame = self.trace.current_frame_id
+        self.env = {}
+        self.trace.current_frame_id = f"frame:{self.graph.function_id}"
+        self.return_value = None
+        try:
+            self.trace.emit(
+                expr.lineno,
+                [call["id"], self.graph.function_id],
+                {},
+                {
+                    "type": "call_enter",
+                    "functionId": self.graph.function_id,
+                    "callId": call["id"],
+                    "argsRepr": [value_repr(value) for value in args],
+                },
+            )
+            for name, value in zip(self.graph.param_names, args, strict=True):
+                self.env[name] = value
+                binding = self.graph.bindings.get(name)
+                self.trace.emit(
+                    self.graph.node_line[binding["id"]] if binding else self.function.lineno,
+                    [binding["id"]] if binding else [self.graph.function_id],
+                    self.trace.snapshot(self.env),
+                    {
+                        "type": "bind_param",
+                        "name": name,
+                        "repr": value_repr(value),
+                    },
+                )
+            returned = False
+            for stmt in self.function.body:
+                signal = self._exec_stmt(stmt)
+                if signal == "return":
+                    returned = True
+                    break
+                if signal in {"break", "continue"}:
+                    raise SandboxViolation("loop_control", "Loop control must be inside a loop.")
+            value = self.return_value if returned else None
+        finally:
+            self.env = module_env
+            self.trace.current_frame_id = module_frame
+        return value
 
     def _eval_binop(self, expr: ast.BinOp) -> Any:
         left = self._eval_expr(expr.left)

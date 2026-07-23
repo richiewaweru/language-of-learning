@@ -1,0 +1,11 @@
+{
+  "lessonId": "values-and-variables",
+  "exampleId": "values-tax-rate",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "price": "100",
+    "tax_rate": "0.16",
+    "tax": "16.0",
+    "total": "116.0"
+  }
+}

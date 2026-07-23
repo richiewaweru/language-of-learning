@@ -1,0 +1,97 @@
+{
+  "scope": {
+    "kind": "module",
+    "id": "module:main",
+    "label": "Program"
+  },
+  "steps": [
+    {
+      "index": 0,
+      "line": 4,
+      "focus": [
+        "call-L4C9",
+        "fn-L1C0"
+      ],
+      "bindings": {},
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "call_enter",
+        "functionId": "fn-L1C0",
+        "callId": "call-L4C9",
+        "argsRepr": [
+          "100",
+          "0.16"
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "line": 1,
+      "focus": [
+        "bind-L1C18"
+      ],
+      "bindings": {
+        "price": "100"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "bind_param",
+        "name": "price",
+        "repr": "100"
+      }
+    },
+    {
+      "index": 2,
+      "line": 1,
+      "focus": [
+        "bind-L1C25"
+      ],
+      "bindings": {
+        "price": "100",
+        "rate": "0.16"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "bind_param",
+        "name": "rate",
+        "repr": "0.16"
+      }
+    },
+    {
+      "index": 3,
+      "line": 2,
+      "focus": [
+        "ret-L2C4"
+      ],
+      "bindings": {
+        "price": "100",
+        "rate": "0.16"
+      },
+      "frameId": "frame:fn-L1C0",
+      "event": {
+        "type": "return_exit",
+        "repr": "16.0"
+      }
+    },
+    {
+      "index": 4,
+      "line": 4,
+      "focus": [
+        "bind-L4C0"
+      ],
+      "bindings": {
+        "result": "16.0"
+      },
+      "frameId": "frame:module",
+      "event": {
+        "type": "state_init",
+        "binding": "bind-L4C0",
+        "repr": "16.0"
+      }
+    }
+  ],
+  "truncated": false,
+  "result": {
+    "repr": "16.0"
+  }
+}

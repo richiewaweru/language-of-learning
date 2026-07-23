@@ -1,0 +1,10 @@
+{
+  "lessonId": "values-and-variables",
+  "exampleId": "values-price-200",
+  "expectedNodeKinds": [],
+  "expectedFinalBindings": {
+    "price": "200",
+    "tax": "32.0",
+    "total": "232.0"
+  }
+}

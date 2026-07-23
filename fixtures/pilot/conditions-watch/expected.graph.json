@@ -1,0 +1,209 @@
+{
+  "version": "0.1",
+  "source": "def classify_temperature(temp):\n    if temp > 30:\n        return \"hot\"\n    else:\n        return \"cool\"\n\nresult = classify_temperature(35)",
+  "nodes": [
+    {
+      "id": "module:main",
+      "kind": "module",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 7,
+        "endCol": 33
+      },
+      "name": "Program"
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 0,
+        "endLine": 5,
+        "endCol": 21
+      },
+      "name": "classify_temperature",
+      "params": [
+        "bind-L1C25"
+      ]
+    },
+    {
+      "id": "bind-L1C25",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 1,
+        "startCol": 25,
+        "endLine": 1,
+        "endCol": 29
+      },
+      "name": "temp",
+      "role": "parameter",
+      "mutable": false
+    },
+    {
+      "id": "branch-L2C4",
+      "kind": "branch",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 4,
+        "endLine": 5,
+        "endCol": 21
+      },
+      "conditionExpr": "temp > 30",
+      "trueBody": "ret-L3C8",
+      "falseBody": "ret-L5C8"
+    },
+    {
+      "id": "op-L2C7",
+      "kind": "operation",
+      "sourceRange": {
+        "startLine": 2,
+        "startCol": 7,
+        "endLine": 2,
+        "endCol": 16
+      },
+      "expr": "temp > 30"
+    },
+    {
+      "id": "ret-L3C8",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 8,
+        "endLine": 3,
+        "endCol": 20
+      },
+      "valueRef": "val-L3C15"
+    },
+    {
+      "id": "val-L3C15",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 3,
+        "startCol": 15,
+        "endLine": 3,
+        "endCol": 20
+      },
+      "repr": "'hot'",
+      "pyType": "str"
+    },
+    {
+      "id": "ret-L5C8",
+      "kind": "return",
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 8,
+        "endLine": 5,
+        "endCol": 21
+      },
+      "valueRef": "val-L5C15"
+    },
+    {
+      "id": "val-L5C15",
+      "kind": "value",
+      "sourceRange": {
+        "startLine": 5,
+        "startCol": 15,
+        "endLine": 5,
+        "endCol": 21
+      },
+      "repr": "'cool'",
+      "pyType": "str"
+    },
+    {
+      "id": "bind-L7C0",
+      "kind": "binding",
+      "sourceRange": {
+        "startLine": 7,
+        "startCol": 0,
+        "endLine": 7,
+        "endCol": 33
+      },
+      "name": "result",
+      "role": "local",
+      "mutable": false
+    },
+    {
+      "id": "call-L7C9",
+      "kind": "call",
+      "sourceRange": {
+        "startLine": 7,
+        "startCol": 9,
+        "endLine": 7,
+        "endCol": 33
+      },
+      "callee": "classify_temperature",
+      "args": [
+        "35"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "fn-L1C0"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "bind-L1C25"
+    },
+    {
+      "from": "fn-L1C0",
+      "type": "contains",
+      "to": "branch-L2C4"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "op-L2C7"
+    },
+    {
+      "from": "op-L2C7",
+      "type": "reads",
+      "to": "bind-L1C25"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "ret-L3C8"
+    },
+    {
+      "from": "ret-L3C8",
+      "type": "returns",
+      "to": "val-L3C15"
+    },
+    {
+      "from": "branch-L2C4",
+      "type": "contains",
+      "to": "ret-L5C8"
+    },
+    {
+      "from": "ret-L5C8",
+      "type": "returns",
+      "to": "val-L5C15"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "bind-L7C0"
+    },
+    {
+      "from": "module:main",
+      "type": "contains",
+      "to": "call-L7C9"
+    },
+    {
+      "from": "call-L7C9",
+      "type": "invokes",
+      "to": "fn-L1C0"
+    },
+    {
+      "from": "call-L7C9",
+      "type": "writes",
+      "to": "bind-L7C0"
+    }
+  ],
+  "unsupported": []
+}

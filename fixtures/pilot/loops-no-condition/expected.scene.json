@@ -1,0 +1,568 @@
+{
+  "id": "pilot-loops-no-condition",
+  "graphRef": "0.1",
+  "motionVersion": "0.2",
+  "layout": [
+    {
+      "id": "bind-L1C17",
+      "kind": "binding",
+      "x": 84,
+      "y": 168,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "bind-L2C4",
+      "kind": "binding",
+      "x": 84,
+      "y": 210,
+      "width": 168,
+      "height": 56
+    },
+    {
+      "id": "op-L4C16",
+      "kind": "operation",
+      "x": 112,
+      "y": 350,
+      "width": 168,
+      "height": 28
+    },
+    {
+      "id": "loop-L3C4",
+      "kind": "loop",
+      "x": 84,
+      "y": 280,
+      "width": 364,
+      "height": 112
+    },
+    {
+      "id": "ret-L5C4",
+      "kind": "return",
+      "x": 84,
+      "y": 406,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "fn-L1C0",
+      "kind": "function",
+      "x": 56,
+      "y": 98,
+      "width": 476,
+      "height": 350
+    },
+    {
+      "id": "bind-L7C0",
+      "kind": "binding",
+      "x": 56,
+      "y": 462,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "call-L7C9",
+      "kind": "call",
+      "x": 56,
+      "y": 504,
+      "width": 140,
+      "height": 28
+    },
+    {
+      "id": "module:main",
+      "kind": "module",
+      "x": 28,
+      "y": 28,
+      "width": 532,
+      "height": 518
+    },
+    {
+      "id": "bind-L3C8",
+      "kind": "binding",
+      "x": 56,
+      "y": 56,
+      "width": 112,
+      "height": 28
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-module:main-fn-L1C0-contains",
+      "fromNode": "module:main",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 287,
+        "x2": 294,
+        "y2": 273
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L1C17-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L1C17",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 273,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-bind-L2C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "bind-L2C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 273,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-loop-L3C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "loop-L3C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 273,
+        "x2": 266,
+        "y2": 336
+      }
+    },
+    {
+      "id": "edge-loop-L3C4-bind-L1C17-iterates",
+      "fromNode": "loop-L3C4",
+      "toNode": "bind-L1C17",
+      "kind": "repeat",
+      "path": {
+        "x1": 266,
+        "y1": 336,
+        "x2": 154,
+        "y2": 182
+      }
+    },
+    {
+      "id": "edge-loop-L3C4-op-L4C16-contains",
+      "fromNode": "loop-L3C4",
+      "toNode": "op-L4C16",
+      "kind": "control",
+      "path": {
+        "x1": 266,
+        "y1": 336,
+        "x2": 196,
+        "y2": 364
+      }
+    },
+    {
+      "id": "edge-op-L4C16-bind-L2C4-reads",
+      "fromNode": "op-L4C16",
+      "toNode": "bind-L2C4",
+      "kind": "data",
+      "path": {
+        "x1": 196,
+        "y1": 364,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-op-L4C16-bind-L2C4-writes",
+      "fromNode": "op-L4C16",
+      "toNode": "bind-L2C4",
+      "kind": "data",
+      "path": {
+        "x1": 196,
+        "y1": 364,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-fn-L1C0-ret-L5C4-contains",
+      "fromNode": "fn-L1C0",
+      "toNode": "ret-L5C4",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 273,
+        "x2": 154,
+        "y2": 420
+      }
+    },
+    {
+      "id": "edge-ret-L5C4-bind-L2C4-returns",
+      "fromNode": "ret-L5C4",
+      "toNode": "bind-L2C4",
+      "kind": "return",
+      "path": {
+        "x1": 154,
+        "y1": 420,
+        "x2": 168,
+        "y2": 238
+      }
+    },
+    {
+      "id": "edge-module:main-bind-L7C0-contains",
+      "fromNode": "module:main",
+      "toNode": "bind-L7C0",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 287,
+        "x2": 126,
+        "y2": 476
+      }
+    },
+    {
+      "id": "edge-module:main-call-L7C9-contains",
+      "fromNode": "module:main",
+      "toNode": "call-L7C9",
+      "kind": "control",
+      "path": {
+        "x1": 294,
+        "y1": 287,
+        "x2": 126,
+        "y2": 518
+      }
+    },
+    {
+      "id": "edge-call-L7C9-fn-L1C0-invokes",
+      "fromNode": "call-L7C9",
+      "toNode": "fn-L1C0",
+      "kind": "control",
+      "path": {
+        "x1": 126,
+        "y1": 518,
+        "x2": 294,
+        "y2": 273
+      }
+    },
+    {
+      "id": "edge-call-L7C9-bind-L7C0-writes",
+      "fromNode": "call-L7C9",
+      "toNode": "bind-L7C0",
+      "kind": "data",
+      "path": {
+        "x1": 126,
+        "y1": 518,
+        "x2": 126,
+        "y2": 476
+      }
+    }
+  ],
+  "steps": [
+    {
+      "index": 0,
+      "focus": [
+        "call-L7C9",
+        "fn-L1C0"
+      ],
+      "line": 7,
+      "actions": [
+        {
+          "type": "spawn_value",
+          "tokenId": "tok-S0-call_enter-0",
+          "repr": "[72, 41, 65, 38]",
+          "atNode": "fn-L1C0"
+        },
+        {
+          "type": "focus_nodes",
+          "primary": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "call.enter",
+        "params": {
+          "function": "count_scores"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "focus": [
+        "bind-L1C17"
+      ],
+      "line": 1,
+      "actions": [
+        {
+          "type": "bind_value",
+          "tokenId": "tok-S1-bind_param-0",
+          "bindingNode": "bind-L1C17",
+          "repr": "[72, 41, 65, 38]"
+        }
+      ],
+      "caption": {
+        "key": "bind.param",
+        "params": {
+          "name": "scores",
+          "repr": "[72, 41, 65, 38]"
+        }
+      }
+    },
+    {
+      "index": 2,
+      "focus": [
+        "bind-L2C4"
+      ],
+      "line": 2,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "—",
+          "newRepr": "0",
+          "inputTokenId": "tok-S2-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "total",
+          "repr": "0"
+        }
+      }
+    },
+    {
+      "index": 3,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 0,
+          "itemRepr": "72",
+          "tokenId": "tok-S3-loop_advance-0",
+          "collection": "bind-L1C17"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "72"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "focus": [
+        "op-L4C16",
+        "bind-L2C4"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "0",
+          "newRepr": "1",
+          "inputTokenId": "tok-S4-state_change-0"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "0",
+          "new": "1"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 1,
+          "itemRepr": "41",
+          "tokenId": "tok-S5-loop_advance-0",
+          "collection": "bind-L1C17"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "41"
+        }
+      }
+    },
+    {
+      "index": 6,
+      "focus": [
+        "op-L4C16",
+        "bind-L2C4"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "1",
+          "newRepr": "2",
+          "inputTokenId": "tok-S6-state_change-0"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "1",
+          "new": "2"
+        }
+      }
+    },
+    {
+      "index": 7,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 2,
+          "itemRepr": "65",
+          "tokenId": "tok-S7-loop_advance-0",
+          "collection": "bind-L1C17"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "65"
+        }
+      }
+    },
+    {
+      "index": 8,
+      "focus": [
+        "op-L4C16",
+        "bind-L2C4"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "2",
+          "newRepr": "3",
+          "inputTokenId": "tok-S8-state_change-0"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "2",
+          "new": "3"
+        }
+      }
+    },
+    {
+      "index": 9,
+      "focus": [
+        "loop-L3C4"
+      ],
+      "line": 3,
+      "actions": [
+        {
+          "type": "advance_item",
+          "loop": "loop-L3C4",
+          "itemIndex": 3,
+          "itemRepr": "38",
+          "tokenId": "tok-S9-loop_advance-0",
+          "collection": "bind-L1C17"
+        }
+      ],
+      "caption": {
+        "key": "loop.advance",
+        "params": {
+          "item": "38"
+        }
+      }
+    },
+    {
+      "index": 10,
+      "focus": [
+        "op-L4C16",
+        "bind-L2C4"
+      ],
+      "line": 4,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L2C4",
+          "oldRepr": "3",
+          "newRepr": "4",
+          "inputTokenId": "tok-S10-state_change-0"
+        }
+      ],
+      "caption": {
+        "key": "state.change",
+        "params": {
+          "name": "total",
+          "old": "3",
+          "new": "4"
+        }
+      }
+    },
+    {
+      "index": 11,
+      "focus": [
+        "ret-L5C4"
+      ],
+      "line": 5,
+      "actions": [
+        {
+          "type": "exit_return",
+          "repr": "4",
+          "port": "ret-L5C4",
+          "tokenId": "tok-S11-return_exit-0",
+          "returnNode": "ret-L5C4",
+          "functionNode": "fn-L1C0"
+        }
+      ],
+      "caption": {
+        "key": "return.exit",
+        "params": {
+          "repr": "4"
+        }
+      }
+    },
+    {
+      "index": 12,
+      "focus": [
+        "bind-L7C0"
+      ],
+      "line": 7,
+      "actions": [
+        {
+          "type": "change_state",
+          "cell": "bind-L7C0",
+          "oldRepr": "—",
+          "newRepr": "4",
+          "inputTokenId": "tok-S12-state_init-0"
+        }
+      ],
+      "caption": {
+        "key": "state.init",
+        "params": {
+          "name": "result",
+          "repr": "4"
+        }
+      }
+    }
+  ]
+}

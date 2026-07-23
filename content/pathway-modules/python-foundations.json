@@ -1,10 +1,4 @@
 {
   "pathwaySlug": "python-foundations",
-  "modules": {
-    "loops": {
-      "title": "Loops",
-      "summary": "Six structural patterns for following values, branches, and collection changes.",
-      "lessonSlugs": ["accumulate", "count", "filter", "transform", "search", "array-update"]
-    }
-  }
+  "modules": {}
 }
