@@ -80,6 +80,8 @@
   class:with-sidebar={Boolean(sidebar)}
   data-testid="lens-workspace"
   data-session-id={state.id}
+  data-hydration-status={state.hydrationStatus}
+  data-revision={state.revision}
 >
   <section class="input-panel surface-card">
     <div class="input-tabs" role="tablist">
@@ -103,7 +105,7 @@
           value={state.source}
           readonly={!controller.capabilities.canEditSource}
           allowPaste={controller.capabilities.canPasteSource}
-          onchange={(value) => controller.actions.setSource(value)}
+          onchange={(value) => controller.actions.setSourceFromUser(value)}
         />
       </label>
       {#if !moduleInput}
@@ -158,6 +160,12 @@
         <p><strong>Execution not verified.</strong> {violation.message}</p>
         <p>Lens will not invent a trace for unsupported behavior.</p>
       </div>
+    {/if}
+
+    {#if state.persistenceWarning}
+      <p class="persistence-warning" data-testid="lens-persistence-warning" role="status">
+        {state.persistenceWarning}
+      </p>
     {/if}
 
     {#if controller.capabilities.canReset}

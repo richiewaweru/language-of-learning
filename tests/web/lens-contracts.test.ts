@@ -10,6 +10,7 @@ import {
   sourceHasModuleEntry,
 } from '../../apps/web/src/lib/lens/input';
 import { createRunCoordinator } from '../../apps/web/src/lib/lens/run-coordinator';
+import { parseLensSessionSnapshot } from '@lol/lens-contracts';
 
 describe('Lens workspace contracts', () => {
   it('creates distinct, versioned keys for every session identity', () => {
@@ -30,7 +31,7 @@ describe('Lens workspace contracts', () => {
     ).toThrow(/Invalid ownerId/);
   });
 
-  it('round-trips valid snapshots and ignores malformed storage', async () => {
+  it('round-trips valid snapshots and exposes malformed storage for contract validation', async () => {
     const values = new Map<string, string>();
     const persistence = createBrowserLensPersistence({
       getItem: (key) => values.get(key) ?? null,
@@ -50,7 +51,14 @@ describe('Lens workspace contracts', () => {
     await persistence.save('valid', stored);
     expect(await persistence.load('valid')).toEqual(stored);
     values.set('invalid', '{"schemaVersion":0}');
-    expect(await persistence.load('invalid')).toBeNull();
+    const invalid = await persistence.load('invalid');
+    expect(
+      parseLensSessionSnapshot(invalid, {
+        id: 'a',
+        kind: 'harness',
+        enabledViews: ['flow'],
+      }).success,
+    ).toBe(false);
   });
 
   it('parses nested argument representations and detects module entry', () => {
@@ -79,5 +87,15 @@ describe('Lens workspace contracts', () => {
     const workspace = readFileSync(path.join(root, 'LensWorkspace.svelte'), 'utf8');
     expect(engine).not.toMatch(/routes\/|lessonMode|isLesson|localStorage/);
     expect(workspace).not.toMatch(/routes\/decode|lessonMode|isLesson|localStorage/);
+  });
+
+  it('routes only Values and Variables through the Phase 2 player', () => {
+    const routeRoot = path.resolve('apps/web/src/routes/learn/[pathway]/[lesson]');
+    const server = readFileSync(path.join(routeRoot, '+page.server.ts'), 'utf8');
+    const page = readFileSync(path.join(routeRoot, '+page.svelte'), 'utf8');
+    expect(server).toContain("renderer: 'phase2'");
+    expect(server).toContain("renderer: 'pilot'");
+    expect(page).toContain('LessonPlayer');
+    expect(page).toContain('LessonRenderer');
   });
 });

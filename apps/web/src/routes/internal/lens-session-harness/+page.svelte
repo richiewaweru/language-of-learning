@@ -1,5 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
   import type { LensCapabilities } from '@lol/lens-contracts';
   import LensWorkspace from '$lib/lens/LensWorkspace.svelte';
   import { createLensEngine } from '$lib/lens/engine';
@@ -34,7 +35,7 @@
     enabledViews: ['flow', 'state'],
   };
 
-  const left = createLensSession({
+  const leftSession = createLensSession({
     id: 'harness-a',
     kind: 'harness',
     source: 'first = 1\nsecond = first + 1',
@@ -49,7 +50,7 @@
       sessionId: 'a',
     }),
   });
-  const right = createLensSession({
+  const rightSession = createLensSession({
     id: 'harness-b',
     kind: 'harness',
     source: 'first = 99\nsecond = first + 1',
@@ -64,6 +65,21 @@
       sessionId: 'b',
     }),
   });
+  const left = leftSession.controller;
+  const right = rightSession.controller;
+  let sessionsReady = $state(false);
+
+  onMount(() => {
+    void (async () => {
+      await Promise.all([left.actions.hydrate(), right.actions.hydrate()]);
+      const leftFrame = left.state.selection.stepIndex ?? 0;
+      const rightFrame = right.state.selection.stepIndex ?? 0;
+      await Promise.all([left.actions.run(), right.actions.run()]);
+      left.actions.setCurrentFrame(leftFrame);
+      right.actions.setCurrentFrame(rightFrame);
+      sessionsReady = true;
+    })();
+  });
 </script>
 
 <svelte:head>
@@ -77,15 +93,26 @@
     <p>Each workspace owns its code, artifacts, controls, selection, and persistence namespace.</p>
   </header>
 
-  <section class="harness-workspace" data-testid="workspace-a">
+  <section class="harness-workspace" data-testid="workspace-a" data-session-initialized={left.state.initialized} data-sessions-ready={sessionsReady}>
     <h2>Editable session A</h2>
     <code data-testid="persistence-key">{left.persistenceKey}</code>
     <LensWorkspace controller={left} />
   </section>
 
-  <section class="harness-workspace" data-testid="workspace-b">
+  <section class="harness-workspace" data-testid="workspace-b" data-session-initialized={right.state.initialized} data-sessions-ready={sessionsReady}>
     <h2>Restricted session B</h2>
     <code data-testid="persistence-key">{right.persistenceKey}</code>
+    <button
+      type="button"
+      class="owner-load"
+      data-testid="owner-load-program"
+      onclick={() => rightSession.ownerActions.loadProgramFromOwner({
+        id: 'owner-program',
+        language: 'python',
+        source: 'owner_loaded = 42',
+        argsText: '',
+      })}
+    >Load from owner controller</button>
     <LensWorkspace controller={right} />
   </section>
 </main>
@@ -98,4 +125,5 @@
   .harness-workspace { display: grid; gap: var(--space-3); border-top: 2px solid var(--line-default); padding-top: var(--space-4); }
   .harness-workspace h2 { margin: 0; }
   code { color: var(--ink-muted); font-size: var(--text-xs); }
+  .owner-load { justify-self: start; }
 </style>

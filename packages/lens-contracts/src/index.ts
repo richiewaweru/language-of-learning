@@ -17,7 +17,7 @@ import { PatternHitSchema } from './pattern.js';
 import { SceneSchema, SceneActionsFixtureSchema } from './scene.js';
 import { MotionStateSchema } from './motion.js';
 import { SelectionSchema } from './selection.js';
-import { LessonRevisionSchema } from './lesson.js';
+import { LessonDefinitionV1Schema, LessonRevisionSchema } from './lesson.js';
 import { PathwaySchema } from './pathway.js';
 import { SemanticSceneSchema, SymbolManifestSchema } from './semantic.js';
 
@@ -30,6 +30,7 @@ export const ContractSchemas = {
   motionState: MotionStateSchema,
   selection: SelectionSchema,
   lessonRevision: LessonRevisionSchema,
+  lessonDefinitionV1: LessonDefinitionV1Schema,
   pathway: PathwaySchema,
   semanticScene: SemanticSceneSchema,
   symbolManifest: SymbolManifestSchema,

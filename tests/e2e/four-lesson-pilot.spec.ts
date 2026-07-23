@@ -33,13 +33,6 @@ test('pilot index exposes exactly four intentional lessons', async ({ page }) =>
 
 const canonical = [
   {
-    lesson: 'values-and-variables',
-    source: 'price = 100',
-    forbidden: 'def calculate_tax',
-    prediction: 'price = 100',
-    screenshot: 'lesson-1-values.png',
-  },
-  {
     lesson: 'functions-and-returns',
     source: 'def calculate_tax(price, rate):',
     forbidden: 'classify_temperature',
@@ -93,24 +86,24 @@ for (const item of canonical) {
   });
 }
 
-test('prediction unlocks the inline syntax, watch, and exploration sequence', async ({ page }) => {
-  await page.goto('/learn/python-foundations/values-and-variables');
+test('legacy prediction unlocks the inline syntax, watch, and exploration sequence', async ({ page }) => {
+  await page.goto('/learn/python-foundations/functions-and-returns');
   await waitForPilot(page);
 
   await expect(page.getByTestId('pilot-step-section')).toHaveCount(9);
   await expect(page.getByTestId('pilot-lens-embed')).toHaveCount(0);
   await expect(page.getByText('Prediction comes first')).toBeVisible();
 
-  await page.getByRole('button', { name: '100 = price', exact: true }).click();
+  await page.getByRole('button', { name: '100', exact: true }).click();
   await expect(page.getByTestId('pilot-lens-embed')).toHaveCount(0);
 
-  await revealLens(page, 'price = 100');
+  await revealLens(page, '16.0');
   await expect(page.locator('[data-lens-mode="syntax"]')).toContainText('Structure beside syntax');
   await expect(page.locator('[data-lens-mode="watch"]')).toContainText('Watch the canonical run');
   await expect(page.locator('[data-lens-mode="explore"]')).toContainText('Explore mode');
 
-  await page.getByRole('button', { name: 'Change the starting price' }).click();
-  await expect(page.locator('[data-lens-mode="explore"]')).toContainText('price = 200');
+  await page.getByRole('button', { name: 'Change the arguments' }).click();
+  await expect(page.locator('[data-lens-mode="explore"]')).toContainText('250');
 });
 
 test('progress persists through refresh and reset clears it', async ({ page }) => {

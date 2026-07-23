@@ -153,7 +153,7 @@ describe('homepage contract', () => {
       'utf8',
     );
     expect(pathway).not.toMatch(/32%|42 \/ 132|streak|\d+\s+min|locked/);
-    expect(pathway).toContain('pathwayProgress.percent');
+    expect(pathway).toContain('progress.completedLessonIds');
   });
 });
 

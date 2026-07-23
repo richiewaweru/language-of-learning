@@ -2,7 +2,7 @@
   import '@lol/visual-grammar/styles.css';
   import { gradeTransferCheck } from '@lol/lens-scenes';
   import type { LensCapabilities, LensEngine } from '@lol/lens-contracts';
-  import { untrack } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import type { DemoPack } from '$lib/product/loadDemoPack';
   import PageContainer from '$lib/learner-ui/shell/PageContainer.svelte';
   import Breadcrumbs from '$lib/learner-ui/shell/Breadcrumbs.svelte';
@@ -55,7 +55,7 @@
     semanticScene: initialPack.semanticScene,
   });
 
-  const controller = createLensSession({
+  const { controller } = createLensSession({
     id: 'decode-default',
     kind: 'decode',
     source: initialPack.source,
@@ -66,6 +66,7 @@
     persistence: noOpLensPersistence,
     persistenceKey: lensSessionStorageKey({ kind: 'decode', ownerId: 'default' }),
   });
+  onMount(() => void controller.actions.hydrate());
 
   let transferAnswer = $state('');
   let transferFeedback = $state('');

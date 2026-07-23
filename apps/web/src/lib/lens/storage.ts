@@ -1,8 +1,4 @@
-import type {
-  LensSessionKind,
-  LensSessionPersistence,
-  LensSessionSnapshot,
-} from '@lol/lens-contracts';
+import type { LensSessionKind, LensSessionPersistence } from '@lol/lens-contracts';
 
 const STORAGE_SCHEMA_VERSION = 'v1';
 
@@ -42,21 +38,9 @@ export function createBrowserLensPersistence(
       const raw = storage.getItem(key);
       if (!raw) return null;
       try {
-        const value = JSON.parse(raw) as Partial<LensSessionSnapshot>;
-        if (
-          value.schemaVersion !== 1 ||
-          typeof value.id !== 'string' ||
-          typeof value.source !== 'string' ||
-          typeof value.argsText !== 'string' ||
-          typeof value.activeView !== 'string' ||
-          !value.selection ||
-          typeof value.updatedAt !== 'string'
-        ) {
-          return null;
-        }
-        return value as LensSessionSnapshot;
+        return JSON.parse(raw) as unknown;
       } catch {
-        return null;
+        return { malformed: true };
       }
     },
     async save(key, session) {

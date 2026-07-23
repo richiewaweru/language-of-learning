@@ -1,10 +1,13 @@
+import { parseLensSessionSnapshot } from '@lol/lens-contracts';
 import type {
   LensArtifacts,
   LensCapabilities,
   LensEngine,
   LensSessionActions,
   LensSessionKind,
+  LensSessionHandle,
   LensSessionPersistence,
+  LensProgram,
   LensSessionSnapshot,
   LensSessionState,
   LensViewId,
@@ -39,12 +42,7 @@ function snapshot(state: LensSessionState): LensSessionSnapshot {
   };
 }
 
-export function createLensSession(options: LensSessionOptions): {
-  state: LensSessionState;
-  actions: LensSessionActions;
-  capabilities: LensCapabilities;
-  persistenceKey: string;
-} {
+export function createLensSession(options: LensSessionOptions): LensSessionHandle {
   const initial = {
     source: options.source,
     argsText: options.argsText,
@@ -62,21 +60,112 @@ export function createLensSession(options: LensSessionOptions): {
     activeView: initial.activeView,
     selection: { stepIndex: 0 },
     updatedAt: new Date().toISOString(),
+    initialized: false,
+    hydrationStatus: 'not-requested',
+    revision: 0,
+    persistenceWarning: null,
     status: initial.artifacts?.violation ? 'unsupported' : initial.artifacts ? 'supported' : 'idle',
     artifacts: initial.artifacts,
     error: '',
   });
 
+  let pendingSnapshot: LensSessionSnapshot | null = null;
+  let persistenceDrain: Promise<void> | null = null;
+  let hydrationPromise: Promise<void> | null = null;
+
+  async function flushPersistence() {
+    while (pendingSnapshot) {
+      const next = pendingSnapshot;
+      pendingSnapshot = null;
+      try {
+        await options.persistence.save(options.persistenceKey, next);
+        if (state.hydrationStatus !== 'failed' && state.hydrationStatus !== 'invalid') {
+          state.persistenceWarning = null;
+        }
+      } catch (error) {
+        state.persistenceWarning = `Progress could not be saved: ${
+          error instanceof Error ? error.message : String(error)
+        }`;
+      }
+    }
+  }
+
+  function requestPersistenceFlush() {
+    if (persistenceDrain) return;
+    persistenceDrain = flushPersistence().finally(() => {
+      persistenceDrain = null;
+      if (pendingSnapshot) requestPersistenceFlush();
+    });
+  }
+
   function touch() {
+    state.revision += 1;
     state.updatedAt = new Date().toISOString();
-    void options.persistence.save(options.persistenceKey, snapshot(state));
+    pendingSnapshot = snapshot(state);
+    requestPersistenceFlush();
+  }
+
+  function applyProgram(program: LensProgram) {
+    runs.invalidate();
+    state.source = program.source;
+    state.argsText = program.argsText;
+    state.selection = { stepIndex: 0 };
+    state.artifacts = null;
+    state.status = 'idle';
+    state.error = '';
+    touch();
   }
 
   const actions: LensSessionActions = {
-    setSource(source) {
+    async hydrate() {
+      if (hydrationPromise) return hydrationPromise;
+      hydrationPromise = (async () => {
+        state.hydrationStatus = 'loading';
+        try {
+          const loaded = await options.persistence.load(options.persistenceKey);
+          if (loaded === null) {
+            state.hydrationStatus = 'empty';
+          } else {
+            const parsed = parseLensSessionSnapshot(loaded, {
+              id: options.id,
+              kind: options.kind,
+              enabledViews: options.capabilities.enabledViews,
+            });
+            if (!parsed.success) {
+              state.hydrationStatus = 'invalid';
+              state.persistenceWarning = parsed.reason;
+            } else {
+              state.source = parsed.data.source;
+              state.argsText = parsed.data.argsText;
+              state.activeView = parsed.data.activeView;
+              state.selection = { ...parsed.data.selection };
+              state.updatedAt = parsed.data.updatedAt;
+              state.artifacts = null;
+              state.status = 'idle';
+              state.error = '';
+              state.revision += 1;
+              state.hydrationStatus = 'restored';
+            }
+          }
+        } catch (error) {
+          state.hydrationStatus = 'failed';
+          state.persistenceWarning = `Progress could not be restored: ${
+            error instanceof Error ? error.message : String(error)
+          }`;
+        } finally {
+          state.initialized = true;
+        }
+      })();
+      return hydrationPromise;
+    },
+    setSourceFromUser(source) {
       if (!options.capabilities.canEditSource) return;
       state.source = source;
       touch();
+    },
+    replaceProgramFromUser(program) {
+      if (!options.capabilities.canReplaceProgram) return;
+      applyProgram(program);
     },
     setArgsText(argsText) {
       if (!options.capabilities.canUseFreeformInput) return;
@@ -140,7 +229,7 @@ export function createLensSession(options: LensSessionOptions): {
     },
   };
 
-  return {
+  const controller = {
     state,
     actions,
     capabilities: Object.freeze({
@@ -148,5 +237,27 @@ export function createLensSession(options: LensSessionOptions): {
       enabledViews: Object.freeze([...options.capabilities.enabledViews]),
     }),
     persistenceKey: options.persistenceKey,
+  };
+
+  return {
+    controller,
+    ownerActions: {
+      loadProgramFromOwner(program) {
+        applyProgram(program);
+      },
+      async clearPersistence() {
+        pendingSnapshot = null;
+        try {
+          if (persistenceDrain) await persistenceDrain;
+          pendingSnapshot = null;
+          await options.persistence.remove(options.persistenceKey);
+          state.persistenceWarning = null;
+        } catch (error) {
+          state.persistenceWarning = `Saved progress could not be cleared: ${
+            error instanceof Error ? error.message : String(error)
+          }`;
+        }
+      },
+    },
   };
 }

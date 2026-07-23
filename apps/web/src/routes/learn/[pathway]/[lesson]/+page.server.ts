@@ -9,11 +9,20 @@ import {
 } from '$lib/pilot/course';
 import '$lib/pilot/validation';
 import { loadPilotExamplePack } from '$lib/pilot/server';
+import { loadLessonDefinition } from '$lib/lesson-foundation/definitions';
 
 export async function load({ params }: { params: { pathway: string; lesson: string } }) {
   if (params.pathway !== course.id) error(404, 'Pathway not found');
   const lesson = lessonsById[params.lesson];
   if (!lesson) error(404, 'Lesson not found');
+  const phase2Definition = loadLessonDefinition(params.lesson);
+  if (phase2Definition) {
+    return {
+      renderer: 'phase2' as const,
+      definition: phase2Definition,
+      lesson,
+    };
+  }
   const index = lessons.findIndex((entry) => entry.id === lesson.id);
   const packs = Object.fromEntries(
     await Promise.all(
@@ -32,6 +41,7 @@ export async function load({ params }: { params: { pathway: string; lesson: stri
     ),
   );
   return {
+    renderer: 'pilot' as const,
     course,
     lesson,
     lessons,

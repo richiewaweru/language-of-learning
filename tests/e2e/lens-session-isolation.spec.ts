@@ -16,6 +16,9 @@ test.describe('Lens session isolation harness', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/internal/lens-session-harness');
     await waitForHydration(page);
+    await expect(page.getByTestId('workspace-a')).toHaveAttribute('data-session-initialized', 'true');
+    await expect(page.getByTestId('workspace-b')).toHaveAttribute('data-session-initialized', 'true');
+    await expect(page.getByTestId('workspace-a')).toHaveAttribute('data-sessions-ready', 'true');
   });
 
   test('keeps code, artifacts, frames, views, and reset instance-local', async ({ page }) => {
@@ -63,5 +66,34 @@ test.describe('Lens session isolation harness', () => {
     expect(leftKey).toBe('lens:v1:harness:isolation:a');
     expect(rightKey).toBe('lens:v1:harness:isolation:b');
     expect(leftKey).not.toBe(rightKey);
+  });
+
+  test('restores durable state, regenerates artifacts, and keeps owner loading privileged', async ({ page }) => {
+    const left = page.getByTestId('workspace-a');
+    const right = page.getByTestId('workspace-b');
+
+    await replaceEditor(left, page, 'saved_value = 17\nresult = saved_value + 3');
+    await left.getByTestId('decode-visualize').click();
+    await left.getByTestId('step-next').click();
+    await left.getByRole('tab', { name: 'State', exact: true }).click();
+
+    const stored = await page.evaluate(() => {
+      const raw = localStorage.getItem('lens:v1:harness:isolation:a');
+      return raw ? JSON.parse(raw) : null;
+    });
+    expect(stored.source).toContain('saved_value = 17');
+    expect(stored.activeView).toBe('state');
+    expect(stored.artifacts).toBeUndefined();
+
+    await page.reload();
+    await expect(page.getByTestId('workspace-a')).toHaveAttribute('data-sessions-ready', 'true');
+    await expect(left.getByTestId('code-editor').locator('.cm-content')).toContainText('saved_value = 17');
+    await expect(left.getByRole('tab', { name: 'State', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expect(left.getByTestId('decode-playback')).toBeVisible();
+
+    await expect(right.getByTestId('code-editor').locator('.cm-content')).toContainText('first = 99');
+    await right.getByTestId('owner-load-program').click();
+    await expect(right.getByTestId('code-editor').locator('.cm-content')).toContainText('owner_loaded = 42');
+    await expect(right.getByTestId('code-editor')).toHaveAttribute('data-readonly', 'true');
   });
 });

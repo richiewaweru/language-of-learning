@@ -59,9 +59,9 @@ describe('graph schema', () => {
     }
   });
 
-  it('accepts 5 binding roles and 7 relation types', () => {
+  it('accepts 5 binding roles and 8 relation types', () => {
     expect(BindingRoleSchema.options).toHaveLength(5);
-    expect(RelationTypeSchema.options).toHaveLength(7);
+    expect(RelationTypeSchema.options).toHaveLength(8);
     expect(BindingRoleSchema.safeParse('constant').success).toBe(true);
     expect(RelationTypeSchema.safeParse('mutates').success).toBe(true);
     expect(RelationTypeSchema.safeParse('triggers').success).toBe(false);

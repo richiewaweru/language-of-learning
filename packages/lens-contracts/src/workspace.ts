@@ -4,6 +4,8 @@ import type { Selection } from './selection.js';
 import type { SemanticGraph } from './graph.js';
 import type { SemanticScene } from './semantic.js';
 import type { Trace } from './trace.js';
+import { z } from 'zod';
+import { SelectionSchema } from './selection.js';
 
 export type LensSessionKind = 'decode' | 'lesson' | 'playground' | 'harness';
 
@@ -14,6 +16,21 @@ export type LensSessionKind = 'decode' | 'lesson' | 'playground' | 'harness';
 export type LensViewId = 'flow' | 'state' | 'explain' | 'structure';
 
 export type LensRunStatus = 'idle' | 'running' | 'supported' | 'unsupported' | 'invalid';
+
+export type LensHydrationStatus =
+  | 'not-requested'
+  | 'loading'
+  | 'restored'
+  | 'empty'
+  | 'invalid'
+  | 'failed';
+
+export type LensProgram = {
+  id: string;
+  language: 'python';
+  source: string;
+  argsText: string;
+};
 
 export type LensDiagnostic = {
   code: string;
@@ -81,13 +98,19 @@ export type LensSessionSnapshot = {
 };
 
 export type LensSessionState = LensSessionSnapshot & {
+  initialized: boolean;
+  hydrationStatus: LensHydrationStatus;
+  revision: number;
+  persistenceWarning: string | null;
   status: LensRunStatus;
   artifacts: LensArtifacts | null;
   error: string;
 };
 
 export interface LensSessionActions {
-  setSource(source: string): void;
+  hydrate(): Promise<void>;
+  setSourceFromUser(source: string): void;
+  replaceProgramFromUser(program: LensProgram): void;
   setArgsText(argsText: string): void;
   run(): Promise<void>;
   reset(): void;
@@ -96,8 +119,13 @@ export interface LensSessionActions {
   setSelection(selection: Selection): void;
 }
 
+export interface LensSessionOwnerActions {
+  loadProgramFromOwner(program: LensProgram): void;
+  clearPersistence(): Promise<void>;
+}
+
 export interface LensSessionPersistence {
-  load(key: string): Promise<LensSessionSnapshot | null>;
+  load(key: string): Promise<unknown | null>;
   save(key: string, session: LensSessionSnapshot): Promise<void>;
   remove(key: string): Promise<void>;
 }
@@ -108,3 +136,52 @@ export type LensSessionController = {
   readonly capabilities: LensCapabilities;
   readonly persistenceKey: string;
 };
+
+export type LensSessionHandle = {
+  readonly controller: LensSessionController;
+  readonly ownerActions: LensSessionOwnerActions;
+};
+
+const LensViewIdSchema = z.enum(['flow', 'state', 'explain', 'structure']);
+const LensSessionKindSchema = z.enum(['decode', 'lesson', 'playground', 'harness']);
+
+export const LensSessionSnapshotSchema = z.object({
+  schemaVersion: z.literal(1),
+  id: z.string().min(1),
+  kind: LensSessionKindSchema,
+  source: z.string(),
+  argsText: z.string(),
+  activeView: LensViewIdSchema,
+  selection: SelectionSchema,
+  updatedAt: z.string().datetime(),
+}).strict();
+
+export type LensSnapshotExpectation = {
+  id: string;
+  kind: LensSessionKind;
+  enabledViews: readonly LensViewId[];
+};
+
+export type LensSnapshotValidationResult =
+  | { success: true; data: LensSessionSnapshot }
+  | { success: false; reason: string };
+
+export function parseLensSessionSnapshot(
+  value: unknown,
+  expected: LensSnapshotExpectation,
+): LensSnapshotValidationResult {
+  const parsed = LensSessionSnapshotSchema.safeParse(value);
+  if (!parsed.success) {
+    return { success: false, reason: 'Snapshot shape or schema version is invalid.' };
+  }
+  if (parsed.data.id !== expected.id) {
+    return { success: false, reason: 'Snapshot session identity does not match.' };
+  }
+  if (parsed.data.kind !== expected.kind) {
+    return { success: false, reason: 'Snapshot session kind does not match.' };
+  }
+  if (!expected.enabledViews.includes(parsed.data.activeView)) {
+    return { success: false, reason: 'Snapshot view is not enabled for this session.' };
+  }
+  return { success: true, data: parsed.data };
+}
