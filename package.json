@@ -24,7 +24,7 @@
     "test:parity-ops": "python tools/run_interpreter_parity.py",
     "test:visual": "vitest run packages/visual-grammar/src",
     "verify:structural-lens": "pnpm export-schemas && python tools/verify_structural_lens.py && python tools/run_analyzer_tests.py && python tools/run_trace_tests.py && vitest run packages/lens-contracts/src packages/lens-scenes/src packages/visual-grammar/src tests/fixtures && pnpm typecheck && pnpm lint && playwright test tests/e2e/flagship-lesson.spec.ts",
-    "test:web": "vitest run tests/web",
+    "test:web": "pnpm --filter web exec svelte-kit sync && vitest run tests/web",
     "test:e2e": "playwright test",
     "test:visual:update": "playwright test --update-snapshots",
     "capture:pm7": "pnpm exec tsx tools/capture_pm7_screenshots.ts",
@@ -35,7 +35,7 @@
     "pyodide-parity": "node tools/run_pyodide_parity.mjs",
     "trace-pyodide-parity": "node tools/run_trace_pyodide_parity.mjs",
     "lint": "eslint .",
-    "typecheck": "tsc --build",
+    "typecheck": "pnpm --filter web exec svelte-kit sync && tsc --build",
     "export-schemas": "pnpm --filter @lol/lens-contracts export-schemas"
   },
   "devDependencies": {

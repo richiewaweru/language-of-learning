@@ -16,6 +16,8 @@ A clean isolated worktree initially reproduced a missing-root-executable failure
 
 The first GitHub Actions run then exposed a separate Windows-only executable name in two Python subprocess calls (`pnpm.cmd`). Both calls now resolve `pnpm.cmd` or `pnpm` from `PATH`; focused journey and API-save tests pass on Windows, and the follow-up CI run is the Linux verification.
 
+The next Linux run reached the web suite and exposed another clean-run assumption: `apps/web/.svelte-kit/tsconfig.json` existed locally only because a prior build had generated it. `test:web` and `typecheck` now run `svelte-kit sync` first so each gate prepares its required generated configuration.
+
 ## Atomic rejection evidence
 
 Every new negative path asserts:

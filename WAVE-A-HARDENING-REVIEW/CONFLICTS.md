@@ -40,4 +40,8 @@ The original working environment had a hoisted `tsx` executable, but a clean fro
 
 The strengthened Linux CI gate exposed two Python subprocess calls that invoked the Windows-only name `pnpm.cmd`. They now resolve `pnpm.cmd` or `pnpm` through `PATH` without a shell fallback. This changes no analysis or trace semantics.
 
+## Generated SvelteKit configuration
+
+Local web tests inherited `apps/web/.svelte-kit/tsconfig.json` from earlier builds, while clean Linux CI ran the full suite before the build gate. Web tests and type-check now run `svelte-kit sync` explicitly, making their precondition reproducible without reordering or weakening any check.
+
 No unresolved semantic conflict remains inside the bounded candidate.
