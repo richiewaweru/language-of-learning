@@ -22,6 +22,7 @@ CLI:
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -91,22 +92,16 @@ def _run_pattern_scene(
             encoding="utf-8",
         )
         argv = ["exec", "tsx", "tools/build_pattern_scene.ts", str(inp), str(outp)]
+        pnpm = shutil.which("pnpm.cmd") or shutil.which("pnpm")
+        if pnpm is None:
+            raise RuntimeError("pnpm executable not found")
         proc = subprocess.run(
-            ["pnpm.cmd", *argv],
+            [pnpm, *argv],
             cwd=str(ROOT),
             capture_output=True,
             text=True,
             shell=False,
         )
-        if proc.returncode != 0:
-            # Fallback for environments where pnpm.cmd resolution differs (POSIX).
-            proc = subprocess.run(
-                f'pnpm exec tsx tools/build_pattern_scene.ts "{inp}" "{outp}"',
-                cwd=str(ROOT),
-                capture_output=True,
-                text=True,
-                shell=True,
-            )
         if proc.returncode != 0:
             raise RuntimeError(
                 f"pattern/scene subprocess failed (exit {proc.returncode}):\n{proc.stderr or proc.stdout}"

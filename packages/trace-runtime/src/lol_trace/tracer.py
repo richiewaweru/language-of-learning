@@ -211,8 +211,8 @@ class Tracer:
             raise SandboxViolation("assignment", "Only simple assignments are supported.")
         name = stmt.targets[0].id
         if isinstance(stmt.value, ast.List):
-            self.env[name] = []
-            self.sandbox.track_allocation(64)
+            self.env[name] = [self._eval_expr(item) for item in stmt.value.elts]
+            self.sandbox.track_allocation(max(64, len(stmt.value.elts) * 8))
             return
         if isinstance(stmt.value, ast.Name):
             old = self.env.get(name)

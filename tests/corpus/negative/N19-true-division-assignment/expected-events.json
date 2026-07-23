@@ -1,0 +1,5 @@
+{
+  "code": "UNSUPPORTED_TRUE_DIVISION_ASSIGNMENT",
+  "message": "True-division assignment (/=) is reserved for a later wave because it introduces float-state semantics.",
+  "verifiedSteps": false
+}

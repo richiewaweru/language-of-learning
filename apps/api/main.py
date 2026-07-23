@@ -86,6 +86,16 @@ def analyze(req: AnalyzeRequest) -> dict[str, Any]:
         raise HTTPException(status_code=400, detail="source is required")
     try:
         graph = analyze_source(source)
+        # Analyzer rejections are intentionally node-free. Let the trace layer
+        # translate the canonical rejection before the missing-function check so
+        # callers receive one atomic, structured failure with no partial trace.
+        if graph.get("unsupported"):
+            trace = run_trace(source, graph, req.argsRepr)
+            return {
+                "graph": graph,
+                "trace": {k: v for k, v in trace.items() if k != "violation"},
+                "violation": trace.get("violation"),
+            }
         # Trace needs a function node; still return graph with unsupported honestly
         has_fn = any(n.get("kind") == "function" for n in graph.get("nodes", []))
         if not has_fn:

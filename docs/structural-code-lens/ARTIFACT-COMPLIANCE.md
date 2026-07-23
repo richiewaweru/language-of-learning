@@ -50,6 +50,7 @@ This is an evidence register, not a claim register. `Verified` means the named a
 | reference | Registry badge and deterministic alias `objectIds` | Verified |
 | return | `ReturnPort.svelte`, delayed-return test | Verified |
 | effect | `EffectPulse.svelte`, existing effect contract | Verified |
+| builtin-call | Collapsed built-in graph nodes, `builtin-evaluated` traces, and Graph Inspector evidence | Verified |
 | generic-operation | `GenericOperationSymbol.svelte`, resolver and visual fallback evidence | Verified |
 | unsupported | `UnsupportedRegion.svelte`, recursion/DictComp fixtures and visual fallback evidence | Verified |
 

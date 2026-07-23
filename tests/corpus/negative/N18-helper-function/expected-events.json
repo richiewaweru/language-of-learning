@@ -1,0 +1,5 @@
+{
+  "code": "UNSUPPORTED_HELPER_FUNCTION",
+  "message": "Helper-function calls are not yet supported. Lens currently explains one top-level function in a single call frame.",
+  "verifiedSteps": false
+}

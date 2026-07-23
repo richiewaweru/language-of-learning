@@ -135,6 +135,38 @@ test.describe('Decode pasted-program acceptance', () => {
     });
   });
 
+  const canonicalRejections = [
+    {
+      id: 'builtin-shadowing',
+      source: 'def calculate(max, values):\n    return max(values)',
+      args: '[1, 2, 3]',
+      message:
+        'This pilot does not support shadowing built-in function names. Rename the parameter or local variable.',
+    },
+    {
+      id: 'enumerate',
+      source:
+        'def indexed_total(values):\n    total = 0\n    for index, value in enumerate(values):\n        total = total + index + value\n    return total',
+      args: '[1, 2, 3]',
+      message:
+        'Enumerate is not yet supported in this pilot. Use an index-based range(len(values)) loop for now.',
+    },
+  ] as const;
+
+  for (const rejection of canonicalRejections) {
+    test(`${rejection.id} renders its canonical atomic rejection`, async ({ page }) => {
+      await pasteProgram(page, rejection.source, rejection.args);
+
+      await expect(page.getByTestId('error')).toHaveCount(0);
+      await expect(page.getByTestId('unsupported')).toContainText(rejection.message);
+      await expect(page.getByTestId('unsupported-workspace')).toContainText(rejection.message);
+      await expect(page.getByTestId('decode-playback')).toHaveCount(0);
+      await expect(page.locator('.workspace .view-tabs [role="tab"]')).toHaveCount(0);
+      await expect(page.getByTestId('learner-flow-view')).toHaveCount(0);
+      await expect(page.getByTestId('flow-result')).toHaveCount(0);
+    });
+  }
+
   test('Decode and Ask Lens remain usable on mobile with reduced motion', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: 'reduce' });

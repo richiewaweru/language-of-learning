@@ -3,7 +3,7 @@ export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://127.0.0.1:8000'
 export type AnalyzeResponse = {
   graph: import('@lol/lens-scenes').SemanticGraph;
   trace: import('@lol/lens-scenes').Trace;
-  violation: { construct: string; message: string } | null;
+  violation: { code: string; construct: string; message: string; diagnostic?: string } | null;
 };
 
 export type AIStatus = {

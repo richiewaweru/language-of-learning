@@ -393,6 +393,15 @@ These strings are the single source of truth for negative-corpus assertions and 
 | `UNSUPPORTED_GENERATOR` | Generators | Generators are not yet supported because suspended execution frames are not yet visualized. |
 | `UNSUPPORTED_ASYNC` | Async execution | Async execution is not yet supported. |
 | `UNSUPPORTED_NESTED_FUNCTION` | Nested functions | Nested functions and captured scopes are not yet supported. |
+| `UNSUPPORTED_BUILTIN_SHADOWING` | Built-in name shadowing | This pilot does not support shadowing built-in function names. Rename the parameter or local variable. |
+| `UNSUPPORTED_ENUMERATE` | Enumerate | Enumerate is not yet supported in this pilot. Use an index-based range(len(values)) loop for now. |
+| `UNSUPPORTED_TUPLE_UNPACKING` | Tuple unpacking and swaps | Tuple unpacking and swaps are not yet supported. Use separate assignments for the current pilot. |
+| `UNSUPPORTED_MEMBERSHIP` | Membership checks | Membership checks are not yet supported in this pilot. Write the search as an explicit loop and comparison. |
+| `UNSUPPORTED_LIST_METHOD` | Deferred list methods | This list method is not yet supported. The current pilot supports indexing, indexed updates, and append. |
+| `UNSUPPORTED_LIST_LITERAL_RETURN` | List-literal return | Returning a new list literal is not yet supported. Bind the list to a variable before returning it. |
+| `UNSUPPORTED_NESTED_LIST` | Nested lists | Nested list access is not yet supported. The current pilot explains one-dimensional lists. |
+| `UNSUPPORTED_HELPER_FUNCTION` | Helper-function calls | Helper-function calls are not yet supported. Lens currently explains one top-level function in a single call frame. |
+| `UNSUPPORTED_TRUE_DIVISION_ASSIGNMENT` | True-division assignment | True-division assignment (/=) is reserved for a later wave because it introduces float-state semantics. |
 
 Example:
 
@@ -411,4 +420,3 @@ A wave is complete only when:
 - no new fallback to `generic-operation` hides a construct covered by this ADR;
 - Richie reviews the wave as one bundle and signs it off;
 - the wave is frozen before the next wave begins.
-

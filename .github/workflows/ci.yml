@@ -2,9 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - codex/wave-a-hardening
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   test:
@@ -26,13 +29,19 @@ jobs:
           python-version: "3.12"
 
       - name: Install JS deps
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Install Python deps
         run: pip install -r apps/api/requirements.txt
 
       - name: Build contracts
         run: pnpm --filter @lol/lens-contracts build
+
+      - name: Wave A corpus
+        run: python tools/run_wave_a_corpus.py
+
+      - name: Full test suite
+        run: pnpm test:all
 
       - name: Typecheck
         run: pnpm typecheck
@@ -60,6 +69,9 @@ jobs:
 
       - name: Lesson checks
         run: pnpm test:lessons
+
+      - name: Build
+        run: pnpm build
 
       - name: Content scenes rebuild (drift check)
         run: |

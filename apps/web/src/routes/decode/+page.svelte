@@ -274,24 +274,26 @@
             <button type="button" class="btn-secondary" onclick={() => goToStep(totalSteps - 1)} disabled={stepIndex >= totalSteps - 1}>End</button>
           </div>
         {/if}
-        <div class="view-tabs" role="tablist">
-          {#each [
-            { id: 'flow', label: 'Flow' },
-            { id: 'state', label: 'State' },
-            { id: 'explain', label: 'Guided Trace' },
-            { id: 'structure', label: 'Graph Inspector' },
-          ] as view}
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeView === view.id}
-              class:active={activeView === view.id}
-              onclick={() => (activeView = view.id as typeof activeView)}
-            >
-              {view.label}
-            </button>
-          {/each}
-        </div>
+        {#if !violation}
+          <div class="view-tabs" role="tablist">
+            {#each [
+              { id: 'flow', label: 'Flow' },
+              { id: 'state', label: 'State' },
+              { id: 'explain', label: 'Guided Trace' },
+              { id: 'structure', label: 'Graph Inspector' },
+            ] as view}
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeView === view.id}
+                class:active={activeView === view.id}
+                onclick={() => (activeView = view.id as typeof activeView)}
+              >
+                {view.label}
+              </button>
+            {/each}
+          </div>
+        {/if}
 
         <div class="workspace-main surface-card" data-testid="view-{activeView}">
           {#if violation}

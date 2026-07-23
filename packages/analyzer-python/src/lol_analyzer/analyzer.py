@@ -55,7 +55,49 @@ CANONICAL_UNSUPPORTED: dict[str, tuple[str, str]] = {
         "nested functions",
         "Nested functions and captured scopes are not yet supported.",
     ),
+    "UNSUPPORTED_BUILTIN_SHADOWING": (
+        "built-in name shadowing",
+        "This pilot does not support shadowing built-in function names. Rename the parameter or local variable.",
+    ),
+    "UNSUPPORTED_ENUMERATE": (
+        "enumerate",
+        "Enumerate is not yet supported in this pilot. Use an index-based range(len(values)) loop for now.",
+    ),
+    "UNSUPPORTED_TUPLE_UNPACKING": (
+        "tuple unpacking",
+        "Tuple unpacking and swaps are not yet supported. Use separate assignments for the current pilot.",
+    ),
+    "UNSUPPORTED_MEMBERSHIP": (
+        "membership checks",
+        "Membership checks are not yet supported in this pilot. Write the search as an explicit loop and comparison.",
+    ),
+    "UNSUPPORTED_LIST_METHOD": (
+        "list method",
+        "This list method is not yet supported. The current pilot supports indexing, indexed updates, and append.",
+    ),
+    "UNSUPPORTED_LIST_LITERAL_RETURN": (
+        "list-literal return",
+        "Returning a new list literal is not yet supported. Bind the list to a variable before returning it.",
+    ),
+    "UNSUPPORTED_NESTED_LIST": (
+        "nested lists",
+        "Nested list access is not yet supported. The current pilot explains one-dimensional lists.",
+    ),
+    "UNSUPPORTED_HELPER_FUNCTION": (
+        "helper-function calls",
+        "Helper-function calls are not yet supported. Lens currently explains one top-level function in a single call frame.",
+    ),
+    "UNSUPPORTED_TRUE_DIVISION_ASSIGNMENT": (
+        "true-division assignment",
+        "True-division assignment (/=) is reserved for a later wave because it introduces float-state semantics.",
+    ),
+    "UNSUPPORTED_CONSTRUCT": (
+        "list item expression",
+        "This pilot supports only scalar literals in list assignments.",
+    ),
 }
+
+SPECIAL_BUILTIN_NAMES = {"len", "range", "min", "max", "sum", "abs", "print"}
 
 
 class Analyzer:
@@ -193,6 +235,7 @@ class Analyzer:
                     ("UNSUPPORTED_EXCEPTION_FLOW", next((node for node in ast.walk(function) if isinstance(node, (ast.Try, ast.TryStar, ast.Raise))), None)),
                 ]
             )
+            checks.extend(self.hardening_checks(function))
         for code, node in checks:
             if node is not None:
                 construct, message = CANONICAL_UNSUPPORTED[code]
@@ -204,6 +247,154 @@ class Analyzer:
                     diagnostic=f"{type(node).__name__} at line {getattr(node, 'lineno', 1)}, column {getattr(node, 'col_offset', 0)}",
                 ).__dict__
         return None
+
+    def hardening_checks(self, function: ast.FunctionDef) -> list[tuple[str, ast.AST | None]]:
+        """Return ordered Wave A hardening checks after established canonicals."""
+        nodes = list(ast.walk(function))
+        special_calls = [
+            node
+            for node in nodes
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in SPECIAL_BUILTIN_NAMES
+        ]
+        bound_special_names = {
+            arg.arg
+            for arg in function.args.args
+            if arg.arg in SPECIAL_BUILTIN_NAMES
+        }
+        for node in nodes:
+            if isinstance(node, ast.Assign):
+                bound_special_names.update(
+                    target.id
+                    for target in node.targets
+                    if isinstance(target, ast.Name) and target.id in SPECIAL_BUILTIN_NAMES
+                )
+            elif isinstance(node, (ast.For, ast.AsyncFor)) and isinstance(node.target, ast.Name):
+                if node.target.id in SPECIAL_BUILTIN_NAMES:
+                    bound_special_names.add(node.target.id)
+            elif isinstance(node, ast.AugAssign) and isinstance(node.target, ast.Name):
+                if node.target.id in SPECIAL_BUILTIN_NAMES:
+                    bound_special_names.add(node.target.id)
+
+        shadowed_call = next(
+            (
+                call
+                for call in special_calls
+                if isinstance(call.func, ast.Name) and call.func.id in bound_special_names
+            ),
+            None,
+        )
+        enumerate_call = next(
+            (
+                node
+                for node in nodes
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "enumerate"
+            ),
+            None,
+        )
+        nested_list = next(
+            (
+                node
+                for node in nodes
+                if (
+                    isinstance(node, ast.List)
+                    and any(isinstance(item, ast.List) for item in node.elts)
+                )
+                or (
+                    isinstance(node, ast.Subscript)
+                    and isinstance(node.value, ast.Subscript)
+                )
+            ),
+            None,
+        )
+        tuple_target = next(
+            (
+                node
+                for node in nodes
+                if (
+                    isinstance(node, (ast.Assign, ast.For))
+                    and any(
+                        isinstance(target, (ast.Tuple, ast.List))
+                        for target in (
+                            node.targets if isinstance(node, ast.Assign) else [node.target]
+                        )
+                    )
+                )
+            ),
+            None,
+        )
+        membership = next(
+            (
+                node
+                for node in nodes
+                if isinstance(node, ast.Compare)
+                and any(isinstance(op, (ast.In, ast.NotIn)) for op in node.ops)
+            ),
+            None,
+        )
+        list_method = next(
+            (
+                node
+                for node in nodes
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr in {"pop", "insert", "remove"}
+            ),
+            None,
+        )
+        list_literal_return = next(
+            (
+                node
+                for node in nodes
+                if isinstance(node, ast.Return) and isinstance(node.value, ast.List)
+            ),
+            None,
+        )
+        helper_call = next(
+            (
+                node
+                for node in nodes
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id not in SPECIAL_BUILTIN_NAMES
+                and node.func.id != function.name
+                and node.func.id != "enumerate"
+            ),
+            None,
+        )
+        true_division_assignment = next(
+            (
+                node
+                for node in nodes
+                if isinstance(node, ast.AugAssign) and isinstance(node.op, ast.Div)
+            ),
+            None,
+        )
+        unsupported_list_item = next(
+            (
+                item
+                for node in nodes
+                if isinstance(node, ast.List)
+                for item in node.elts
+                if not self.is_list_literal_item(item)
+            ),
+            None,
+        )
+        return [
+            ("UNSUPPORTED_BUILTIN_SHADOWING", shadowed_call),
+            ("UNSUPPORTED_ENUMERATE", enumerate_call),
+            ("UNSUPPORTED_NESTED_LIST", nested_list),
+            ("UNSUPPORTED_TUPLE_UNPACKING", tuple_target),
+            ("UNSUPPORTED_MEMBERSHIP", membership),
+            ("UNSUPPORTED_LIST_METHOD", list_method),
+            ("UNSUPPORTED_LIST_LITERAL_RETURN", list_literal_return),
+            ("UNSUPPORTED_HELPER_FUNCTION", helper_call),
+            ("UNSUPPORTED_TRUE_DIVISION_ASSIGNMENT", true_division_assignment),
+            ("UNSUPPORTED_CONSTRUCT", unsupported_list_item),
+        ]
 
     def precollect(self, function: ast.FunctionDef) -> None:
         for node in ast.walk(function):
@@ -713,9 +904,16 @@ class Analyzer:
 
     def read_refs(self, value: ast.expr) -> list[str]:
         refs: list[str] = []
+        special_callee_nodes = {
+            id(node.func)
+            for node in ast.walk(value)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in SPECIAL_BUILTIN_NAMES
+        }
         for node in ast.walk(value):
             if isinstance(node, ast.Name):
-                if node.id in {"len", "range", "min", "max", "sum", "abs"}:
+                if id(node) in special_callee_nodes:
                     continue
                 refs.append(self.binding_or_collection_id(node.id))
         return refs
@@ -782,6 +980,17 @@ class Analyzer:
 
     def is_literal(self, value: ast.expr) -> bool:
         return isinstance(value, ast.Constant) and isinstance(value.value, (int, float, str, bool))
+
+    def is_list_literal_item(self, value: ast.expr) -> bool:
+        if self.is_literal(value):
+            return True
+        return (
+            isinstance(value, ast.UnaryOp)
+            and isinstance(value.op, ast.USub)
+            and isinstance(value.operand, ast.Constant)
+            and isinstance(value.operand.value, (int, float))
+            and not isinstance(value.operand.value, bool)
+        )
 
     def literal_repr(self, value: ast.AST) -> str:
         return ast.unparse(value)

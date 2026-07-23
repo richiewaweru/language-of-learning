@@ -1,5 +1,322 @@
 [
   {
+    "construct": "single-top-level-function",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "positional-parameters",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "scalar-literals",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "list-literal-assignment",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "P01",
+      "P02",
+      "P03",
+      "P04"
+    ]
+  },
+  {
+    "construct": "simple-assignment",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A01",
+      "A02",
+      "A04",
+      "A05",
+      "A08",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "state-reassignment",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "arithmetic-binop",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A08",
+      "A13",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "comparisons",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A09",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "if-else",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A15"
+    ]
+  },
+  {
+    "construct": "for-named-collection",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A01",
+      "A02",
+      "A04",
+      "A05"
+    ]
+  },
+  {
+    "construct": "for-range",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A03",
+      "A14"
+    ]
+  },
+  {
+    "construct": "while-loop",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A15"
+    ]
+  },
+  {
+    "construct": "range-one-arg",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A03"
+    ]
+  },
+  {
+    "construct": "range-two-arg",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A14"
+    ]
+  },
+  {
+    "construct": "range-three-arg",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "experimental",
+    "corpusCases": []
+  },
+  {
+    "construct": "list-index-read",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A03",
+      "A07",
+      "A08",
+      "A15"
+    ]
+  },
+  {
+    "construct": "list-index-write",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "array-update"
+    ]
+  },
+  {
+    "construct": "list-append",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "filter",
+      "transform",
+      "alias-mutation"
+    ]
+  },
+  {
+    "construct": "len",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A03",
+      "A07",
+      "A08",
+      "A15"
+    ]
+  },
+  {
+    "construct": "print",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "print_total"
+    ]
+  },
+  {
+    "construct": "early-return",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A03",
+      "A06",
+      "A07",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "ordinary-return",
+    "wave": "A",
+    "analyzer": "verified",
+    "tracer": "verified",
+    "renderer": "verified",
+    "corpusCases": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15"
+    ]
+  },
+  {
+    "construct": "builtin-shadowing",
+    "wave": "A",
+    "analyzer": "unsupported",
+    "tracer": "unsupported",
+    "renderer": "unsupported",
+    "corpusCases": [
+      "P06",
+      "P07"
+    ]
+  },
+  {
     "construct": "unsupported-path-hardening",
     "wave": "A",
     "analyzer": "verified",
@@ -261,4 +578,3 @@
     "corpusCases": []
   }
 ]
-
