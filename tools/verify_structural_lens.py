@@ -78,6 +78,8 @@ def verify_executable_case(case: dict[str, object]) -> None:
     second = run_trace(source, graph, args_repr)
     assert canonical_json(first) == canonical_json(second), f"{case_id}: trace is not deterministic"
     actual_events = [step["event"]["type"] for step in first["steps"]]
+    if "violation" in first:
+        actual_events.append("unsupported")
     for expected in expected_events:
         assert expected in actual_events, f"{case_id}: missing event {expected}"
     expected_result = case.get("expectedResultRepr")
@@ -92,6 +94,8 @@ def verify_executable_case(case: dict[str, object]) -> None:
     else:
         assert first.get("violation", {}).get("construct") == expected_violation, f"{case_id}: wrong violation"
         assert graph["unsupported"], f"{case_id}: missing analyzer unsupported region"
+        assert first["steps"] == [], f"{case_id}: rejected source leaked partial trace steps"
+        assert "result" not in first, f"{case_id}: rejected source leaked a result"
     expected_primitives = set(case["expectedPrimitives"])
     missing = expected_primitives - evidenced_primitives(graph, first)
     assert not missing, f"{case_id}: primitives lack executable evidence: {sorted(missing)}"
