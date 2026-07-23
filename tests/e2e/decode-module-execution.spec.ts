@@ -90,11 +90,26 @@ function observeBrowserFailures(page: Page) {
 }
 
 async function assertNoPageOverflow(page: Page) {
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
-    ),
-  ).toBe(true);
+  const overflow = await page.evaluate(() => {
+    const viewportWidth = document.documentElement.clientWidth;
+    if (document.documentElement.scrollWidth <= viewportWidth) return [];
+    return Array.from(document.querySelectorAll<HTMLElement>('body *'))
+      .filter((element) => {
+        const bounds = element.getBoundingClientRect();
+        return bounds.right > viewportWidth + 0.5 || bounds.left < -0.5;
+      })
+      .map((element) => ({
+        element: element.tagName.toLowerCase(),
+        className: element.className,
+        testId: element.dataset.testid ?? null,
+        left: element.getBoundingClientRect().left,
+        right: element.getBoundingClientRect().right,
+        scrollWidth: element.scrollWidth,
+        clientWidth: element.clientWidth,
+      }))
+      .slice(0, 20);
+  });
+  expect(overflow).toEqual([]);
 }
 
 test.describe('module execution in Decode', () => {

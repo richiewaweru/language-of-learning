@@ -7,6 +7,7 @@ export * from './selection.js';
 export * from './lesson.js';
 export * from './pathway.js';
 export * from './semantic.js';
+export * from './workspace.js';
 
 export { z } from 'zod';
 

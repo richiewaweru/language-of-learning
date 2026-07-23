@@ -7,9 +7,13 @@
   let {
     value = '',
     onchange,
+    readonly = false,
+    allowPaste = true,
   }: {
     value?: string;
     onchange?: (next: string) => void;
+    readonly?: boolean;
+    allowPaste?: boolean;
   } = $props();
 
   let host: HTMLDivElement | undefined = $state();
@@ -24,6 +28,15 @@
         extensions: [
           basicSetup,
           python(),
+          EditorState.readOnly.of(readonly),
+          EditorView.editable.of(!readonly),
+          EditorView.domEventHandlers({
+            paste(event) {
+              if (allowPaste) return false;
+              event.preventDefault();
+              return true;
+            },
+          }),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
               onchange?.(update.state.doc.toString());
@@ -48,7 +61,13 @@
   });
 </script>
 
-<div class="editor" bind:this={host} data-testid="code-editor"></div>
+<div
+  class="editor"
+  class:readonly
+  bind:this={host}
+  data-testid="code-editor"
+  data-readonly={readonly}
+></div>
 
 <style>
   .editor {
@@ -64,5 +83,9 @@
 
   .editor :global(.cm-focused) {
     outline: none;
+  }
+
+  .editor.readonly {
+    background: var(--surface-muted, #f5f5f3);
   }
 </style>
