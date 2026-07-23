@@ -11,6 +11,7 @@ Candidate: `e929828092d329c83fb0d0b74a3ce50cd0c52af0`
 | `pnpm verify:structural-lens` | PASS — 11 pack artifacts, 17 symbols, 14 acceptance cases, 127 TS tests, analyzer 9/9, tracer 13/13, flagship Playwright 8/8 |
 | content rebuild and drift checks | PASS — no content/schema drift |
 | `git diff --check` | PASS |
+| GitHub Actions on Linux | PASS — push and pull-request runs at `210bb21` |
 
 A clean isolated worktree initially reproduced a missing-root-executable failure at `test:variations`: `pnpm exec tsx` was invoked by a root script, but `tsx` was declared only in a child workspace. The root development dependency was added and the complete `pnpm test:all` gate then passed from the clean install.
 
