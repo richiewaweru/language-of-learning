@@ -22,6 +22,7 @@ Candidate: `e929828092d329c83fb0d0b74a3ce50cd0c52af0`
 
 - `tools/run_wave_a_corpus.py` — P01–P09 structural coverage and atomicity assertions.
 - `tools/run_api_analyze_tests.py` — API regression coverage for built-in shadowing and enumerate.
+- `tools/build_artifacts.py` and `tools/run_journey_tests.py` — resolve the pnpm executable portably for Windows and Linux CI.
 - `tools/verify_structural_lens.py` — verifies rejection outcomes without treating empty traces as malformed supported output.
 - `tests/corpus/negative/N11-*` through `N19-*` — one canonical atomic fixture per new rejection code.
 - `tests/e2e/decode-acceptance.spec.ts` — rendered canonical-message and absent-control assertions.

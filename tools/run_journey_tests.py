@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -125,22 +126,16 @@ def main() -> int:
 
         tmp = ROOT / "data" / f"_journey_{snippet['name']}.json"
         tmp.write_text(json.dumps({"graph": graph, "trace": trace}), encoding="utf-8")
+        pnpm = shutil.which("pnpm.cmd") or shutil.which("pnpm")
+        if pnpm is None:
+            raise RuntimeError("pnpm executable not found")
         pipe = subprocess.run(
-            ["pnpm.cmd", "exec", "tsx", "tools/journey_pipeline.ts", str(tmp)],
+            [pnpm, "exec", "tsx", "tools/journey_pipeline.ts", str(tmp)],
             cwd=str(ROOT),
             capture_output=True,
             text=True,
             shell=False,
         )
-        if pipe.returncode != 0:
-            # Fallback for environments where pnpm.cmd resolution differs
-            pipe = subprocess.run(
-                f'pnpm exec tsx tools/journey_pipeline.ts "{tmp}"',
-                cwd=str(ROOT),
-                capture_output=True,
-                text=True,
-                shell=True,
-            )
         if pipe.returncode != 0:
             print(pipe.stdout)
             print(pipe.stderr)

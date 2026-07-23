@@ -36,4 +36,8 @@ During final browser verification, unrelated module-program changes appeared in 
 
 The original working environment had a hoisted `tsx` executable, but a clean frozen workspace install did not. Root scripts invoke `pnpm exec tsx`, while the dependency was declared only in `packages/lens-contracts`. The dependency is now declared at the root and the full suite passes from the isolated clean install.
 
+## Cross-platform pnpm executable
+
+The strengthened Linux CI gate exposed two Python subprocess calls that invoked the Windows-only name `pnpm.cmd`. They now resolve `pnpm.cmd` or `pnpm` through `PATH` without a shell fallback. This changes no analysis or trace semantics.
+
 No unresolved semantic conflict remains inside the bounded candidate.
