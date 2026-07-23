@@ -1,0 +1,5 @@
+{
+  "verifiedGraph": false,
+  "requiredNodeKinds": [],
+  "forbiddenNodeKinds": ["function", "collection", "return"]
+}

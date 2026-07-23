@@ -1,0 +1,5 @@
+{
+  "code": "UNSUPPORTED_LIST_LITERAL_RETURN",
+  "message": "Returning a new list literal is not yet supported. Bind the list to a variable before returning it.",
+  "verifiedSteps": false
+}

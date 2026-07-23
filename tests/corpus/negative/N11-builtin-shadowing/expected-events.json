@@ -1,0 +1,5 @@
+{
+  "code": "UNSUPPORTED_BUILTIN_SHADOWING",
+  "message": "This pilot does not support shadowing built-in function names. Rename the parameter or local variable.",
+  "verifiedSteps": false
+}

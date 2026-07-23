@@ -1,0 +1,5 @@
+{
+  "code": "UNSUPPORTED_MEMBERSHIP",
+  "message": "Membership checks are not yet supported in this pilot. Write the search as an explicit loop and comparison.",
+  "verifiedSteps": false
+}

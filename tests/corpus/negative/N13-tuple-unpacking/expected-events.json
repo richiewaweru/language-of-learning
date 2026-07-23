@@ -1,0 +1,5 @@
+{
+  "code": "UNSUPPORTED_TUPLE_UNPACKING",
+  "message": "Tuple unpacking and swaps are not yet supported. Use separate assignments for the current pilot.",
+  "verifiedSteps": false
+}

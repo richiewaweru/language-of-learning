@@ -1,0 +1,5 @@
+{
+  "code": "UNSUPPORTED_NESTED_LIST",
+  "message": "Nested list access is not yet supported. The current pilot explains one-dimensional lists.",
+  "verifiedSteps": false
+}
