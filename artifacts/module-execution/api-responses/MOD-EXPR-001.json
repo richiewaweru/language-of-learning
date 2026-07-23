@@ -1,0 +1,105 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "result = (10 + 5) * 2",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 21
+        },
+        "name": "Program"
+      },
+      {
+        "id": "bind-L1C0",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 21
+        },
+        "name": "result",
+        "role": "local",
+        "mutable": false
+      },
+      {
+        "id": "op-L1C9",
+        "kind": "operation",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 9,
+          "endLine": 1,
+          "endCol": 20
+        },
+        "expr": "(10 + 5) * 2"
+      },
+      {
+        "id": "op-L1C10",
+        "kind": "operation",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 10,
+          "endLine": 1,
+          "endCol": 15
+        },
+        "expr": "10 + 5"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "bind-L1C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "op-L1C9"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "op-L1C10"
+      },
+      {
+        "from": "op-L1C9",
+        "type": "writes",
+        "to": "bind-L1C0"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "op-L1C9",
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "result": "30"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "bind-L1C0",
+          "repr": "30"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

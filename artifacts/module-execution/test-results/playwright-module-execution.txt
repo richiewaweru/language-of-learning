@@ -1,0 +1,31 @@
+[WebServer] INFO:     Started server process [17092]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8011 (Press CTRL+C to quit)
+
+Running 22 tests using 1 worker
+
+  ok  1 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-ASSIGN-001 renders all learner views (4.6s)
+  ok  2 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-ASSIGN-002 renders all learner views (2.2s)
+  ok  3 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-ASSIGN-003 renders all learner views (2.1s)
+  ok  4 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-EXPR-001 renders all learner views (2.1s)
+  ok  5 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-IF-001 renders all learner views (2.1s)
+  ok  6 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-FOR-001 renders all learner views (2.3s)
+  ok  7 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-WHILE-001 renders all learner views (2.1s)
+  ok  8 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-LIST-001 renders all learner views (2.1s)
+  ok  9 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-LIST-002 renders all learner views (2.2s)
+  ok 10 tests\e2e\decode-module-execution.spec.ts:102:5 › module execution in Decode › MOD-LIST-003 renders all learner views (2.1s)
+  ok 11 tests\e2e\decode-module-execution.spec.ts:136:3 › module execution in Decode › critical price program synchronizes source and dependencies (1.9s)
+  ok 12 tests\e2e\decode-module-execution.spec.ts:155:3 › module execution in Decode › comment-only source has a precise empty state (1.5s)
+  ok 13 tests\e2e\decode-module-execution.spec.ts:166:3 › module execution in Decode › unknown call stops before dependent state (1.6s)
+  ok 14 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-ASSIGN-002 desktop visual matrix (1.9s)
+  ok 15 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-FOR-001 desktop visual matrix (1.8s)
+  ok 16 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-UNSUPPORTED-001 desktop visual matrix (1.7s)
+  ok 17 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-ASSIGN-002 tablet visual matrix (1.8s)
+  ok 18 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-FOR-001 tablet visual matrix (1.8s)
+  ok 19 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-UNSUPPORTED-001 tablet visual matrix (1.7s)
+  ok 20 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-ASSIGN-002 mobile visual matrix (1.8s)
+  ok 21 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-FOR-001 mobile visual matrix (1.7s)
+  ok 22 tests\e2e\decode-module-execution.spec.ts:195:7 › module execution in Decode › MOD-UNSUPPORTED-001 mobile visual matrix (1.7s)
+
+  22 passed (58.7s)

@@ -1,5 +1,8 @@
 {
-  "call": {
+  "scope": {
+    "kind": "function",
+    "id": "fn-L1C0",
+    "label": "positive_prices",
     "functionId": "fn-L1C0",
     "argsRepr": [
       "[-2, 3, 0, 5]"
@@ -13,6 +16,7 @@
         "fn-L1C0"
       ],
       "bindings": {},
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "call_enter",
         "functionId": "fn-L1C0"
@@ -29,6 +33,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L4C4",
@@ -47,6 +52,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L5C11",
@@ -64,6 +70,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L5C8",
@@ -81,6 +88,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L4C4",
@@ -99,6 +107,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L5C11",
@@ -116,6 +125,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L5C8",
@@ -133,6 +143,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "collection_append",
         "collection": "coll-L2C4",
@@ -150,6 +161,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L4C4",
@@ -168,6 +180,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L5C11",
@@ -185,6 +198,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L5C8",
@@ -202,6 +216,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L4C4",
@@ -220,6 +235,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L5C11",
@@ -237,6 +253,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L5C8",
@@ -254,6 +271,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3, 5]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "collection_append",
         "collection": "coll-L2C4",
@@ -271,6 +289,7 @@
         "prices": "[-2, 3, 0, 5]",
         "results": "[3, 5]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "return_exit",
         "repr": "[3, 5]"
@@ -278,6 +297,12 @@
     }
   ],
   "truncated": false,
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": [
+      "[-2, 3, 0, 5]"
+    ]
+  },
   "result": {
     "repr": "[3, 5]"
   }

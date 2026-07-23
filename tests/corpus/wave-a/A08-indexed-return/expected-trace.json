@@ -1,7 +1,10 @@
 {
   "runs": [
     {
-      "call": {
+      "scope": {
+        "kind": "function",
+        "id": "fn-L1C0",
+        "label": "get_middle",
         "functionId": "fn-L1C0",
         "argsRepr": [
           "[2, 4, 6, 8, 10]"
@@ -15,6 +18,7 @@
             "fn-L1C0"
           ],
           "bindings": {},
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "call_enter",
             "functionId": "fn-L1C0"
@@ -29,6 +33,7 @@
           "bindings": {
             "values": "[2, 4, 6, 8, 10]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "supported_call",
             "callee": "len",
@@ -49,6 +54,7 @@
             "index": "2",
             "values": "[2, 4, 6, 8, 10]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "indexed_selection",
             "collection": "bind-L1C15",
@@ -66,6 +72,7 @@
             "index": "2",
             "values": "[2, 4, 6, 8, 10]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "return_exit",
             "repr": "6"
@@ -73,6 +80,12 @@
         }
       ],
       "truncated": false,
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "[2, 4, 6, 8, 10]"
+        ]
+      },
       "result": {
         "repr": "6"
       }

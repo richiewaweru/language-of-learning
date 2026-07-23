@@ -1,0 +1,211 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "age = 20\nif age >= 18:\n    status = 'adult'\nelse:\n    status = 'minor'",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 5,
+          "endCol": 20
+        },
+        "name": "Program"
+      },
+      {
+        "id": "bind-L1C0",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 8
+        },
+        "name": "age",
+        "role": "constant",
+        "mutable": false,
+        "initialRepr": "20"
+      },
+      {
+        "id": "val-L1C6",
+        "kind": "value",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 6,
+          "endLine": 1,
+          "endCol": 8
+        },
+        "repr": "20",
+        "pyType": "int"
+      },
+      {
+        "id": "branch-L2C0",
+        "kind": "branch",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 0,
+          "endLine": 5,
+          "endCol": 20
+        },
+        "conditionExpr": "age >= 18",
+        "trueBody": "bind-L3C4",
+        "falseBody": "bind-L3C4"
+      },
+      {
+        "id": "op-L2C3",
+        "kind": "operation",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 3,
+          "endLine": 2,
+          "endCol": 12
+        },
+        "expr": "age >= 18"
+      },
+      {
+        "id": "bind-L3C4",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 3,
+          "startCol": 4,
+          "endLine": 3,
+          "endCol": 20
+        },
+        "name": "status",
+        "role": "state",
+        "mutable": true,
+        "initialRepr": "'adult'"
+      },
+      {
+        "id": "val-L3C13",
+        "kind": "value",
+        "sourceRange": {
+          "startLine": 3,
+          "startCol": 13,
+          "endLine": 3,
+          "endCol": 20
+        },
+        "repr": "'adult'",
+        "pyType": "str"
+      },
+      {
+        "id": "val-L5C13",
+        "kind": "value",
+        "sourceRange": {
+          "startLine": 5,
+          "startCol": 13,
+          "endLine": 5,
+          "endCol": 20
+        },
+        "repr": "'minor'",
+        "pyType": "str"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "bind-L1C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "branch-L2C0"
+      },
+      {
+        "from": "branch-L2C0",
+        "type": "contains",
+        "to": "op-L2C3"
+      },
+      {
+        "from": "op-L2C3",
+        "type": "reads",
+        "to": "bind-L1C0"
+      },
+      {
+        "from": "branch-L2C0",
+        "type": "contains",
+        "to": "bind-L3C4"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "age": "20"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "bind-L1C0",
+          "repr": "20"
+        }
+      },
+      {
+        "index": 1,
+        "line": 2,
+        "focus": [
+          "op-L2C3"
+        ],
+        "bindings": {
+          "age": "20"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "condition_eval",
+          "branch": "op-L2C3",
+          "result": true
+        }
+      },
+      {
+        "index": 2,
+        "line": 2,
+        "focus": [
+          "branch-L2C0"
+        ],
+        "bindings": {
+          "age": "20"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "condition_eval",
+          "branch": "branch-L2C0",
+          "result": true
+        }
+      },
+      {
+        "index": 3,
+        "line": 3,
+        "focus": [
+          "bind-L3C4"
+        ],
+        "bindings": {
+          "age": "20",
+          "status": "'adult'"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "bind-L3C4",
+          "repr": "'adult'"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

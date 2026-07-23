@@ -4,11 +4,74 @@
     "trace": {
       "type": "object",
       "properties": {
+        "scope": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "module"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "kind",
+                "id",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "function"
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "functionId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "argsRepr": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "kind",
+                "id",
+                "functionId",
+                "label",
+                "argsRepr"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
         "call": {
           "type": "object",
           "properties": {
             "functionId": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             },
             "argsRepr": {
               "type": "array",
@@ -517,7 +580,7 @@
         }
       },
       "required": [
-        "call",
+        "scope",
         "steps"
       ],
       "additionalProperties": false

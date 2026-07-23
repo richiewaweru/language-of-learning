@@ -46,6 +46,7 @@ app.add_middleware(
         "http://localhost:4173",
         "http://127.0.0.1:4173",
     ],
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1):\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -74,6 +75,72 @@ class EventRequest(BaseModel):
     payload: dict[str, Any] = Field(default_factory=dict)
 
 
+GRAPH_NODE_KINDS = {
+    "value", "binding", "collection", "module", "function", "call",
+    "builtin-call", "operation", "sequence", "branch", "loop", "return",
+    "mutation", "effect",
+}
+TRACE_EVENT_TYPES = {
+    "call_enter", "bind_param", "state_init", "loop_advance",
+    "condition_eval", "state_change", "collection_append",
+    "indexed_selection", "indexed_mutation", "supported_call", "loop_test",
+    "loop-exit", "loop-skip", "builtin-evaluated", "effect_fire",
+    "unsupported", "return_exit",
+}
+
+
+def validate_analysis_contracts(graph: dict[str, Any], trace: dict[str, Any]) -> None:
+    """Reject internal writer drift before a successful analysis response."""
+    if not isinstance(graph.get("version"), str) or not isinstance(graph.get("source"), str):
+        raise ValueError("Semantic graph is missing version or source.")
+    nodes = graph.get("nodes")
+    relations = graph.get("relations")
+    unsupported = graph.get("unsupported")
+    if not isinstance(nodes, list) or not isinstance(relations, list) or not isinstance(unsupported, list):
+        raise ValueError("Semantic graph collections are invalid.")
+    node_ids = {
+        node.get("id")
+        for node in nodes
+        if isinstance(node, dict) and node.get("kind") in GRAPH_NODE_KINDS
+    }
+    if len(node_ids) != len(nodes) or None in node_ids:
+        raise ValueError("Semantic graph contains an invalid or duplicate node.")
+    if not unsupported:
+        roots = [node for node in nodes if node.get("kind") in {"module", "function"}]
+        if len(roots) != 1:
+            raise ValueError("Semantic graph must contain one execution scope.")
+    for relation in relations:
+        if relation.get("from") not in node_ids or relation.get("to") not in node_ids:
+            raise ValueError("Semantic graph relation references an unknown node.")
+
+    scope = trace.get("scope")
+    if not isinstance(scope, dict) or scope.get("kind") not in {"module", "function"}:
+        raise ValueError("Trace execution scope is invalid.")
+    if not isinstance(scope.get("id"), str) or not isinstance(scope.get("label"), str):
+        raise ValueError("Trace execution scope identity is invalid.")
+    if scope["kind"] == "function":
+        if not isinstance(scope.get("functionId"), str) or not isinstance(scope.get("argsRepr"), list):
+            raise ValueError("Function trace scope metadata is incomplete.")
+        call = trace.get("call")
+        if not isinstance(call, dict) or call.get("functionId") != scope["functionId"]:
+            raise ValueError("Function compatibility call metadata is inconsistent.")
+    steps = trace.get("steps")
+    if not isinstance(steps, list) or not isinstance(trace.get("truncated"), bool):
+        raise ValueError("Trace steps or truncation state is invalid.")
+    for index, step in enumerate(steps):
+        if (
+            not isinstance(step, dict)
+            or step.get("index") != index
+            or not isinstance(step.get("line"), int)
+            or step["line"] < 1
+            or not isinstance(step.get("focus"), list)
+            or not isinstance(step.get("bindings"), dict)
+            or not isinstance(step.get("frameId"), str)
+            or step.get("event", {}).get("type") not in TRACE_EVENT_TYPES
+        ):
+            raise ValueError(f"Trace step {index} is invalid.")
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -91,24 +158,14 @@ def analyze(req: AnalyzeRequest) -> dict[str, Any]:
         # callers receive one atomic, structured failure with no partial trace.
         if graph.get("unsupported"):
             trace = run_trace(source, graph, req.argsRepr)
+            validate_analysis_contracts(graph, trace)
             return {
                 "graph": graph,
                 "trace": {k: v for k, v in trace.items() if k != "violation"},
                 "violation": trace.get("violation"),
             }
-        # Trace needs a function node; still return graph with unsupported honestly
-        has_fn = any(n.get("kind") == "function" for n in graph.get("nodes", []))
-        if not has_fn:
-            return {
-                "graph": graph,
-                "trace": {
-                    "call": {"functionId": "missing", "argsRepr": req.argsRepr},
-                    "steps": [],
-                    "truncated": False,
-                },
-                "violation": None,
-            }
         trace = run_trace(source, graph, req.argsRepr)
+        validate_analysis_contracts(graph, trace)
         return {
             "graph": graph,
             "trace": {k: v for k, v in trace.items() if k != "violation"},
@@ -118,7 +175,11 @@ def analyze(req: AnalyzeRequest) -> dict[str, Any]:
         return {
             "graph": {"version": "0.1", "source": source, "nodes": [], "relations": [], "unsupported": []},
             "trace": {
-                "call": {"functionId": "blocked", "argsRepr": req.argsRepr},
+                "scope": {
+                    "kind": "module",
+                    "id": "module:main",
+                    "label": "Program",
+                },
                 "steps": [],
                 "truncated": True,
             },

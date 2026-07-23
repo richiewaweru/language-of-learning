@@ -29,7 +29,7 @@ from lol_trace import canonical_json as trace_canonical_json  # noqa: E402
 from lol_trace import run_trace  # noqa: E402
 
 PATTERN_FIXTURES = ["accumulate", "count", "filter", "transform", "search", "guard"]
-SUPPORTED_FIXTURES = ["array-update"]
+SUPPORTED_FIXTURES = ["array-update", "print_total", "return_total"]
 
 
 def regenerate_graph(fixture_dir: Path) -> None:

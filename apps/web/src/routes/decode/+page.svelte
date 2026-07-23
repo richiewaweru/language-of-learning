@@ -71,6 +71,15 @@
 
   const stepIndex = $derived(selection.stepIndex ?? 0);
   const totalSteps = $derived(semanticScene?.steps.length ?? 0);
+  const moduleInput = $derived(sourceHasModuleEntry(source));
+  const emptyProgram = $derived(
+    Boolean(
+      graph &&
+        trace?.scope.kind === 'module' &&
+        !violation &&
+        trace.steps.length === 0,
+    ),
+  );
 
   const truthDetail = $derived(
     graph && trace && scene
@@ -106,18 +115,33 @@
     return args.filter(Boolean);
   }
 
+  function sourceHasModuleEntry(value: string): boolean {
+    const topLevel = value
+      .split('\n')
+      .map((line) => line.trimEnd())
+      .filter((line) => line.trim() && !line.trimStart().startsWith('#'))
+      .filter((line) => !/^\s/.test(line));
+    if (topLevel.length === 0) return true;
+    return topLevel.some(
+      (line) =>
+        !line.startsWith('def ') &&
+        !line.startsWith('async def ') &&
+        !line.startsWith('@'),
+    );
+  }
+
   async function runAnalyze() {
     analyzing = true;
     error = '';
     transferFeedback = '';
     try {
-      const argsRepr = parseArgs(argsText);
+      const argsRepr = moduleInput ? [] : parseArgs(argsText);
       const result = await analyzeSource(source, argsRepr);
       graph = result.graph;
       trace = result.trace as Trace;
       violation = result.violation;
       pattern = detectPattern(result.graph);
-      if (result.graph.nodes.some((n) => n.kind === 'function') && result.trace.steps?.length) {
+      if (!result.violation && result.trace.steps?.length) {
         scene = buildScene(result.graph, result.trace as Trace);
         semanticScene = normalizeSemanticScene(result.graph, result.trace as Trace);
       } else {
@@ -127,7 +151,15 @@
       transfer = buildTransferCheck(result.graph);
       selection = { stepIndex: 0 };
       await recordEvent('analyze', {
-        functionId: result.trace.call?.functionId,
+        scopeKind: result.trace.scope.kind,
+        scopeId:
+          result.trace.scope.kind === 'function'
+            ? result.trace.scope.functionId
+            : result.trace.scope.id,
+        functionId:
+          result.trace.scope.kind === 'function'
+            ? result.trace.scope.functionId
+            : undefined,
         unsupported: result.graph.unsupported?.length ?? 0,
         pattern: pattern?.pattern ?? null,
       });
@@ -229,14 +261,23 @@
       </div>
 
       {#if inputTab === 'paste'}
-        <label class="field">
+        <label class="field" data-testid="decode-source-editor">
           <span class="sr-only">Python source</span>
           <CodeEditor value={source} onchange={(v) => (source = v)} />
         </label>
-        <label class="field args-field">
-          <span>Sample input</span>
-          <input class="args" bind:value={argsText} placeholder="[2, 4, 6, 8]" />
-        </label>
+        {#if !moduleInput}
+          <label class="field args-field">
+            <span>Sample input</span>
+            <input
+              class="args"
+              bind:value={argsText}
+              placeholder="[2, 4, 6, 8]"
+              data-testid="decode-sample-input"
+            />
+          </label>
+        {:else}
+          <p class="hint" data-testid="module-input-note">Program code runs without sample input.</p>
+        {/if}
       {:else if inputTab === 'examples'}
         <p class="hint">Explore supported functions, loops, lists, and conditionals.</p>
         <div class="example-pills">
@@ -246,17 +287,23 @@
         </div>
       {/if}
 
-      <button type="button" class="btn-primary visualize" onclick={runAnalyze} disabled={analyzing}>
+      <button
+        type="button"
+        class="btn-primary visualize"
+        onclick={runAnalyze}
+        disabled={analyzing}
+        data-testid="decode-visualize"
+      >
         {analyzing ? 'Visualizing…' : 'Visualize'}
       </button>
 
       {#if error}
-        <div class="error" data-testid="error" role="alert">
+        <div class="error" data-testid="decode-error" role="alert">
           <p>We could not visualize that program. {error}</p>
           <button type="button" class="btn-secondary" onclick={runAnalyze}>Retry</button>
         </div>
       {:else if violation}
-        <div class="error" data-testid="unsupported" role="status">
+        <div class="error" data-testid="decode-unsupported" role="status">
           <p><strong>Execution not verified.</strong> {violation.message}</p>
           <p>Lens will not invent a trace for unsupported behavior.</p>
         </div>
@@ -269,7 +316,7 @@
           <div class="decode-playback" data-testid="decode-playback" aria-label="Execution controls">
             <button type="button" class="btn-secondary" onclick={() => goToStep(0)} disabled={stepIndex === 0}>Start</button>
             <button type="button" class="btn-secondary" onclick={() => goToStep(stepIndex - 1)} disabled={stepIndex === 0}>Back</button>
-            <span>Step {stepIndex + 1} of {totalSteps}</span>
+            <span data-testid="decode-step-count">Step {stepIndex + 1} of {totalSteps}</span>
             <button type="button" class="btn-secondary" onclick={() => goToStep(stepIndex + 1)} disabled={stepIndex >= totalSteps - 1}>Next</button>
             <button type="button" class="btn-secondary" onclick={() => goToStep(totalSteps - 1)} disabled={stepIndex >= totalSteps - 1}>End</button>
           </div>
@@ -285,6 +332,7 @@
               <button
                 type="button"
                 role="tab"
+                data-testid="view-{view.id}"
                 aria-selected={activeView === view.id}
                 class:active={activeView === view.id}
                 onclick={() => (activeView = view.id as typeof activeView)}
@@ -300,7 +348,15 @@
             <div class="unsupported-workspace" data-testid="unsupported-workspace">
               <h2>Verified visualization unavailable</h2>
               <p>{violation.message}</p>
-              <p>Try a smaller function using supported assignments, loops, conditions, list operations, and returns.</p>
+              <p>
+                Try a smaller {trace.scope.kind === 'module' ? 'program' : 'function'} using supported assignments,
+                loops, conditions, and list operations{trace.scope.kind === 'function' ? ', and returns' : ''}.
+              </p>
+            </div>
+          {:else if emptyProgram}
+            <div class="workspace-empty" data-testid="decode-empty-program">
+              <h2>Nothing to run</h2>
+              <p>This file contains definitions or comments but nothing to run.</p>
             </div>
           {:else if activeView === 'structure' && scene && semanticScene}
             <GraphInspector
@@ -341,7 +397,7 @@
       <div class="insight-card surface-card">
         <p class="card-label">Try this next</p>
         <ul>
-          <li>Rename the function and variables, then Visualize again.</li>
+          <li>Rename the program variables, then Visualize again.</li>
           <li>Change an input value and predict which State row will change.</li>
         </ul>
       </div>
@@ -364,14 +420,14 @@
 
   <AskLens
     {source}
-    argsRepr={parseArgs(argsText)}
+    argsRepr={moduleInput ? [] : parseArgs(argsText)}
     {stepIndex}
     lessonGoal="Connect the current Flow, State, and Guided Trace views."
   />
 
   <footer class="scope-strip surface-card">
     <p>
-      <strong>Scope:</strong> Lens currently explains single-function programs built from variables, arithmetic,
+      <strong>Scope:</strong> Lens explains supported programs and single functions built from variables, arithmetic,
       comparisons, Boolean guards, loops, lists, state updates, selected built-ins, and returns. It does not yet
       expand recursion, helper functions, objects, dictionaries, comprehensions, exceptions, imports, generators,
       or async code.

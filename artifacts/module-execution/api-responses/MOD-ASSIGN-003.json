@@ -1,0 +1,124 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "score = 10\nscore = score + 5",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 2,
+          "endCol": 17
+        },
+        "name": "Program"
+      },
+      {
+        "id": "bind-L1C0",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 10
+        },
+        "name": "score",
+        "role": "state",
+        "mutable": true,
+        "initialRepr": "10"
+      },
+      {
+        "id": "val-L1C8",
+        "kind": "value",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 8,
+          "endLine": 1,
+          "endCol": 10
+        },
+        "repr": "10",
+        "pyType": "int"
+      },
+      {
+        "id": "op-L2C8",
+        "kind": "operation",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 8,
+          "endLine": 2,
+          "endCol": 16
+        },
+        "expr": "score + 5"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "bind-L1C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "op-L2C8"
+      },
+      {
+        "from": "op-L2C8",
+        "type": "reads",
+        "to": "bind-L1C0"
+      },
+      {
+        "from": "op-L2C8",
+        "type": "writes",
+        "to": "bind-L1C0"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "score": "10"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "bind-L1C0",
+          "repr": "10"
+        }
+      },
+      {
+        "index": 1,
+        "line": 2,
+        "focus": [
+          "op-L2C8",
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "score": "15"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_change",
+          "binding": "bind-L1C0",
+          "oldRepr": "10",
+          "newRepr": "15"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

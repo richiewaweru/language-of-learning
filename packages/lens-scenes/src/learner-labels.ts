@@ -35,7 +35,9 @@ export function deriveStepLabel(graph: SemanticGraph, step: TraceStep, trace: Tr
     case 'bind_param':
       return 'Receiving the input';
     case 'state_init':
-      return `Creating the running ${stateName}`;
+      return trace.scope.kind === 'module'
+        ? `Setting ${byId(graph).get(event.binding)?.name ?? stateName}`
+        : `Creating the running ${stateName}`;
     case 'loop_advance': {
       const priorAdvances = trace.steps
         .filter((s) => s.index < step.index && s.event.type === 'loop_advance')
@@ -75,7 +77,9 @@ export function deriveLearnerCaption(
     case 'bind_param':
       return `The parameter ${event.name} receives the value ${event.repr}.`;
     case 'state_init':
-      return `The running ${stateName} starts at ${event.repr}.`;
+      return _trace.scope.kind === 'module'
+        ? `${byId(graph).get(event.binding)?.name ?? stateName} receives ${event.repr}.`
+        : `The running ${stateName} starts at ${event.repr}.`;
     case 'loop_advance':
       return `The current ${itemName} is ${event.itemRepr}. The ${stateName} is still ${bindings[stateName] ?? 'unchanged'}.`;
     case 'state_change':

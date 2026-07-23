@@ -3,7 +3,12 @@ import type { NormalizedSceneStep, SemanticEntity, SemanticScene } from '@lol/le
 export type FlowProjection = {
   collection: { label: string; items: string[] };
   cursor: { label: string; value?: string; index?: number; active: boolean };
-  work: { label: string; expression: string; active: boolean };
+  work: {
+    label: string;
+    expression: string;
+    inputs: { label: string; value?: string }[];
+    active: boolean;
+  };
   state: {
     label: string;
     value?: string;
@@ -11,6 +16,7 @@ export type FlowProjection = {
     changing: boolean;
   };
   result: { value?: string; visible: boolean; active: boolean };
+  scopeKind: 'module' | 'function';
   eventType: NormalizedSceneStep['activeEvent']['type'];
 };
 
@@ -48,11 +54,26 @@ export function deriveFlowProjection(
   const step = scene.steps[stepIndex] ?? scene.steps[0];
   if (!step) throw new Error('Cannot derive Flow without a semantic step');
 
-  const state = scene.entities.find((entity) => entity.role === 'state');
+  const scopeKind = scene.entities.some(
+    (entity) =>
+      entity.role === 'call-frame' &&
+      entity.properties.semanticKind === 'module',
+  )
+    ? 'module'
+    : 'function';
+  const writtenEntityId =
+    typeof step.activeEvent.payload.binding === 'string'
+      ? step.activeEvent.payload.binding
+      : undefined;
+  const state =
+    scene.entities.find((entity) => entity.id === writtenEntityId) ??
+    scene.entities.find((entity) => entity.role === 'state');
   const cursor = scene.entities.find((entity) => entity.role === 'cursor');
   const result = scene.entities.find((entity) => entity.role === 'result');
   const operation = scene.entities.find(
-    (entity) => entity.properties.semanticKind === 'operation',
+    (entity) =>
+      step.activeEntityIds.includes(entity.id) &&
+      entity.properties.semanticKind === 'operation',
   );
   const explicitCollection = scene.entities.find((entity) => entity.role === 'collection');
   const listBinding = scene.entities.find((entity) => {
@@ -74,6 +95,27 @@ export function deriveFlowProjection(
       ? cursorEvent.payload.itemValue
       : snapshotValue(step, cursor);
   const resultValue = snapshotValue(step, result);
+  const expression =
+    typeof operation?.properties.expression === 'string'
+      ? operation.properties.expression
+      : step.activeEvent.type === 'bind'
+        ? 'assign the value'
+        : 'supported operation';
+  const expressionInputs = scene.entities
+    .filter(
+      (entity) =>
+        ['binding', 'state', 'reference', 'cursor'].includes(entity.role) &&
+        expression.includes(entity.label),
+    )
+    .map((entity) => ({
+      label: entity.label,
+      value: snapshotValue(step, entity),
+    }));
+  for (const literal of expression.match(/(?<![\w.])\d+(?:\.\d+)?/g) ?? []) {
+    if (!expressionInputs.some((input) => input.label === literal)) {
+      expressionInputs.push({ label: literal, value: literal });
+    }
+  }
 
   return {
     collection: {
@@ -88,14 +130,20 @@ export function deriveFlowProjection(
     },
     work: {
       label: 'Operation',
-      expression:
-        typeof operation?.properties.expression === 'string'
-          ? operation.properties.expression
-          : 'supported operation',
-      active: event.type === 'calculate' || event.type === 'update',
+      expression,
+      inputs: expressionInputs,
+      active:
+        event.type === 'bind' ||
+        event.type === 'calculate' ||
+        event.type === 'update',
     },
     state: {
-      label: state?.label ? 'Running ' + state.label : 'State',
+      label:
+        state?.label
+          ? scopeKind === 'module'
+            ? state.label
+            : 'Running ' + state.label
+          : 'State',
       value: snapshotValue(step, state),
       previousValue: previousSnapshotValue(step, state),
       changing: event.type === 'update',
@@ -105,6 +153,7 @@ export function deriveFlowProjection(
       visible: event.type === 'return' && resultValue !== undefined,
       active: event.type === 'return',
     },
+    scopeKind,
     eventType: event.type,
   };
 }

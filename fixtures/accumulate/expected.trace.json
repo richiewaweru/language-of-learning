@@ -1,5 +1,8 @@
 {
-  "call": {
+  "scope": {
+    "kind": "function",
+    "id": "fn-L1C0",
+    "label": "calculate_total",
     "functionId": "fn-L1C0",
     "argsRepr": [
       "[2, 4, 6, 8]"
@@ -13,6 +16,7 @@
         "fn-L1C0"
       ],
       "bindings": {},
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "call_enter",
         "functionId": "fn-L1C0"
@@ -28,6 +32,7 @@
         "numbers": "[2, 4, 6, 8]",
         "total": "0"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_init",
         "binding": "bind-L2C4",
@@ -45,6 +50,7 @@
         "numbers": "[2, 4, 6, 8]",
         "total": "0"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -56,13 +62,15 @@
       "index": 3,
       "line": 4,
       "focus": [
-        "op-L4C16"
+        "op-L4C16",
+        "bind-L2C4"
       ],
       "bindings": {
         "number": "2",
         "numbers": "[2, 4, 6, 8]",
         "total": "2"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -81,6 +89,7 @@
         "numbers": "[2, 4, 6, 8]",
         "total": "2"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -92,13 +101,15 @@
       "index": 5,
       "line": 4,
       "focus": [
-        "op-L4C16"
+        "op-L4C16",
+        "bind-L2C4"
       ],
       "bindings": {
         "number": "4",
         "numbers": "[2, 4, 6, 8]",
         "total": "6"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -117,6 +128,7 @@
         "numbers": "[2, 4, 6, 8]",
         "total": "6"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -128,13 +140,15 @@
       "index": 7,
       "line": 4,
       "focus": [
-        "op-L4C16"
+        "op-L4C16",
+        "bind-L2C4"
       ],
       "bindings": {
         "number": "6",
         "numbers": "[2, 4, 6, 8]",
         "total": "12"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -153,6 +167,7 @@
         "numbers": "[2, 4, 6, 8]",
         "total": "12"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -164,13 +179,15 @@
       "index": 9,
       "line": 4,
       "focus": [
-        "op-L4C16"
+        "op-L4C16",
+        "bind-L2C4"
       ],
       "bindings": {
         "number": "8",
         "numbers": "[2, 4, 6, 8]",
         "total": "20"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -189,6 +206,7 @@
         "numbers": "[2, 4, 6, 8]",
         "total": "20"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "return_exit",
         "repr": "20"
@@ -196,6 +214,12 @@
     }
   ],
   "truncated": false,
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": [
+      "[2, 4, 6, 8]"
+    ]
+  },
   "result": {
     "repr": "20"
   }

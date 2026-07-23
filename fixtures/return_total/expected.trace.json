@@ -1,5 +1,8 @@
 {
-  "call": {
+  "scope": {
+    "kind": "function",
+    "id": "fn-L1C0",
+    "label": "return_total",
     "functionId": "fn-L1C0",
     "argsRepr": [
       "[1, 2, 3]"
@@ -13,6 +16,7 @@
         "fn-L1C0"
       ],
       "bindings": {},
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "call_enter",
         "functionId": "fn-L1C0"
@@ -28,6 +32,7 @@
         "numbers": "[1, 2, 3]",
         "total": "0"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_init",
         "binding": "bind-L2C4",
@@ -45,6 +50,7 @@
         "numbers": "[1, 2, 3]",
         "total": "0"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -56,13 +62,15 @@
       "index": 3,
       "line": 4,
       "focus": [
-        "op-L4C16"
+        "op-L4C16",
+        "bind-L2C4"
       ],
       "bindings": {
         "n": "1",
         "numbers": "[1, 2, 3]",
         "total": "1"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -81,6 +89,7 @@
         "numbers": "[1, 2, 3]",
         "total": "1"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -92,13 +101,15 @@
       "index": 5,
       "line": 4,
       "focus": [
-        "op-L4C16"
+        "op-L4C16",
+        "bind-L2C4"
       ],
       "bindings": {
         "n": "2",
         "numbers": "[1, 2, 3]",
         "total": "3"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -117,6 +128,7 @@
         "numbers": "[1, 2, 3]",
         "total": "3"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -128,13 +140,15 @@
       "index": 7,
       "line": 4,
       "focus": [
-        "op-L4C16"
+        "op-L4C16",
+        "bind-L2C4"
       ],
       "bindings": {
         "n": "3",
         "numbers": "[1, 2, 3]",
         "total": "6"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -153,6 +167,7 @@
         "numbers": "[1, 2, 3]",
         "total": "6"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "return_exit",
         "repr": "6"
@@ -160,6 +175,12 @@
     }
   ],
   "truncated": false,
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": [
+      "[1, 2, 3]"
+    ]
+  },
   "result": {
     "repr": "6"
   }

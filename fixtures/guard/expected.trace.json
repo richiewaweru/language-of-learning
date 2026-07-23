@@ -1,5 +1,8 @@
 {
-  "call": {
+  "scope": {
+    "kind": "function",
+    "id": "fn-L1C0",
+    "label": "apply_tax",
     "functionId": "fn-L1C0",
     "argsRepr": [
       "100"
@@ -13,6 +16,7 @@
         "fn-L1C0"
       ],
       "bindings": {},
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "call_enter",
         "functionId": "fn-L1C0"
@@ -28,6 +32,7 @@
         "amount": "100",
         "rate": "0.16"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_init",
         "binding": "bind-L2C4",
@@ -44,6 +49,7 @@
         "amount": "100",
         "rate": "0.16"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L3C7",
@@ -60,6 +66,7 @@
         "amount": "100",
         "rate": "0.16"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L3C4",
@@ -76,6 +83,7 @@
         "amount": "100",
         "rate": "0.16"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "return_exit",
         "repr": "16.0"
@@ -83,6 +91,12 @@
     }
   ],
   "truncated": false,
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": [
+      "100"
+    ]
+  },
   "result": {
     "repr": "16.0"
   }

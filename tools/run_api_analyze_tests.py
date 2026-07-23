@@ -64,9 +64,39 @@ def test_atomic_rejections() -> None:
         print(f"  ok {label}: {expected_code}, no partial artifacts")
 
 
+def test_module_execution() -> None:
+    client = TestClient(app)
+    response = client.post(
+        "/analyze",
+        json={
+            "source": "price = 100\ntax = price * 0.16\ntotal = price + tax",
+            "argsRepr": [],
+        },
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["violation"] is None, body
+    assert body["trace"]["scope"] == {
+        "kind": "module",
+        "id": "module:main",
+        "label": "Program",
+    }, body
+    assert "call" not in body["trace"], body
+    assert len(body["trace"]["steps"]) == 3, body
+    assert body["trace"]["steps"][-1]["bindings"] == {
+        "price": "100",
+        "tax": "16.0",
+        "total": "116.0",
+    }, body
+    assert all(step["frameId"] == "frame:module" for step in body["trace"]["steps"]), body
+    assert any(node["kind"] == "module" for node in body["graph"]["nodes"]), body
+    print("  ok module execution: three verified steps and exact final bindings")
+
+
 def main() -> int:
     test_atomic_rejections()
-    print(f"api-analyze: {len(REJECTION_CASES)}/{len(REJECTION_CASES)} atomic rejection tests passed")
+    test_module_execution()
+    print(f"api-analyze: {len(REJECTION_CASES) + 1} contract and rejection tests passed")
     return 0
 
 

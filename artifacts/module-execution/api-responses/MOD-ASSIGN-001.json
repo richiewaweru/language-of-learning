@@ -1,0 +1,80 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "price = 100",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 11
+        },
+        "name": "Program"
+      },
+      {
+        "id": "bind-L1C0",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 11
+        },
+        "name": "price",
+        "role": "constant",
+        "mutable": false,
+        "initialRepr": "100"
+      },
+      {
+        "id": "val-L1C8",
+        "kind": "value",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 8,
+          "endLine": 1,
+          "endCol": 11
+        },
+        "repr": "100",
+        "pyType": "int"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "bind-L1C0"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "price": "100"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "bind-L1C0",
+          "repr": "100"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

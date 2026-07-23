@@ -16,7 +16,7 @@ CLI:
   output.json: { "graph", "trace", "pattern", "scene", "engineVersion" }
                (--engine-only omits pattern/scene: { "graph", "trace" })
 
-  On a SandboxViolation or function-less graph the CLI writes
+  On a SandboxViolation or graph without an execution scope the CLI writes
   { "violation": { "construct", "message" } } and exits non-zero.
 """
 from __future__ import annotations
@@ -66,10 +66,16 @@ def build_graph_and_trace(source: str, args_repr: list[str]) -> tuple[dict[str, 
                 "diagnostic": rejection.get("diagnostic", "Analyzer rejected source before graph construction."),
             }
         )
-    has_fn = any(node.get("kind") == "function" for node in graph.get("nodes", []))
-    if not has_fn:
+    has_scope = any(
+        node.get("kind") in {"module", "function"}
+        for node in graph.get("nodes", [])
+    )
+    if not has_scope:
         raise ArtifactError(
-            {"construct": "no_function", "message": "Source defines no analyzable function node."}
+            {
+                "construct": "execution_scope",
+                "message": "Source defines no analyzable program or function scope.",
+            }
         )
     trace = run_trace(source, graph, args_repr)
     violation = trace.get("violation")

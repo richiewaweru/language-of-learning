@@ -1,7 +1,10 @@
 {
   "runs": [
     {
-      "call": {
+      "scope": {
+        "kind": "function",
+        "id": "fn-L1C0",
+        "label": "is_positive",
         "functionId": "fn-L1C0",
         "argsRepr": [
           "3"
@@ -15,6 +18,7 @@
             "fn-L1C0"
           ],
           "bindings": {},
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "call_enter",
             "functionId": "fn-L1C0"
@@ -29,6 +33,7 @@
           "bindings": {
             "value": "3"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "op-L2C11",
@@ -44,6 +49,7 @@
           "bindings": {
             "value": "3"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "return_exit",
             "repr": "True"
@@ -51,12 +57,21 @@
         }
       ],
       "truncated": false,
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "3"
+        ]
+      },
       "result": {
         "repr": "True"
       }
     },
     {
-      "call": {
+      "scope": {
+        "kind": "function",
+        "id": "fn-L1C0",
+        "label": "is_positive",
         "functionId": "fn-L1C0",
         "argsRepr": [
           "-2"
@@ -70,6 +85,7 @@
             "fn-L1C0"
           ],
           "bindings": {},
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "call_enter",
             "functionId": "fn-L1C0"
@@ -84,6 +100,7 @@
           "bindings": {
             "value": "-2"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "op-L2C11",
@@ -99,6 +116,7 @@
           "bindings": {
             "value": "-2"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "return_exit",
             "repr": "False"
@@ -106,6 +124,12 @@
         }
       ],
       "truncated": false,
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "-2"
+        ]
+      },
       "result": {
         "repr": "False"
       }

@@ -1,7 +1,10 @@
 {
   "runs": [
     {
-      "call": {
+      "scope": {
+        "kind": "function",
+        "id": "fn-L1C0",
+        "label": "linear_search",
         "functionId": "fn-L1C0",
         "argsRepr": [
           "[5, 8, 11]",
@@ -16,6 +19,7 @@
             "fn-L1C0"
           ],
           "bindings": {},
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "call_enter",
             "functionId": "fn-L1C0"
@@ -31,6 +35,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "supported_call",
             "callee": "len",
@@ -50,6 +55,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "supported_call",
             "callee": "range",
@@ -70,6 +76,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop_advance",
             "loop": "loop-L2C4",
@@ -89,6 +96,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "indexed_selection",
             "collection": "bind-L1C18",
@@ -107,6 +115,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "op-L3C11",
@@ -124,6 +133,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "branch-L3C8",
@@ -141,6 +151,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop_advance",
             "loop": "loop-L2C4",
@@ -160,6 +171,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "indexed_selection",
             "collection": "bind-L1C18",
@@ -178,6 +190,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "op-L3C11",
@@ -195,6 +208,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "branch-L3C8",
@@ -212,6 +226,7 @@
             "target": "8",
             "values": "[5, 8, 11]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "return_exit",
             "repr": "1"
@@ -219,6 +234,13 @@
         }
       ],
       "truncated": false,
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "[5, 8, 11]",
+          "8"
+        ]
+      },
       "result": {
         "repr": "1"
       }

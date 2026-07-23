@@ -90,6 +90,13 @@ describe('graph schema', () => {
 describe('trace schema', () => {
   it('accepts closed event set', () => {
     const trace = {
+      scope: {
+        kind: 'function' as const,
+        id: 'f1',
+        functionId: 'f1',
+        label: 'example',
+        argsRepr: ['[1, 2]'],
+      },
       call: { functionId: 'f1', argsRepr: ['[1, 2]'] },
       steps: [
         {
@@ -141,6 +148,13 @@ describe('trace schema', () => {
       { type: 'unsupported', construct: 'recursion', message: 'Deferred in v1.' },
     ];
     const trace = {
+      scope: {
+        kind: 'function' as const,
+        id: 'f1',
+        functionId: 'f1',
+        label: 'example',
+        argsRepr: [],
+      },
       call: { functionId: 'f1', argsRepr: [] },
       steps: events.map((event, index) => ({
         index,
@@ -153,6 +167,33 @@ describe('trace schema', () => {
       truncated: false,
     };
     expect(TraceSchema.safeParse(trace).success).toBe(true);
+  });
+
+  it('accepts a module trace without legacy call metadata', () => {
+    expect(
+      TraceSchema.safeParse({
+        scope: { kind: 'module', id: 'module:main', label: 'Program' },
+        steps: [],
+        truncated: false,
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects invalid or incomplete execution scopes', () => {
+    expect(
+      TraceSchema.safeParse({
+        scope: { kind: 'script', id: 'module:main', label: 'Program' },
+        steps: [],
+        truncated: false,
+      }).success,
+    ).toBe(false);
+    expect(
+      TraceSchema.safeParse({
+        scope: { kind: 'function', id: 'f1', label: 'example' },
+        steps: [],
+        truncated: false,
+      }).success,
+    ).toBe(false);
   });
 });
 

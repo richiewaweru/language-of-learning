@@ -1,0 +1,31 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "# Calculate the final price",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 27
+        },
+        "name": "Program"
+      }
+    ],
+    "relations": [],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [],
+    "truncated": false
+  },
+  "violation": null
+}

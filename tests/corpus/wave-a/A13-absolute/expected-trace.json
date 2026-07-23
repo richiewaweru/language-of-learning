@@ -1,7 +1,10 @@
 {
   "runs": [
     {
-      "call": {
+      "scope": {
+        "kind": "function",
+        "id": "fn-L1C0",
+        "label": "distance",
         "functionId": "fn-L1C0",
         "argsRepr": [
           "3",
@@ -16,6 +19,7 @@
             "fn-L1C0"
           ],
           "bindings": {},
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "call_enter",
             "functionId": "fn-L1C0"
@@ -31,6 +35,7 @@
             "left": "3",
             "right": "9"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "builtin-evaluated",
             "builtin": "abs",
@@ -51,6 +56,7 @@
             "left": "3",
             "right": "9"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "return_exit",
             "repr": "6"
@@ -58,6 +64,13 @@
         }
       ],
       "truncated": false,
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "3",
+          "9"
+        ]
+      },
       "result": {
         "repr": "6"
       }

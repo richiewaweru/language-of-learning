@@ -1,5 +1,8 @@
 {
-  "call": {
+  "scope": {
+    "kind": "function",
+    "id": "fn-L1C0",
+    "label": "find_first_positive",
     "functionId": "fn-L1C0",
     "argsRepr": [
       "[-3, -1, 4, 2]"
@@ -13,6 +16,7 @@
         "fn-L1C0"
       ],
       "bindings": {},
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "call_enter",
         "functionId": "fn-L1C0"
@@ -28,6 +32,7 @@
         "n": "-3",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L2C4",
@@ -45,6 +50,7 @@
         "n": "-3",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L3C11",
@@ -61,6 +67,7 @@
         "n": "-3",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L3C8",
@@ -77,6 +84,7 @@
         "n": "-1",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L2C4",
@@ -94,6 +102,7 @@
         "n": "-1",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L3C11",
@@ -110,6 +119,7 @@
         "n": "-1",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L3C8",
@@ -126,6 +136,7 @@
         "n": "4",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L2C4",
@@ -143,6 +154,7 @@
         "n": "4",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L3C11",
@@ -159,6 +171,7 @@
         "n": "4",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L3C8",
@@ -175,6 +188,7 @@
         "n": "4",
         "numbers": "[-3, -1, 4, 2]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "return_exit",
         "repr": "4"
@@ -182,6 +196,12 @@
     }
   ],
   "truncated": false,
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": [
+      "[-3, -1, 4, 2]"
+    ]
+  },
   "result": {
     "repr": "4"
   }

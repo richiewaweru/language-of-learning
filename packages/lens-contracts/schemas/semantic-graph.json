@@ -204,6 +204,57 @@
                   },
                   "kind": {
                     "type": "string",
+                    "const": "module"
+                  },
+                  "sourceRange": {
+                    "type": "object",
+                    "properties": {
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "startCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "endCol": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "startLine",
+                      "startCol",
+                      "endLine",
+                      "endCol"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "sourceRange",
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
                     "const": "function"
                   },
                   "sourceRange": {

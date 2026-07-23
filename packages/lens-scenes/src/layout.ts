@@ -5,6 +5,7 @@ export const GRID = 28;
 export const MAX_NESTING = 3;
 
 const SIZE: Record<string, { w: number; h: number }> = {
+  module: { w: 16 * GRID, h: 2 * GRID },
   function: { w: 16 * GRID, h: 2 * GRID },
   binding: { w: 4 * GRID, h: GRID },
   collection: { w: 5 * GRID, h: 2 * GRID },
@@ -108,7 +109,7 @@ function layoutSubtree(
   const width = Math.max(size.w, maxChildRight - originX + pad);
   const height = Math.max(size.h, contentBottom - originY + pad / 2);
 
-  const isContainer = ['function', 'loop', 'branch', 'builtin-call'].includes(node.kind);
+  const isContainer = ['module', 'function', 'loop', 'branch', 'builtin-call'].includes(node.kind);
   out.push({
     id: node.id,
     kind: node.kind,
@@ -151,17 +152,17 @@ export function assertNoOverlap(layout: LayoutNode[]): void {
 }
 
 export function layoutGraph(graph: SemanticGraph): LayoutResult {
-  const functions = graph.nodes.filter((n) => n.kind === 'function');
-  if (functions.length !== 1) {
-    throw new LayoutError('Layout requires exactly one function node');
+  const roots = graph.nodes.filter((n) => n.kind === 'module' || n.kind === 'function');
+  if (roots.length !== 1) {
+    throw new LayoutError('Layout requires exactly one execution-scope node');
   }
-  const fn = functions[0]!;
+  const root = roots[0]!;
   const byId = new Map(graph.nodes.map((n) => [n.id, n]));
   const childrenOf = containsMap(graph.relations);
   const placed: Placed[] = [];
-  const box = layoutSubtree(fn.id, byId, childrenOf, GRID, GRID, 0, placed);
+  const box = layoutSubtree(root.id, byId, childrenOf, GRID, GRID, 0, placed);
 
-  // Nodes not reached via contains (e.g. iterator bindings) — place under function row
+  // Nodes not reached via contains (e.g. iterator bindings) — place under the scope row.
   const placedIds = new Set(placed.map((p) => p.id));
   let orphanX = GRID * 2;
   const orphanY = GRID * 2;

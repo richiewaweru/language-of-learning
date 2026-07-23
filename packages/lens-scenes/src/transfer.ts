@@ -16,6 +16,7 @@ function pickNode(graph: SemanticGraph): GraphNode | undefined {
     ...graph.nodes.filter((n) => n.kind === 'branch'),
     ...graph.nodes.filter((n) => n.kind === 'return'),
     ...graph.nodes.filter((n) => n.kind === 'function'),
+    ...graph.nodes.filter((n) => n.kind === 'module'),
   ];
   return preferred[0] ?? graph.nodes[0];
 }
@@ -34,6 +35,8 @@ export function buildTransferCheck(graph: SemanticGraph): TransferCheck | null {
     subject = `the branch \`${node.conditionExpr ?? node.id}\``;
   } else if (node.kind === 'function') {
     subject = `the function \`${node.name}\``;
+  } else if (node.kind === 'module') {
+    subject = 'the program';
   } else if (node.kind === 'return') {
     subject = `the return at \`${node.id}\``;
   } else {

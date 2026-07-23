@@ -52,7 +52,11 @@
       />
     </header>
 
-    <section class="source-evidence" aria-label="Active source range">
+    <section
+      class="source-evidence"
+      aria-label="Active source range"
+      data-testid={range ? `active-source-line-${range.startLine}` : undefined}
+    >
       <div class="line-label">
         Line {range?.startLine ?? '—'}
         {#if range} · columns {range.startColumn + 1}–{range.endColumn}{/if}

@@ -73,6 +73,13 @@ describe('semantic v1 normalization', () => {
       ],
     };
     const trace: Trace = {
+      scope: {
+        kind: 'function',
+        id: 'f1',
+        functionId: 'f1',
+        label: 'f',
+        argsRepr: ['[3]'],
+      },
       call: { functionId: 'f1', argsRepr: ['[3]'] },
       steps: [
         {
@@ -101,6 +108,37 @@ describe('semantic v1 normalization', () => {
       entityIds: ['unsupported-0'],
     });
     expect(scene.steps[1].activeSourceRange).toBeDefined();
+  });
+
+  it('normalizes a module scope without call metadata', () => {
+    const graph: SemanticGraph = {
+      version: '0.1',
+      source: 'price = 100',
+      nodes: [
+        { id: 'module:main', kind: 'module', name: 'Program', sourceRange: range(1, 0, 1, 11) },
+        { id: 'price', kind: 'binding', name: 'price', role: 'constant', sourceRange: range(1, 0, 1, 11) },
+      ],
+      relations: [{ from: 'module:main', type: 'contains', to: 'price' }],
+      unsupported: [],
+    };
+    const trace: Trace = {
+      scope: { kind: 'module', id: 'module:main', label: 'Program' },
+      steps: [
+        {
+          index: 0,
+          line: 1,
+          focus: ['price'],
+          bindings: { price: '100' },
+          frameId: 'frame:module',
+          event: { type: 'state_init', binding: 'price', repr: '100' },
+        },
+      ],
+      truncated: false,
+    };
+    const scene = normalizeSemanticScene(graph, trace);
+    expect(scene.id).toBe('semantic-module:main');
+    expect(scene.entities.find((entity) => entity.id === 'module:main')?.role).toBe('call-frame');
+    expect(scene.steps[0]?.snapshots[0]?.properties?.frameId).toBe('frame:module');
   });
 });
 

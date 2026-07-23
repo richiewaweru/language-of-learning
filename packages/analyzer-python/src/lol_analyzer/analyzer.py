@@ -101,7 +101,7 @@ SPECIAL_BUILTIN_NAMES = {"len", "range", "min", "max", "sum", "abs", "print"}
 
 
 class Analyzer:
-    """Builds a semantic graph from a single top-level function.
+    """Builds a semantic graph for a module execution or one top-level function.
 
     Node ids are purely positional (`<kind>-L<line>C<col>`), per the N2
     contract. Names, literals, and reprs live only in their own contract
@@ -127,16 +127,44 @@ class Analyzer:
         self.loop_stack: list[str] = []
 
     def analyze(self) -> dict[str, Any]:
+        functions = [node for node in self.tree.body if isinstance(node, ast.FunctionDef)]
+        module_statements = [
+            node for node in self.tree.body if not isinstance(node, ast.FunctionDef)
+        ]
+        module_mode = bool(module_statements) or not functions
         rejection = self.canonical_rejection()
         if rejection is not None:
             self.unsupported = [rejection]
             return self.graph()
 
-        functions = [node for node in self.tree.body if isinstance(node, ast.FunctionDef)]
-        if len(functions) != 1 or len(self.tree.body) != 1:
-            for node in self.tree.body:
-                if not isinstance(node, ast.FunctionDef):
-                    self.add_unsupported(node, type(node).__name__)
+        if module_mode:
+            executable_tree = ast.Module(body=module_statements, type_ignores=[])
+            self.precollect(executable_tree)
+            module_id = "module:main"
+            self.used_ids.add(module_id)
+            self.nodes.append(
+                {
+                    "id": module_id,
+                    "kind": "module",
+                    "sourceRange": {
+                        "startLine": 1,
+                        "startCol": 0,
+                        "endLine": max(1, len(self.source.splitlines())),
+                        "endCol": (
+                            len(self.source.splitlines()[-1])
+                            if self.source.splitlines()
+                            else 0
+                        ),
+                    },
+                    "name": "Program",
+                }
+            )
+            self.node_ids.add(module_id)
+            for stmt in module_statements:
+                self.visit_stmt(stmt, parent_id=module_id)
+            return self.graph()
+
+        if len(functions) != 1:
             if len(functions) != 1:
                 message = "This version analyzes one top-level function per run."
                 construct = "multiple functions" if len(functions) > 1 else "missing function"
@@ -202,14 +230,23 @@ class Analyzer:
 
     def canonical_rejection(self) -> dict[str, Any] | None:
         top_functions = [node for node in self.tree.body if isinstance(node, ast.FunctionDef)]
-        checks: list[tuple[str, ast.AST | None]] = [
-            ("UNSUPPORTED_CLASS", next((node for node in ast.walk(self.tree) if isinstance(node, ast.ClassDef)), None)),
-            ("UNSUPPORTED_ASYNC", next((node for node in ast.walk(self.tree) if isinstance(node, (ast.AsyncFunctionDef, ast.AsyncFor, ast.AsyncWith, ast.Await))), None)),
-            ("UNSUPPORTED_IMPORT", next((node for node in ast.walk(self.tree) if isinstance(node, (ast.Import, ast.ImportFrom))), None)),
+        module_statements = [
+            node for node in self.tree.body if not isinstance(node, ast.FunctionDef)
         ]
-        if len(top_functions) > 1:
+        module_mode = bool(module_statements) or not top_functions
+        checked_root: ast.AST
+        if module_mode:
+            checked_root = ast.Module(body=module_statements, type_ignores=[])
+        else:
+            checked_root = self.tree
+        checks: list[tuple[str, ast.AST | None]] = [
+            ("UNSUPPORTED_CLASS", next((node for node in ast.walk(checked_root) if isinstance(node, ast.ClassDef)), None)),
+            ("UNSUPPORTED_ASYNC", next((node for node in ast.walk(checked_root) if isinstance(node, (ast.AsyncFunctionDef, ast.AsyncFor, ast.AsyncWith, ast.Await))), None)),
+            ("UNSUPPORTED_IMPORT", next((node for node in ast.walk(checked_root) if isinstance(node, (ast.Import, ast.ImportFrom))), None)),
+        ]
+        if not module_mode and len(top_functions) > 1:
             checks.insert(0, ("UNSUPPORTED_MULTIPLE_FUNCTIONS", top_functions[1]))
-        function = top_functions[0] if len(top_functions) == 1 else None
+        function = top_functions[0] if not module_mode and len(top_functions) == 1 else None
         if function is not None:
             nested = next(
                 (node for node in ast.walk(function) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node is not function),
@@ -236,6 +273,12 @@ class Analyzer:
                 ]
             )
             checks.extend(self.hardening_checks(function))
+        elif module_mode:
+            checks.extend(
+                (code, node)
+                for code, node in self.hardening_checks(checked_root)
+                if code != "UNSUPPORTED_HELPER_FUNCTION"
+            )
         for code, node in checks:
             if node is not None:
                 construct, message = CANONICAL_UNSUPPORTED[code]
@@ -248,7 +291,7 @@ class Analyzer:
                 ).__dict__
         return None
 
-    def hardening_checks(self, function: ast.FunctionDef) -> list[tuple[str, ast.AST | None]]:
+    def hardening_checks(self, function: ast.AST) -> list[tuple[str, ast.AST | None]]:
         """Return ordered Wave A hardening checks after established canonicals."""
         nodes = list(ast.walk(function))
         special_calls = [
@@ -258,11 +301,15 @@ class Analyzer:
             and isinstance(node.func, ast.Name)
             and node.func.id in SPECIAL_BUILTIN_NAMES
         ]
-        bound_special_names = {
-            arg.arg
-            for arg in function.args.args
-            if arg.arg in SPECIAL_BUILTIN_NAMES
-        }
+        bound_special_names = (
+            {
+                arg.arg
+                for arg in function.args.args
+                if arg.arg in SPECIAL_BUILTIN_NAMES
+            }
+            if isinstance(function, ast.FunctionDef)
+            else set()
+        )
         for node in nodes:
             if isinstance(node, ast.Assign):
                 bound_special_names.update(
@@ -360,7 +407,10 @@ class Analyzer:
                 if isinstance(node, ast.Call)
                 and isinstance(node.func, ast.Name)
                 and node.func.id not in SPECIAL_BUILTIN_NAMES
-                and node.func.id != function.name
+                and (
+                    not isinstance(function, ast.FunctionDef)
+                    or node.func.id != function.name
+                )
                 and node.func.id != "enumerate"
             ),
             None,
@@ -396,7 +446,7 @@ class Analyzer:
             ("UNSUPPORTED_CONSTRUCT", unsupported_list_item),
         ]
 
-    def precollect(self, function: ast.FunctionDef) -> None:
+    def precollect(self, function: ast.AST) -> None:
         for node in ast.walk(function):
             if isinstance(node, ast.For) and isinstance(node.target, ast.Name):
                 self.loop_iterators.add(node.target.id)
@@ -425,6 +475,9 @@ class Analyzer:
             self.visit_loop_control(stmt, parent_id)
         elif isinstance(stmt, ast.Expr):
             self.visit_expr_stmt(stmt, parent_id)
+        elif isinstance(stmt, ast.FunctionDef):
+            # Function definitions are declarations in module execution mode.
+            return
         else:
             self.add_unsupported(stmt, type(stmt).__name__)
 
@@ -578,6 +631,8 @@ class Analyzer:
         elif isinstance(value, ast.Name):
             source_id = self.binding_or_collection_id(value.id)
             self.rel(binding_id, "reads", source_id)
+        elif isinstance(value, ast.Call):
+            self.add_unsupported(value, "call")
         elif not self.is_literal(value):
             self.add_unsupported(value, type(value).__name__)
 
@@ -610,7 +665,7 @@ class Analyzer:
 
     def visit_for(self, stmt: ast.For, parent_id: str) -> None:
         if not isinstance(stmt.target, ast.Name) or not (
-            isinstance(stmt.iter, ast.Name) or self.is_range_call(stmt.iter)
+            isinstance(stmt.iter, (ast.Name, ast.List)) or self.is_range_call(stmt.iter)
         ):
             self.add_unsupported(stmt, "for target")
             return
@@ -618,9 +673,22 @@ class Analyzer:
         body_target = self.body_reference(stmt.body)
         if isinstance(stmt.iter, ast.Name):
             collection_ref = self.binding_or_collection_id(stmt.iter.id)
-        else:
+        elif self.is_range_call(stmt.iter):
             collection_ref = self.ensure_call_node(stmt.iter, parent_id)
             self.ensure_expression_facts(stmt.iter, parent_id)
+        else:
+            assert isinstance(stmt.iter, ast.List)
+            collection_ref = self.alloc_id("coll", stmt.iter)
+            self.nodes.append(
+                {
+                    "id": collection_ref,
+                    "kind": "collection",
+                    "sourceRange": self.range_for(stmt.iter),
+                    "items": [self.literal_repr(item) for item in stmt.iter.elts],
+                }
+            )
+            self.node_ids.add(collection_ref)
+            self.rel(parent_id, "contains", collection_ref)
         self.nodes.append(
             {
                 "id": loop_id,
@@ -657,6 +725,11 @@ class Analyzer:
     def visit_while(self, stmt: ast.While, parent_id: str) -> None:
         if stmt.orelse:
             self.add_unsupported(stmt, "while else")
+            return
+        if not isinstance(stmt.test, (ast.BoolOp, ast.Compare)) and not (
+            isinstance(stmt.test, ast.UnaryOp) and isinstance(stmt.test.op, ast.Not)
+        ):
+            self.add_unsupported(stmt.test, "while condition")
             return
         condition_id = self.alloc_id("op", stmt.test)
         self.nodes.append(

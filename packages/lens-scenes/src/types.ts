@@ -73,8 +73,19 @@ export type TraceStep = {
   event: TraceEvent;
 };
 
+export type ExecutionScope =
+  | { kind: 'module'; id: string; label: string }
+  | {
+      kind: 'function';
+      id: string;
+      functionId: string;
+      label: string;
+      argsRepr: string[];
+    };
+
 export type Trace = {
-  call: { functionId: string; argsRepr: string[] };
+  scope: ExecutionScope;
+  call?: { functionId: string; argsRepr: string[] };
   steps: TraceStep[];
   result?: { repr: string };
   violation?: { construct: string; message: string };

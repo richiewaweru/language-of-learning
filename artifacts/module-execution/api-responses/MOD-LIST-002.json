@@ -1,0 +1,107 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "numbers = [1, 2]\nnumbers.append(3)",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 2,
+          "endCol": 17
+        },
+        "name": "Program"
+      },
+      {
+        "id": "coll-L1C0",
+        "kind": "collection",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 16
+        },
+        "name": "numbers",
+        "items": [
+          "1",
+          "2"
+        ]
+      },
+      {
+        "id": "mut-L2C0",
+        "kind": "mutation",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 0,
+          "endLine": 2,
+          "endCol": 17
+        },
+        "targetRef": "coll-L1C0",
+        "mutationType": "append"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "coll-L1C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "mut-L2C0"
+      },
+      {
+        "from": "mut-L2C0",
+        "type": "mutates",
+        "to": "coll-L1C0"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "coll-L1C0"
+        ],
+        "bindings": {
+          "numbers": "[1, 2]"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "coll-L1C0",
+          "repr": "[1, 2]"
+        }
+      },
+      {
+        "index": 1,
+        "line": 2,
+        "focus": [
+          "mut-L2C0"
+        ],
+        "bindings": {
+          "numbers": "[1, 2, 3]"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "collection_append",
+          "collection": "coll-L1C0",
+          "valueRepr": "3"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

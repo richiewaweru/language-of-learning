@@ -35,7 +35,7 @@ function entityRole(
 ): SemanticRole {
   if (node.kind === 'value') return 'value';
   if (node.kind === 'collection') return 'collection';
-  if (node.kind === 'function') return 'call-frame';
+  if (node.kind === 'module' || node.kind === 'function') return 'call-frame';
   if (node.kind === 'builtin-call') return 'builtin-call';
   if (node.kind === 'return') return 'result';
   if (node.kind === 'loop') return 'range';
@@ -57,6 +57,7 @@ function entityLabel(node: GraphNode): string {
   if (node.iteratorName) return node.iteratorName;
   if (node.expr) return node.expr;
   if (node.kind === 'return') return 'result';
+  if (node.kind === 'module') return 'Program';
   if (node.kind === 'function') return 'call frame';
   return node.kind.replaceAll('-', ' ');
 }
@@ -323,7 +324,11 @@ function snapshotsForStep(
       ...(previousValue !== undefined ? { previousValue } : {}),
       status: statusFor(entity, step, activeIds),
       properties: {
-        frameId: step.frameId ?? 'frame-root',
+        frameId:
+          step.frameId ??
+          (trace.scope.kind === 'module'
+            ? 'frame:module'
+            : `frame:${trace.scope.functionId}`),
         ...(objectId ? { objectId } : {}),
       },
     };
@@ -380,7 +385,10 @@ export function normalizeSemanticScene(
   });
 
   return SemanticSceneSchema.parse({
-    id: options.sceneId ?? 'semantic-' + trace.call.functionId,
+    id:
+      options.sceneId ??
+      'semantic-' +
+        (trace.scope.kind === 'function' ? trace.scope.functionId : trace.scope.id),
     graphRef: graph.version,
     semanticModelVersion: SEMANTIC_MODEL_VERSION,
     grammarVersion: SYMBOL_GRAMMAR_VERSION,

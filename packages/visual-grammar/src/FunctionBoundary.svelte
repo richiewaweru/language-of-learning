@@ -6,6 +6,7 @@
     width,
     height,
     name,
+    prefix = 'def ',
     focused = false,
     dimmed = false,
     onclick,
@@ -16,6 +17,7 @@
     width: number;
     height: number;
     name: string;
+    prefix?: string;
     focused?: boolean;
     dimmed?: boolean;
     onclick?: () => void;
@@ -36,5 +38,5 @@
   onclick={onclick}
   onkeydown={(e) => e.key === 'Enter' && onclick?.()}
 >
-  def {name}
+  {prefix}{name}
 </div>

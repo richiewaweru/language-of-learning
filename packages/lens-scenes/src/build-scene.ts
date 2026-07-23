@@ -54,7 +54,9 @@ export function buildScene(
   const { layout } = layoutGraph(graph);
   const steps = buildSceneSteps(graph, trace);
   return {
-    id: options.sceneId ?? `scene-${trace.call.functionId}`,
+    id:
+      options.sceneId ??
+      `scene-${trace.scope.kind === 'function' ? trace.scope.functionId : trace.scope.id}`,
     graphRef: options.graphRef ?? graph.version,
     motionVersion: '0.2',
     layout,

@@ -1,0 +1,278 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "total = 0\nfor number in [1, 2, 3]:\n    total = total + number",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 3,
+          "endCol": 26
+        },
+        "name": "Program"
+      },
+      {
+        "id": "bind-L1C0",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 9
+        },
+        "name": "total",
+        "role": "state",
+        "mutable": true,
+        "initialRepr": "0"
+      },
+      {
+        "id": "val-L1C8",
+        "kind": "value",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 8,
+          "endLine": 1,
+          "endCol": 9
+        },
+        "repr": "0",
+        "pyType": "int"
+      },
+      {
+        "id": "coll-L2C14",
+        "kind": "collection",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 14,
+          "endLine": 2,
+          "endCol": 23
+        },
+        "items": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      {
+        "id": "loop-L2C0",
+        "kind": "loop",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 0,
+          "endLine": 3,
+          "endCol": 25
+        },
+        "iteratorName": "number",
+        "collectionRef": "coll-L2C14",
+        "body": "op-L3C12"
+      },
+      {
+        "id": "bind-L2C4",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 4,
+          "endLine": 2,
+          "endCol": 10
+        },
+        "name": "number",
+        "role": "iterator",
+        "mutable": false
+      },
+      {
+        "id": "op-L3C12",
+        "kind": "operation",
+        "sourceRange": {
+          "startLine": 3,
+          "startCol": 12,
+          "endLine": 3,
+          "endCol": 25
+        },
+        "expr": "total + number"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "bind-L1C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "coll-L2C14"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "loop-L2C0"
+      },
+      {
+        "from": "loop-L2C0",
+        "type": "iterates",
+        "to": "coll-L2C14"
+      },
+      {
+        "from": "loop-L2C0",
+        "type": "contains",
+        "to": "op-L3C12"
+      },
+      {
+        "from": "op-L3C12",
+        "type": "reads",
+        "to": "bind-L1C0"
+      },
+      {
+        "from": "op-L3C12",
+        "type": "reads",
+        "to": "bind-L2C4"
+      },
+      {
+        "from": "op-L3C12",
+        "type": "writes",
+        "to": "bind-L1C0"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "total": "0"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "bind-L1C0",
+          "repr": "0"
+        }
+      },
+      {
+        "index": 1,
+        "line": 2,
+        "focus": [
+          "loop-L2C0"
+        ],
+        "bindings": {
+          "number": "1",
+          "total": "0"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "loop_advance",
+          "loop": "loop-L2C0",
+          "itemIndex": 0,
+          "itemRepr": "1"
+        }
+      },
+      {
+        "index": 2,
+        "line": 3,
+        "focus": [
+          "op-L3C12",
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "number": "1",
+          "total": "1"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_change",
+          "binding": "bind-L1C0",
+          "oldRepr": "0",
+          "newRepr": "1"
+        }
+      },
+      {
+        "index": 3,
+        "line": 2,
+        "focus": [
+          "loop-L2C0"
+        ],
+        "bindings": {
+          "number": "2",
+          "total": "1"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "loop_advance",
+          "loop": "loop-L2C0",
+          "itemIndex": 1,
+          "itemRepr": "2"
+        }
+      },
+      {
+        "index": 4,
+        "line": 3,
+        "focus": [
+          "op-L3C12",
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "number": "2",
+          "total": "3"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_change",
+          "binding": "bind-L1C0",
+          "oldRepr": "1",
+          "newRepr": "3"
+        }
+      },
+      {
+        "index": 5,
+        "line": 2,
+        "focus": [
+          "loop-L2C0"
+        ],
+        "bindings": {
+          "number": "3",
+          "total": "3"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "loop_advance",
+          "loop": "loop-L2C0",
+          "itemIndex": 2,
+          "itemRepr": "3"
+        }
+      },
+      {
+        "index": 6,
+        "line": 3,
+        "focus": [
+          "op-L3C12",
+          "bind-L1C0"
+        ],
+        "bindings": {
+          "number": "3",
+          "total": "6"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_change",
+          "binding": "bind-L1C0",
+          "oldRepr": "3",
+          "newRepr": "6"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

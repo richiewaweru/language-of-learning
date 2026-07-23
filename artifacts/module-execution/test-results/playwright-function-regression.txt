@@ -1,0 +1,21 @@
+[WebServer] INFO:     Started server process [19160]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8011 (Press CTRL+C to quit)
+
+Running 12 tests using 1 worker
+
+  ok  1 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › renamed-accumulation derives synchronized learner views (10.9s)
+  ok  2 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › count-condition derives synchronized learner views (5.1s)
+  ok  3 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › linear-search derives synchronized learner views (5.3s)
+  ok  4 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › early-return derives synchronized learner views (5.3s)
+  ok  5 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › array-update derives synchronized learner views (5.2s)
+  ok  6 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › swap derives synchronized learner views (4.4s)
+  ok  7 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › binary-search derives synchronized learner views (5.3s)
+  ok  8 tests\e2e\decode-acceptance.spec.ts:76:5 › Decode pasted-program acceptance › generic-double derives synchronized learner views (5.0s)
+  ok  9 tests\e2e\decode-acceptance.spec.ts:121:3 › Decode pasted-program acceptance › unsupported dictionary comprehension stays honest (2.8s)
+  ok 10 tests\e2e\decode-acceptance.spec.ts:158:5 › Decode pasted-program acceptance › builtin-shadowing renders its canonical atomic rejection (1.8s)
+  ok 11 tests\e2e\decode-acceptance.spec.ts:158:5 › Decode pasted-program acceptance › enumerate renders its canonical atomic rejection (1.8s)
+  ok 12 tests\e2e\decode-acceptance.spec.ts:171:3 › Decode pasted-program acceptance › Decode and Ask Lens remain usable on mobile with reduced motion (1.9s)
+
+  12 passed (1.2m)

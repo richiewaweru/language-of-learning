@@ -13,6 +13,7 @@ export const NodeKindSchema = z.enum([
   'value',
   'binding',
   'collection',
+  'module',
   'function',
   'call',
   'builtin-call',
@@ -67,6 +68,11 @@ export const CollectionNodeSchema = NodeBaseSchema.extend({
   kind: z.literal('collection'),
   name: z.string().optional(),
   items: z.array(z.string()),
+});
+
+export const ModuleNodeSchema = NodeBaseSchema.extend({
+  kind: z.literal('module'),
+  name: z.string(),
 });
 
 export const FunctionNodeSchema = NodeBaseSchema.extend({
@@ -137,6 +143,7 @@ export const SemanticNodeSchema = z.discriminatedUnion('kind', [
   ValueNodeSchema,
   BindingNodeSchema,
   CollectionNodeSchema,
+  ModuleNodeSchema,
   FunctionNodeSchema,
   CallNodeSchema,
   BuiltinCallNodeSchema,

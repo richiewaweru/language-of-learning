@@ -1,0 +1,111 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "numbers = [1, 2, 3]\nnumbers[1] = 9",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 2,
+          "endCol": 14
+        },
+        "name": "Program"
+      },
+      {
+        "id": "coll-L1C0",
+        "kind": "collection",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 19
+        },
+        "name": "numbers",
+        "items": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      {
+        "id": "mut-L2C0",
+        "kind": "mutation",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 0,
+          "endLine": 2,
+          "endCol": 14
+        },
+        "targetRef": "coll-L1C0",
+        "mutationType": "indexed-assignment"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "coll-L1C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "mut-L2C0"
+      },
+      {
+        "from": "mut-L2C0",
+        "type": "mutates",
+        "to": "coll-L1C0"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "coll-L1C0"
+        ],
+        "bindings": {
+          "numbers": "[1, 2, 3]"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "coll-L1C0",
+          "repr": "[1, 2, 3]"
+        }
+      },
+      {
+        "index": 1,
+        "line": 2,
+        "focus": [
+          "mut-L2C0",
+          "coll-L1C0"
+        ],
+        "bindings": {
+          "numbers": "[1, 9, 3]"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "indexed_mutation",
+          "collection": "coll-L1C0",
+          "indexRepr": "1",
+          "oldRepr": "2",
+          "newRepr": "9"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

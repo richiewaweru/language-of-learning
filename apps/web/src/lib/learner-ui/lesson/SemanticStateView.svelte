@@ -40,7 +40,10 @@
   {#each [...frameGroups.entries()] as [frameId, frameRows]}
     <section class="frame-group">
       <header>
-        <SymbolBadge semantic="call-frame" label={frameId === 'frame-root' ? 'Current frame' : frameId} />
+        <SymbolBadge
+          semantic="call-frame"
+          label={frameId === 'frame:module' ? 'Program variables' : frameId === 'frame-root' ? 'Current frame' : 'Function variables'}
+        />
       </header>
       <div class="table-wrap">
         <table>
@@ -50,7 +53,11 @@
           <tbody>
             {#each frameRows as { entity, snapshot }}
               {#if entity}
-                <tr class:changed={snapshot.status === 'changing'} data-entity-label={entity.label ?? entity.id}>
+                <tr
+                  class:changed={snapshot.status === 'changing'}
+                  data-entity-label={entity.label ?? entity.id}
+                  data-testid={`state-binding-${entity.label ?? entity.id}`}
+                >
                   <td><SymbolBadge semantic={entity.role} label={entity.role} state={snapshot.status} /></td>
                   <th scope="row">{entity.label ?? entity.id}</th>
                   <td data-testid="state-current-value"><code>{snapshot.value === undefined ? '—' : String(snapshot.value)}</code></td>

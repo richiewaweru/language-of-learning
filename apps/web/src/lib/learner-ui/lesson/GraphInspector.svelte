@@ -63,7 +63,7 @@
   </aside>
   <details class="frames">
     <summary>Frames and active entities</summary>
-    <p>frame-root</p>
+    <p>{trace.scope.kind === 'module' ? 'Program / frame:module' : `Function / frame:${trace.scope.functionId}`}</p>
     <ul>
       {#each semanticStep?.activeEntityIds ?? [] as id}<li>{id}</li>{/each}
     </ul>

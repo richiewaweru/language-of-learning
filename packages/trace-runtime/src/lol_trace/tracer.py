@@ -12,8 +12,11 @@ from .sandbox import SandboxGuard, SandboxViolation
 
 @dataclass
 class GraphIndex:
-    function_id: str
-    function_name: str
+    scope_kind: str
+    scope_id: str
+    scope_label: str
+    function_id: str | None
+    function_name: str | None
     param_names: list[str]
     bindings: dict[str, dict[str, Any]]
     collections: dict[str, dict[str, Any]]
@@ -30,9 +33,16 @@ class GraphIndex:
 
 def index_graph(graph: dict[str, Any]) -> GraphIndex:
     nodes = graph["nodes"]
-    function = next(node for node in nodes if node["kind"] == "function")
+    module = next((node for node in nodes if node["kind"] == "module"), None)
+    function = next((node for node in nodes if node["kind"] == "function"), None)
+    if module is None and function is None:
+        raise SandboxViolation("execution_scope", "No executable module or function scope was found.")
     bindings = {node["name"]: node for node in nodes if node["kind"] == "binding"}
-    collections = {node["name"]: node for node in nodes if node["kind"] == "collection"}
+    collections = {
+        node["name"]: node
+        for node in nodes
+        if node["kind"] == "collection" and node.get("name")
+    }
     loops = [node for node in nodes if node["kind"] == "loop"]
     branches = [node for node in nodes if node["kind"] == "branch"]
     returns = [node for node in nodes if node["kind"] == "return"]
@@ -43,12 +53,16 @@ def index_graph(graph: dict[str, Any]) -> GraphIndex:
     operations = {node["id"]: node for node in nodes if node["kind"] == "operation"}
     node_line = {node["id"]: node["sourceRange"]["startLine"] for node in nodes}
     param_names = []
-    for node_id in function["params"]:
-        binding = next(node for node in nodes if node["id"] == node_id)
-        param_names.append(binding["name"])
+    if function is not None and module is None:
+        for node_id in function["params"]:
+            binding = next(node for node in nodes if node["id"] == node_id)
+            param_names.append(binding["name"])
     return GraphIndex(
-        function_id=function["id"],
-        function_name=function["name"],
+        scope_kind="module" if module is not None else "function",
+        scope_id=module["id"] if module is not None else function["id"],
+        scope_label=module["name"] if module is not None else function["name"],
+        function_id=None if module is not None else function["id"],
+        function_name=None if module is not None else function["name"],
         param_names=param_names,
         bindings=bindings,
         collections=collections,
@@ -81,6 +95,11 @@ class TraceBuilder:
                 "bindings": {
                     name: value_repr(bindings[name]) for name in sorted(bindings)
                 },
+                "frameId": (
+                    "frame:module"
+                    if self.graph.scope_kind == "module"
+                    else f"frame:{self.graph.function_id}"
+                ),
                 "event": event,
             }
         object_ids = shared_object_ids(bindings)
@@ -93,14 +112,25 @@ class TraceBuilder:
         return {name: env[name] for name in tracked_names if name in env}
 
     def finish(self) -> dict[str, Any]:
+        scope: dict[str, Any] = {
+            "kind": self.graph.scope_kind,
+            "id": self.graph.scope_id,
+            "label": self.graph.scope_label,
+        }
+        if self.graph.scope_kind == "function":
+            assert self.graph.function_id is not None
+            scope["functionId"] = self.graph.function_id
+            scope["argsRepr"] = self.call_args_repr
         payload: dict[str, Any] = {
-            "call": {
-                "functionId": self.graph.function_id,
-                "argsRepr": self.call_args_repr,
-            },
+            "scope": scope,
             "steps": self.steps,
             "truncated": self.truncated,
         }
+        if self.graph.scope_kind == "function":
+            payload["call"] = {
+                "functionId": self.graph.function_id,
+                "argsRepr": self.call_args_repr,
+            }
         if self.result_repr is not None:
             payload["result"] = {"repr": self.result_repr}
         if self.violation is not None:
@@ -115,7 +145,10 @@ class Tracer:
         self.args_repr = args_repr
         self.sandbox = SandboxGuard()
         self.tree = ast.parse(self.source)
-        self.function = next(node for node in self.tree.body if isinstance(node, ast.FunctionDef))
+        self.function = next(
+            (node for node in self.tree.body if isinstance(node, ast.FunctionDef)),
+            None,
+        )
         self.env: dict[str, Any] = {}
         self.trace = TraceBuilder(self.graph, args_repr)
         self.loop_counters: dict[str, int] = {}
@@ -125,23 +158,40 @@ class Tracer:
     def run(self) -> dict[str, Any]:
         try:
             self.sandbox.check_source(self.source)
-            args = self.sandbox.validate_args(self.args_repr)
-            if len(args) != len(self.graph.param_names):
-                raise SandboxViolation(
-                    "call_args",
-                    "Sample-call argument count does not match function parameters.",
-                )
             self.sandbox.begin(self.start_time)
             self._tick()
-            for name, value in zip(self.graph.param_names, args, strict=True):
-                self.env[name] = value
-            self.trace.emit(
-                self.graph.node_line[self.graph.function_id],
-                [self.graph.function_id],
-                {},
-                {"type": "call_enter", "functionId": self.graph.function_id},
-            )
-            for stmt in self.function.body:
+            if self.graph.scope_kind == "function":
+                args = self.sandbox.validate_args(self.args_repr)
+                if len(args) != len(self.graph.param_names):
+                    raise SandboxViolation(
+                        "call_args",
+                        "Sample-call argument count does not match function parameters.",
+                    )
+                if self.function is None or self.graph.function_id is None:
+                    raise SandboxViolation("execution_scope", "The selected function could not be resolved.")
+                for name, value in zip(self.graph.param_names, args, strict=True):
+                    self.env[name] = value
+                self.trace.emit(
+                    self.graph.node_line[self.graph.function_id],
+                    [self.graph.function_id],
+                    {},
+                    {"type": "call_enter", "functionId": self.graph.function_id},
+                )
+                statements = self.function.body
+            else:
+                if self.args_repr:
+                    raise SandboxViolation(
+                        "call_args",
+                        "Program execution does not use sample arguments.",
+                    )
+                statements = [
+                    node
+                    for node in self.tree.body
+                    if not isinstance(node, ast.FunctionDef)
+                ]
+            for stmt in statements:
+                if self.graph.scope_kind == "module" and isinstance(stmt, ast.Return):
+                    raise SandboxViolation("return", "Return can only be used inside a function.")
                 signal = self._exec_stmt(stmt)
                 if signal == "return":
                     break
@@ -213,23 +263,45 @@ class Tracer:
         if isinstance(stmt.value, ast.List):
             self.env[name] = [self._eval_expr(item) for item in stmt.value.elts]
             self.sandbox.track_allocation(max(64, len(stmt.value.elts) * 8))
+            collection = self.graph.collections.get(name)
+            if collection is not None and self.graph.scope_kind == "module":
+                self.trace.emit(
+                    stmt.lineno,
+                    [collection["id"]],
+                    self.trace.snapshot(self.env),
+                    {
+                        "type": "state_init",
+                        "binding": collection["id"],
+                        "repr": value_repr(self.env[name]),
+                    },
+                )
             return
         if isinstance(stmt.value, ast.Name):
+            if stmt.value.id not in self.env:
+                raise SandboxViolation("name", f"{stmt.value.id} is not defined.")
             old = self.env.get(name)
             new_value = self.env[stmt.value.id]
             binding = self.graph.bindings.get(name)
             self.env[name] = new_value
-            if binding and binding.get("role") == "state" and old is not None:
+            if binding and (self.graph.scope_kind == "module" or binding.get("role") == "state"):
                 self.trace.emit(
                     binding["sourceRange"]["startLine"],
                     [binding["id"]],
                     self.trace.snapshot(self.env),
-                    {
-                        "type": "state_change",
-                        "binding": binding["id"],
-                        "oldRepr": value_repr(old),
-                        "newRepr": value_repr(new_value),
-                    },
+                    (
+                        {
+                            "type": "state_change",
+                            "binding": binding["id"],
+                            "oldRepr": value_repr(old),
+                            "newRepr": value_repr(new_value),
+                        }
+                        if old is not None
+                        else {
+                            "type": "state_init",
+                            "binding": binding["id"],
+                            "repr": value_repr(new_value),
+                        }
+                    ),
                 )
             return
         if isinstance(stmt.value, ast.BinOp):
@@ -239,45 +311,64 @@ class Tracer:
             op_node = self._operation_node(stmt.value)
             op_id = op_node["id"]
             line = op_node["sourceRange"]["startLine"]
-            if binding and binding.get("role") == "state" and name in self.env:
-                self.env[name] = new_value
+            existed = name in self.env
+            self.env[name] = new_value
+            if binding and (self.graph.scope_kind == "module" or binding.get("role") == "state"):
                 self.trace.emit(
                     line,
-                    [op_id],
+                    [op_id, binding["id"]],
                     self.trace.snapshot(self.env),
-                    {
-                        "type": "state_change",
-                        "binding": binding["id"],
-                        "oldRepr": value_repr(old),
-                        "newRepr": value_repr(new_value),
-                    },
+                    (
+                        {
+                            "type": "state_change",
+                            "binding": binding["id"],
+                            "oldRepr": value_repr(old),
+                            "newRepr": value_repr(new_value),
+                        }
+                        if existed
+                        else {
+                            "type": "state_init",
+                            "binding": binding["id"],
+                            "repr": value_repr(new_value),
+                        }
+                    ),
                 )
-            else:
-                self.env[name] = new_value
             return
         if isinstance(stmt.value, (ast.Subscript, ast.Call)):
             old = self.env.get(name)
+            existed = name in self.env
             new_value = self._eval_expr(stmt.value)
             binding = self.graph.bindings.get(name)
             self.env[name] = new_value
-            if binding and binding.get("role") == "state" and old is not None:
+            if binding and (self.graph.scope_kind == "module" or binding.get("role") == "state"):
                 self.trace.emit(
                     binding["sourceRange"]["startLine"],
                     [binding["id"]],
                     self.trace.snapshot(self.env),
-                    {
-                        "type": "state_change",
-                        "binding": binding["id"],
-                        "oldRepr": value_repr(old),
-                        "newRepr": value_repr(new_value),
-                    },
+                    (
+                        {
+                            "type": "state_change",
+                            "binding": binding["id"],
+                            "oldRepr": value_repr(old),
+                            "newRepr": value_repr(new_value),
+                        }
+                        if existed
+                        else {
+                            "type": "state_init",
+                            "binding": binding["id"],
+                            "repr": value_repr(new_value),
+                        }
+                    ),
                 )
             return
         if self._is_literal(stmt.value):
             value = self._literal_value(stmt.value)
             binding = self.graph.bindings.get(name)
             self.env[name] = value
-            if binding and binding.get("role") in {"state", "constant"}:
+            if binding and (
+                self.graph.scope_kind == "module"
+                or binding.get("role") in {"state", "constant"}
+            ):
                 self.trace.emit(
                     binding["sourceRange"]["startLine"],
                     [binding["id"]],
@@ -355,7 +446,7 @@ class Tracer:
 
     def _exec_for(self, stmt: ast.For) -> str | None:
         if not isinstance(stmt.target, ast.Name) or not (
-            isinstance(stmt.iter, ast.Name) or self._is_range_call(stmt.iter)
+            isinstance(stmt.iter, (ast.Name, ast.List)) or self._is_range_call(stmt.iter)
         ):
             raise SandboxViolation("for", "Only simple for-loops are supported.")
         loop = self._loop_for_line(stmt.lineno)
@@ -545,7 +636,13 @@ class Tracer:
         if expr is None:
             return None
         if isinstance(expr, ast.Name):
+            if expr.id not in self.env:
+                raise SandboxViolation("name", f"{expr.id} is not defined.")
             return self.env[expr.id]
+        if isinstance(expr, ast.List):
+            values = [self._eval_expr(item) for item in expr.elts]
+            self.sandbox.track_allocation(max(64, len(values) * 8))
+            return values
         if self._is_literal(expr):
             return self._literal_value(expr)
         if isinstance(expr, ast.BinOp):
@@ -585,7 +682,11 @@ class Tracer:
             )
             return value
         if isinstance(expr, ast.Call):
-            if isinstance(expr.func, ast.Name) and expr.func.id == self.graph.function_name:
+            if (
+                self.graph.function_name is not None
+                and isinstance(expr.func, ast.Name)
+                and expr.func.id == self.graph.function_name
+            ):
                 raise SandboxViolation("recursion", "Recursive calls are explicitly unsupported in v1.")
             if isinstance(expr.func, ast.Name) and expr.func.id in {"min", "max", "sum", "abs"}:
                 args = [self._eval_expr(arg) for arg in expr.args]
@@ -855,13 +956,37 @@ def run_trace(source: str, graph: dict[str, Any], args_repr: list[str]) -> dict[
         }
         if rejection.get("diagnostic"):
             violation["diagnostic"] = rejection["diagnostic"]
-        return {
-            "call": {"functionId": "blocked", "argsRepr": args_repr},
+        scope = scope_for_source(source, args_repr)
+        result = {
+            "scope": scope,
             "steps": [],
             "violation": violation,
             "truncated": False,
         }
+        if scope["kind"] == "function":
+            result["call"] = {
+                "functionId": scope["functionId"],
+                "argsRepr": args_repr,
+            }
+        return result
     return Tracer(source, graph, args_repr).run()
+
+
+def scope_for_source(source: str, args_repr: list[str]) -> dict[str, Any]:
+    tree = ast.parse(source)
+    functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)]
+    executable = [node for node in tree.body if not isinstance(node, ast.FunctionDef)]
+    if executable or not functions:
+        return {"kind": "module", "id": "module:main", "label": "Program"}
+    function = functions[0]
+    function_id = f"fn-L{function.lineno}C{function.col_offset}"
+    return {
+        "kind": "function",
+        "id": f"function:{function_id}",
+        "functionId": function_id,
+        "label": function.name,
+        "argsRepr": args_repr,
+    }
 
 
 def run_trace_from_fixture(fixture_dir: str | Path) -> dict[str, Any]:

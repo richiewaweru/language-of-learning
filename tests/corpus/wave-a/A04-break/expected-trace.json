@@ -1,7 +1,10 @@
 {
   "runs": [
     {
-      "call": {
+      "scope": {
+        "kind": "function",
+        "id": "fn-L1C0",
+        "label": "contains_value",
         "functionId": "fn-L1C0",
         "argsRepr": [
           "[4, 7, 9]",
@@ -16,6 +19,7 @@
             "fn-L1C0"
           ],
           "bindings": {},
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "call_enter",
             "functionId": "fn-L1C0"
@@ -32,6 +36,7 @@
             "target": "7",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "state_init",
             "binding": "bind-L2C4",
@@ -50,6 +55,7 @@
             "value": "4",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop_advance",
             "loop": "loop-L3C4",
@@ -69,6 +75,7 @@
             "value": "4",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "op-L4C11",
@@ -87,6 +94,7 @@
             "value": "4",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "branch-L4C8",
@@ -105,6 +113,7 @@
             "value": "7",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop_advance",
             "loop": "loop-L3C4",
@@ -124,6 +133,7 @@
             "value": "7",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "op-L4C11",
@@ -142,6 +152,7 @@
             "value": "7",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "condition_eval",
             "branch": "branch-L4C8",
@@ -160,6 +171,7 @@
             "value": "7",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "state_init",
             "binding": "bind-L2C4",
@@ -178,6 +190,7 @@
             "value": "7",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop-exit",
             "loopId": "loop-L3C4",
@@ -197,6 +210,7 @@
             "value": "7",
             "values": "[4, 7, 9]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "return_exit",
             "repr": "True"
@@ -204,6 +218,13 @@
         }
       ],
       "truncated": false,
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "[4, 7, 9]",
+          "7"
+        ]
+      },
       "result": {
         "repr": "True"
       }

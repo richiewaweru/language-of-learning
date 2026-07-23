@@ -65,6 +65,7 @@ async function pasteProgram(page: Page, source: string, args: string) {
   await editor.click();
   await page.keyboard.press('ControlOrMeta+A');
   await page.keyboard.insertText(source);
+    await page.keyboard.press('Escape');
     await page.getByLabel('Sample input').fill(args);
     await page.getByRole('button', { name: 'Visualize' }).click();
     await expect(page.getByRole('button', { name: 'Visualize' })).toBeEnabled();
@@ -75,8 +76,8 @@ test.describe('Decode pasted-program acceptance', () => {
     test(`${program.id} derives synchronized learner views`, async ({ page }) => {
       await pasteProgram(page, program.source, program.args);
 
-      await expect(page.getByTestId('error')).toHaveCount(0);
-      await expect(page.getByTestId('unsupported')).toHaveCount(0);
+      await expect(page.getByTestId('decode-error')).toHaveCount(0);
+      await expect(page.getByTestId('decode-unsupported')).toHaveCount(0);
       await expect(page.getByTestId('learner-flow-view')).toBeVisible();
       await expect(page.getByTestId('flow-result')).toContainText('Waiting for return');
 
@@ -123,7 +124,7 @@ test.describe('Decode pasted-program acceptance', () => {
       'def map_values(items):\n    return {item: item * 2 for item in items}',
       '[1, 2]',
     );
-    await expect(page.getByTestId('unsupported')).toContainText('Execution not verified');
+    await expect(page.getByTestId('decode-unsupported')).toContainText('Execution not verified');
     await expect(page.getByTestId('unsupported-workspace')).toContainText('Verified visualization unavailable');
     await expect(page.getByTestId('learner-flow-view')).toHaveCount(0);
     await page.getByRole('button', { name: 'Explain this step' }).click();
@@ -157,8 +158,8 @@ test.describe('Decode pasted-program acceptance', () => {
     test(`${rejection.id} renders its canonical atomic rejection`, async ({ page }) => {
       await pasteProgram(page, rejection.source, rejection.args);
 
-      await expect(page.getByTestId('error')).toHaveCount(0);
-      await expect(page.getByTestId('unsupported')).toContainText(rejection.message);
+      await expect(page.getByTestId('decode-error')).toHaveCount(0);
+      await expect(page.getByTestId('decode-unsupported')).toContainText(rejection.message);
       await expect(page.getByTestId('unsupported-workspace')).toContainText(rejection.message);
       await expect(page.getByTestId('decode-playback')).toHaveCount(0);
       await expect(page.locator('.workspace .view-tabs [role="tab"]')).toHaveCount(0);
@@ -171,7 +172,7 @@ test.describe('Decode pasted-program acceptance', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await pasteProgram(page, supportedCases[0].source, supportedCases[0].args);
-    await expect(page.getByTestId('error')).toHaveCount(0);
+    await expect(page.getByTestId('decode-error')).toHaveCount(0);
     await expect(page.getByTestId('learner-flow-view')).toBeVisible();
     await expect(page.getByTestId('ask-lens')).toBeVisible();
     const hasHorizontalOverflow = await page.evaluate(

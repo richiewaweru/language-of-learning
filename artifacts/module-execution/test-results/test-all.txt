@@ -1,0 +1,254 @@
+
+> language-of-learning@ test:all C:\Projects\langauge of learning
+> pnpm test:analyzer && pnpm test:trace && pnpm test:module && pnpm test:wave-a && pnpm test:variations && pnpm test:patterns && pnpm test:scenes && pnpm test:fixtures && pnpm test:journey && pnpm test:api-analyze && pnpm test:api-save && pnpm test:ai && pnpm test:lessons && pnpm test:parity-ops && pnpm test:visual && pnpm test:web && pnpm typecheck && pnpm lint
+
+
+> language-of-learning@ test:analyzer C:\Projects\langauge of learning
+> python tools/run_analyzer_tests.py
+
+test_all_emitted_ids_match_position_regex (__main__.AnalyzerFixtureTests.test_all_emitted_ids_match_position_regex) ... ok
+test_all_fixture_graphs_match_expected (__main__.AnalyzerFixtureTests.test_all_fixture_graphs_match_expected) ... ok
+test_contrast_fixture_graphs_match_expected (__main__.AnalyzerFixtureTests.test_contrast_fixture_graphs_match_expected) ... ok
+test_filter_emits_mutation_node_and_mutates_relation (__main__.AnalyzerFixtureTests.test_filter_emits_mutation_node_and_mutates_relation)
+Guards against a silent second visit_stmt that drops Expr handling. ... ok
+test_function_return_shape_keywords (__main__.AnalyzerFixtureTests.test_function_return_shape_keywords) ... ok
+test_mutation_unsupported_keywords (__main__.AnalyzerFixtureTests.test_mutation_unsupported_keywords) ... ok
+test_print_emits_one_contained_effect (__main__.AnalyzerFixtureTests.test_print_emits_one_contained_effect) ... ok
+test_roles_loop_branch_keywords (__main__.AnalyzerFixtureTests.test_roles_loop_branch_keywords) ... ok
+test_structural_v1_nodes_are_factual_and_supported (__main__.AnalyzerFixtureTests.test_structural_v1_nodes_are_factual_and_supported) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.046s
+
+OK
+
+> language-of-learning@ test:trace C:\Projects\langauge of learning
+> python tools/run_trace_tests.py
+
+test_alias_mutation_preserves_shared_object_identity (__main__.TraceFixtureTests.test_alias_mutation_preserves_shared_object_identity) ... ok
+test_all_fixture_traces_match_expected (__main__.TraceFixtureTests.test_all_fixture_traces_match_expected) ... ok
+test_bounded_range_indexing_and_floor_division (__main__.TraceFixtureTests.test_bounded_range_indexing_and_floor_division) ... ok
+test_branch_and_append_keywords (__main__.TraceFixtureTests.test_branch_and_append_keywords) ... ok
+test_call_enter_and_return_keywords (__main__.TraceFixtureTests.test_call_enter_and_return_keywords) ... ok
+test_loop_and_state_change_keywords (__main__.TraceFixtureTests.test_loop_and_state_change_keywords) ... ok
+test_print_argument_variants (__main__.TraceFixtureTests.test_print_argument_variants) ... ok
+test_print_effect_has_no_result_or_violation (__main__.TraceFixtureTests.test_print_effect_has_no_result_or_violation) ... ok
+test_print_keywords_remain_unsupported (__main__.TraceFixtureTests.test_print_keywords_remain_unsupported) ... ok
+test_recursion_is_an_atomic_unsupported_result (__main__.TraceFixtureTests.test_recursion_is_an_atomic_unsupported_result) ... ok
+test_return_contrast_has_result (__main__.TraceFixtureTests.test_return_contrast_has_result) ... ok
+test_return_inside_for_stops_function_execution (__main__.TraceFixtureTests.test_return_inside_for_stops_function_execution) ... ok
+test_all_hostile_fixtures_contained (__main__.HostileFixtureTests.test_all_hostile_fixtures_contained) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.198s
+
+OK
+
+> language-of-learning@ test:module C:\Projects\langauge of learning
+> python tools/run_module_execution_tests.py
+
+test_acceptance_corpus (__main__.ModuleExecutionAcceptanceTests.test_acceptance_corpus) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.007s
+
+OK
+
+> language-of-learning@ test:wave-a C:\Projects\langauge of learning
+> python tools/run_wave_a_corpus.py
+
+test_all_augmented_assignment_operators (__main__.WaveACorpusTests.test_all_augmented_assignment_operators) ... ok
+test_positive_corpus (__main__.WaveACorpusTests.test_positive_corpus) ... ok
+test_true_division_assignment_stays_out_of_scope (__main__.WaveACorpusTests.test_true_division_assignment_stays_out_of_scope) ... ok
+test_all_deferred_list_methods_reject_atomically (__main__.HardeningCorpusTests.test_all_deferred_list_methods_reject_atomically) ... ok
+test_p01_literal_list_parity (__main__.HardeningCorpusTests.test_p01_literal_list_parity) ... ok
+test_p02_empty_list_still_works (__main__.HardeningCorpusTests.test_p02_empty_list_still_works) ... ok
+test_p03_separate_list_identity (__main__.HardeningCorpusTests.test_p03_separate_list_identity) ... ok
+test_p04_aliasing_remains_honest (__main__.HardeningCorpusTests.test_p04_aliasing_remains_honest) ... ok
+test_p05_unsupported_list_element_rejects_atomically (__main__.HardeningCorpusTests.test_p05_unsupported_list_element_rejects_atomically) ... ok
+test_p06_parameter_shadowing_rejects_atomically (__main__.HardeningCorpusTests.test_p06_parameter_shadowing_rejects_atomically) ... ok
+test_p07_local_shadowing_rejects_atomically (__main__.HardeningCorpusTests.test_p07_local_shadowing_rejects_atomically) ... ok
+test_p08_non_called_special_name_is_an_ordinary_read (__main__.HardeningCorpusTests.test_p08_non_called_special_name_is_an_ordinary_read) ... ok
+test_p09_normal_special_builtins_remain_verified (__main__.HardeningCorpusTests.test_p09_normal_special_builtins_remain_verified) ... ok
+test_shadowing_binding_forms_are_detected (__main__.HardeningCorpusTests.test_shadowing_binding_forms_are_detected) ... ok
+test_tuple_swaps_membership_and_nested_access_use_specific_codes (__main__.HardeningCorpusTests.test_tuple_swaps_membership_and_nested_access_use_specific_codes) ... ok
+test_negative_corpus_is_atomic_and_canonical (__main__.NegativeCorpusTests.test_negative_corpus_is_atomic_and_canonical) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.163s
+
+OK
+
+> language-of-learning@ test:variations C:\Projects\langauge of learning
+> python tools/run_variation_tests.py
+
+test_at_least_twelve_variants (__main__.VariationTests.test_at_least_twelve_variants) ... ok
+test_each_variation (__main__.VariationTests.test_each_variation) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.915s
+
+OK
+
+> language-of-learning@ test:patterns C:\Projects\langauge of learning
+> pnpm --filter @lol/lens-patterns test
+
+
+> @lol/lens-patterns@0.1.0 test C:\Projects\langauge of learning\packages\lens-patterns
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Projects/langauge of learning/packages/lens-patterns[39m
+
+[90mstdout[2m | src/detect.test.ts[2m > [22m[2mlens-patterns negative fixtures[2m > [22m[2mrejects lookalikes with zero false positives
+[22m[39mnegative precision 100% (3/3 lookalikes rejected)
+
+ [32m✓[39m src/detect.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 07:52:43
+[2m   Duration [22m 1.59s[2m (transform 229ms, setup 0ms, collect 717ms, tests 38ms, environment 0ms, prepare 304ms)[22m
+
+
+> language-of-learning@ test:scenes C:\Projects\langauge of learning
+> pnpm --filter @lol/lens-scenes test
+
+
+> @lol/lens-scenes@0.1.0 test C:\Projects\langauge of learning\packages\lens-scenes
+> vitest run
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Projects/langauge of learning/packages/lens-scenes[39m
+
+ [32m✓[39m src/learner-labels.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/normalize-semantic-scene.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/truth-detail.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/motion-state.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32m✓[39m src/flagship-truth.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/scenes.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 129[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m71 passed[39m[22m[90m (71)[39m
+[2m   Start at [22m 07:52:48
+[2m   Duration [22m 1.75s[2m (transform 573ms, setup 0ms, collect 3.42s, tests 315ms, environment 2ms, prepare 2.01s)[22m
+
+
+> language-of-learning@ test:fixtures C:\Projects\langauge of learning
+> vitest run tests/fixtures
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Projects/langauge of learning[39m
+
+[90mstdout[2m | tests/fixtures/fixture-loader.test.ts[2m > [22m[2mgolden fixture loader[2m > [22m[2mreports 6/6 shape-valid fixtures
+[22m[39m6/6 fixtures shape-valid
+
+ [32m✓[39m tests/fixtures/fixture-loader.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 07:52:53
+[2m   Duration [22m 1.48s[2m (transform 242ms, setup 0ms, collect 539ms, tests 75ms, environment 0ms, prepare 431ms)[22m
+
+
+> language-of-learning@ test:journey C:\Projects\langauge of learning
+> python tools/run_journey_tests.py
+
+journey: sum_scores
+  ok analyze/save/load/transfer/pattern=ACCUMULATE
+journey: keep_positive
+  ok analyze/save/load/transfer/pattern=FILTER
+journey: first_match
+  ok analyze/save/load/transfer/pattern=SEARCH
+3/3 fresh snippets complete
+
+> language-of-learning@ test:api-analyze C:\Projects\langauge of learning
+> python tools/run_api_analyze_tests.py
+
+  ok built-in shadowing: UNSUPPORTED_BUILTIN_SHADOWING, no partial artifacts
+  ok enumerate: UNSUPPORTED_ENUMERATE, no partial artifacts
+  ok module execution: three verified steps and exact final bindings
+api-analyze: 3 contract and rejection tests passed
+
+> language-of-learning@ test:api-save C:\Projects\langauge of learning
+> python tools/run_api_save_tests.py
+
+  ok tamper: stored recomputed TRANSFORM truth, engineVersion 0.1.1
+  ok hostile: 422 violation=helper-function calls, nothing persisted
+api-save: 2/2 re-verification tests passed
+
+> language-of-learning@ test:ai C:\Projects\langauge of learning
+> python tools/run_ai_tests.py
+
+  ok test_status_is_safe
+  ok test_mock_explain_step_and_program
+  ok test_unsupported_is_honest_without_provider_call
+  ok test_provider_failure_uses_deterministic_fallback
+  ok test_openai_compatible_adapter_parses_structured_response
+  ok test_fenced_json_is_parsed_but_prose_is_rejected
+ai-runtime: 6/6 tests passed
+
+> language-of-learning@ test:lessons C:\Projects\langauge of learning
+> pnpm exec tsx tools/run_lesson_checks.ts
+
+✓ accumulate machine-checked (44 checks)
+✓ count machine-checked (44 checks)
+✓ filter machine-checked (44 checks)
+✓ transform machine-checked (44 checks)
+pathway lessons: 4; files: 6
+4/4 lessons machine-checked
+
+> language-of-learning@ test:parity-ops C:\Projects\langauge of learning
+> python tools/run_interpreter_parity.py
+
+test_binops (__main__.InterpreterParityTests.test_binops) ... ok
+test_comparisons (__main__.InterpreterParityTests.test_comparisons) ... ok
+test_unary_minus (__main__.InterpreterParityTests.test_unary_minus) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK
+
+> language-of-learning@ test:visual C:\Projects\langauge of learning
+> vitest run packages/visual-grammar/src
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Projects/langauge of learning[39m
+
+ [32m✓[39m packages/visual-grammar/src/trace-display.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m packages/visual-grammar/src/motion-controller.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m packages/visual-grammar/src/symbol-registry.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 07:53:30
+[2m   Duration [22m 1.46s[2m (transform 266ms, setup 0ms, collect 800ms, tests 26ms, environment 1ms, prepare 1.10s)[22m
+
+
+> language-of-learning@ test:web C:\Projects\langauge of learning
+> vitest run tests/web
+
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Projects/langauge of learning[39m
+
+ [32m✓[39m tests/web/repo-root.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/web/audience-routes.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+[90mstdout[2m | tests/web/vite-config.test.ts
+[22m[39mNo Svelte config file found in C:\Projects\langauge of learning - using SvelteKit's default configuration without an adapter.
+
+ [32m✓[39m tests/web/vite-config.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m25 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m 07:53:34
+[2m   Duration [22m 3.63s[2m (transform 477ms, setup 0ms, collect 3.67s, tests 85ms, environment 1ms, prepare 1.19s)[22m
+
+
+> language-of-learning@ typecheck C:\Projects\langauge of learning
+> tsc --build
+
+
+> language-of-learning@ lint C:\Projects\langauge of learning
+> eslint .
+

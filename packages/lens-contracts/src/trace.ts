@@ -89,15 +89,32 @@ export const TraceStepSchema = z.object({
   event: TraceEventSchema,
 });
 
-export const TraceSchema = z.object({
-  call: z.object({
-    functionId: z.string(),
+export const ExecutionScopeSchema = z.discriminatedUnion('kind', [
+  z.object({
+    kind: z.literal('module'),
+    id: z.string().min(1),
+    label: z.string().min(1),
+  }),
+  z.object({
+    kind: z.literal('function'),
+    id: z.string().min(1),
+    functionId: z.string().min(1),
+    label: z.string().min(1),
     argsRepr: z.array(z.string()),
   }),
+]);
+
+export const TraceSchema = z.object({
+  scope: ExecutionScopeSchema,
+  call: z.object({
+    functionId: z.string().min(1),
+    argsRepr: z.array(z.string()),
+  }).optional(),
   steps: z.array(TraceStepSchema),
   result: z.object({ repr: z.string() }).optional(),
   violation: z.object({ construct: z.string(), message: z.string() }).optional(),
   truncated: z.boolean().default(false),
 });
 
+export type ExecutionScope = z.infer<typeof ExecutionScopeSchema>;
 export type Trace = z.infer<typeof TraceSchema>;

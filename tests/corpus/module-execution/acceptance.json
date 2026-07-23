@@ -1,0 +1,20 @@
+{
+  "version": "module-execution-acceptance-v1",
+  "cases": [
+    {"id":"MOD-ASSIGN-001","source":"price = 100","expectedFinalBindings":{"price":"100"},"expectedMinimumSteps":1},
+    {"id":"MOD-ASSIGN-002","source":"price = 100\ntax = price * 0.16\ntotal = price + tax","expectedFinalBindings":{"price":"100","tax":"16.0","total":"116.0"},"expectedMinimumSteps":3,"expectedActiveLines":[1,2,3]},
+    {"id":"MOD-ASSIGN-003","source":"score = 10\nscore = score + 5","expectedFinalBindings":{"score":"15"},"expectedMinimumSteps":2},
+    {"id":"MOD-EXPR-001","source":"result = (10 + 5) * 2","expectedFinalBindings":{"result":"30"},"expectedMinimumSteps":1},
+    {"id":"MOD-IF-001","source":"age = 20\nif age >= 18:\n    status = 'adult'\nelse:\n    status = 'minor'","expectedFinalBindings":{"age":"20","status":"'adult'"},"expectedMinimumSteps":2},
+    {"id":"MOD-FOR-001","source":"total = 0\nfor number in [1, 2, 3]:\n    total = total + number","expectedFinalBindings":{"total":"6","number":"3"},"expectedMinimumSteps":4},
+    {"id":"MOD-WHILE-001","source":"count = 0\nwhile count < 3:\n    count = count + 1","expectedFinalBindings":{"count":"3"},"expectedMinimumSteps":4},
+    {"id":"MOD-LIST-001","source":"numbers = [10, 20, 30]\nfirst = numbers[0]","expectedFinalBindings":{"numbers":"[10, 20, 30]","first":"10"},"expectedMinimumSteps":2},
+    {"id":"MOD-LIST-002","source":"numbers = [1, 2]\nnumbers.append(3)","expectedFinalBindings":{"numbers":"[1, 2, 3]"},"expectedMinimumSteps":2},
+    {"id":"MOD-LIST-003","source":"numbers = [1, 2, 3]\nnumbers[1] = 9","expectedFinalBindings":{"numbers":"[1, 9, 3]"},"expectedMinimumSteps":2},
+    {"id":"MOD-CALL-001","source":"def double(number):\n    return number * 2\n\nresult = double(5)","expectedViolationConstruct":"call","expectedStatus":"PARTIAL"},
+    {"id":"MOD-MIXED-001","source":"def add_tax(price):\n    return price * 1.16\n\ndef add_shipping(price):\n    return price + 10\n\nsubtotal = add_tax(100)\ntotal = add_shipping(subtotal)","expectedViolationConstruct":"call","expectedStatus":"PARTIAL"},
+    {"id":"MOD-EMPTY-001","source":"# Calculate the final price","expectedEmpty":true},
+    {"id":"MOD-UNSUPPORTED-001","source":"value = unknown_function()\nresult = value + 1","expectedViolationConstruct":"call","forbiddenFinalBindings":["value","result"]},
+    {"id":"MOD-INVALID-001","source":"return 5","expectedViolationConstruct":"return"}
+  ]
+}

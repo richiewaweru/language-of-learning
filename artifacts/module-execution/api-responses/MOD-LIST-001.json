@@ -1,0 +1,149 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "numbers = [10, 20, 30]\nfirst = numbers[0]",
+    "nodes": [
+      {
+        "id": "module:main",
+        "kind": "module",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 2,
+          "endCol": 18
+        },
+        "name": "Program"
+      },
+      {
+        "id": "coll-L1C0",
+        "kind": "collection",
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 0,
+          "endLine": 1,
+          "endCol": 22
+        },
+        "name": "numbers",
+        "items": [
+          "10",
+          "20",
+          "30"
+        ]
+      },
+      {
+        "id": "bind-L2C0",
+        "kind": "binding",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 0,
+          "endLine": 2,
+          "endCol": 18
+        },
+        "name": "first",
+        "role": "local",
+        "mutable": false
+      },
+      {
+        "id": "op-L2C8",
+        "kind": "operation",
+        "sourceRange": {
+          "startLine": 2,
+          "startCol": 8,
+          "endLine": 2,
+          "endCol": 18
+        },
+        "expr": "numbers[0]"
+      }
+    ],
+    "relations": [
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "coll-L1C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "bind-L2C0"
+      },
+      {
+        "from": "module:main",
+        "type": "contains",
+        "to": "op-L2C8"
+      },
+      {
+        "from": "op-L2C8",
+        "type": "reads",
+        "to": "coll-L1C0"
+      },
+      {
+        "from": "op-L2C8",
+        "type": "writes",
+        "to": "bind-L2C0"
+      }
+    ],
+    "unsupported": []
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [
+      {
+        "index": 0,
+        "line": 1,
+        "focus": [
+          "coll-L1C0"
+        ],
+        "bindings": {
+          "numbers": "[10, 20, 30]"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "coll-L1C0",
+          "repr": "[10, 20, 30]"
+        }
+      },
+      {
+        "index": 1,
+        "line": 2,
+        "focus": [
+          "op-L2C8",
+          "coll-L1C0"
+        ],
+        "bindings": {
+          "numbers": "[10, 20, 30]"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "indexed_selection",
+          "collection": "coll-L1C0",
+          "indexRepr": "0",
+          "valueRepr": "10"
+        }
+      },
+      {
+        "index": 2,
+        "line": 2,
+        "focus": [
+          "bind-L2C0"
+        ],
+        "bindings": {
+          "first": "10",
+          "numbers": "[10, 20, 30]"
+        },
+        "frameId": "frame:module",
+        "event": {
+          "type": "state_init",
+          "binding": "bind-L2C0",
+          "repr": "10"
+        }
+      }
+    ],
+    "truncated": false
+  },
+  "violation": null
+}

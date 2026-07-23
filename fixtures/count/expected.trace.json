@@ -1,5 +1,8 @@
 {
-  "call": {
+  "scope": {
+    "kind": "function",
+    "id": "fn-L1C0",
+    "label": "count_positive",
     "functionId": "fn-L1C0",
     "argsRepr": [
       "[-1, 2, 0, 3]"
@@ -13,6 +16,7 @@
         "fn-L1C0"
       ],
       "bindings": {},
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "call_enter",
         "functionId": "fn-L1C0"
@@ -28,6 +32,7 @@
         "count": "0",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_init",
         "binding": "bind-L2C4",
@@ -45,6 +50,7 @@
         "n": "-1",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -63,6 +69,7 @@
         "n": "-1",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L4C11",
@@ -80,6 +87,7 @@
         "n": "-1",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L4C8",
@@ -97,6 +105,7 @@
         "n": "2",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -115,6 +124,7 @@
         "n": "2",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L4C11",
@@ -132,6 +142,7 @@
         "n": "2",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L4C8",
@@ -142,13 +153,15 @@
       "index": 8,
       "line": 5,
       "focus": [
-        "op-L5C20"
+        "op-L5C20",
+        "bind-L2C4"
       ],
       "bindings": {
         "count": "1",
         "n": "2",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -167,6 +180,7 @@
         "n": "0",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -185,6 +199,7 @@
         "n": "0",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L4C11",
@@ -202,6 +217,7 @@
         "n": "0",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L4C8",
@@ -219,6 +235,7 @@
         "n": "3",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "loop_advance",
         "loop": "loop-L3C4",
@@ -237,6 +254,7 @@
         "n": "3",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "op-L4C11",
@@ -254,6 +272,7 @@
         "n": "3",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "condition_eval",
         "branch": "branch-L4C8",
@@ -264,13 +283,15 @@
       "index": 15,
       "line": 5,
       "focus": [
-        "op-L5C20"
+        "op-L5C20",
+        "bind-L2C4"
       ],
       "bindings": {
         "count": "2",
         "n": "3",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "state_change",
         "binding": "bind-L2C4",
@@ -289,6 +310,7 @@
         "n": "3",
         "numbers": "[-1, 2, 0, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "return_exit",
         "repr": "2"
@@ -296,6 +318,12 @@
     }
   ],
   "truncated": false,
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": [
+      "[-1, 2, 0, 3]"
+    ]
+  },
   "result": {
     "repr": "2"
   }

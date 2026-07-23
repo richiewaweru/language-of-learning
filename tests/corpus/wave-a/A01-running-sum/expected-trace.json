@@ -1,7 +1,10 @@
 {
   "runs": [
     {
-      "call": {
+      "scope": {
+        "kind": "function",
+        "id": "fn-L1C0",
+        "label": "running_sum",
         "functionId": "fn-L1C0",
         "argsRepr": [
           "[2, 4, 6]"
@@ -15,6 +18,7 @@
             "fn-L1C0"
           ],
           "bindings": {},
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "call_enter",
             "functionId": "fn-L1C0"
@@ -30,6 +34,7 @@
             "total": "0",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "state_init",
             "binding": "bind-L2C4",
@@ -47,6 +52,7 @@
             "value": "2",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop_advance",
             "loop": "loop-L3C4",
@@ -67,6 +73,7 @@
             "value": "2",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "state_change",
             "binding": "bind-L2C4",
@@ -85,6 +92,7 @@
             "value": "4",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop_advance",
             "loop": "loop-L3C4",
@@ -105,6 +113,7 @@
             "value": "4",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "state_change",
             "binding": "bind-L2C4",
@@ -123,6 +132,7 @@
             "value": "6",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "loop_advance",
             "loop": "loop-L3C4",
@@ -143,6 +153,7 @@
             "value": "6",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "state_change",
             "binding": "bind-L2C4",
@@ -161,6 +172,7 @@
             "value": "6",
             "values": "[2, 4, 6]"
           },
+          "frameId": "frame:fn-L1C0",
           "event": {
             "type": "return_exit",
             "repr": "12"
@@ -168,6 +180,12 @@
         }
       ],
       "truncated": false,
+      "call": {
+        "functionId": "fn-L1C0",
+        "argsRepr": [
+          "[2, 4, 6]"
+        ]
+      },
       "result": {
         "repr": "12"
       }

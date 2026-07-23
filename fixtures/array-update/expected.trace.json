@@ -1,5 +1,8 @@
 {
-  "call": {
+  "scope": {
+    "kind": "function",
+    "id": "fn-L1C0",
+    "label": "update_first",
     "functionId": "fn-L1C0",
     "argsRepr": [
       "[1, 2, 3]"
@@ -13,6 +16,7 @@
         "fn-L1C0"
       ],
       "bindings": {},
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "call_enter",
         "functionId": "fn-L1C0"
@@ -28,6 +32,7 @@
       "bindings": {
         "values": "[9, 2, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "indexed_mutation",
         "collection": "bind-L1C17",
@@ -45,6 +50,7 @@
       "bindings": {
         "values": "[9, 2, 3]"
       },
+      "frameId": "frame:fn-L1C0",
       "event": {
         "type": "return_exit",
         "repr": "[9, 2, 3]"
@@ -52,6 +58,12 @@
     }
   ],
   "truncated": false,
+  "call": {
+    "functionId": "fn-L1C0",
+    "argsRepr": [
+      "[1, 2, 3]"
+    ]
+  },
   "result": {
     "repr": "[9, 2, 3]"
   }

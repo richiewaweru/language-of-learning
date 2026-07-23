@@ -327,14 +327,15 @@
     {#each scene.layout as layoutNode (layoutNode.id)}
       {@const node = nodeById(layoutNode.id)}
       {@const focused = focusIds.has(layoutNode.id)}
-      {#if node?.kind === 'function'}
+      {#if node?.kind === 'function' || node?.kind === 'module'}
         <FunctionBoundary
           id={layoutNode.id}
           x={layoutNode.x}
           y={layoutNode.y}
           width={layoutNode.width}
           height={layoutNode.height}
-          name={node.name ?? 'fn'}
+          name={node.name ?? (node.kind === 'module' ? 'Program' : 'fn')}
+          prefix={node.kind === 'module' ? '' : 'def '}
           {focused}
           onclick={() => selectNode(layoutNode.id)}
         />

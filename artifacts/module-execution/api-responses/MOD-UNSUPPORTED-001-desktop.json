@@ -1,0 +1,37 @@
+{
+  "graph": {
+    "version": "0.1",
+    "source": "value = unknown_function()\nresult = value + 1",
+    "nodes": [],
+    "relations": [],
+    "unsupported": [
+      {
+        "sourceRange": {
+          "startLine": 1,
+          "startCol": 8,
+          "endLine": 1,
+          "endCol": 26
+        },
+        "code": "UNSUPPORTED_CONSTRUCT",
+        "construct": "call",
+        "message": "This version does not yet visualize call.",
+        "diagnostic": "Call at line 1, column 8"
+      }
+    ]
+  },
+  "trace": {
+    "scope": {
+      "kind": "module",
+      "id": "module:main",
+      "label": "Program"
+    },
+    "steps": [],
+    "truncated": false
+  },
+  "violation": {
+    "code": "UNSUPPORTED_CONSTRUCT",
+    "construct": "call",
+    "message": "This version does not yet visualize call.",
+    "diagnostic": "Call at line 1, column 8"
+  }
+}
