@@ -1,6 +1,5 @@
 <script lang="ts">
   import type {
-    LessonAssessment,
     LessonDefinitionBlockV4,
     LessonResponse,
     LessonVariationV3,
@@ -9,30 +8,22 @@
 
   let {
     block,
-    assessment,
     response,
     bindings,
     variation,
     comparison,
     onDraft,
-    onCommit,
-    onRevealPrediction,
     onApplyVariation,
     onRetry,
-    onCheckBuild,
   }: {
     block: LessonDefinitionBlockV4;
-    assessment?: LessonAssessment;
     response?: LessonResponse;
     bindings: Record<string, string>;
     variation?: LessonVariationV3;
     comparison: LessonComparisonState;
     onDraft: (id: string, answer: string) => void;
-    onCommit: (id: string, correct?: boolean, feedback?: string) => void;
-    onRevealPrediction: (id: string, correct: boolean, feedback: string) => void;
     onApplyVariation: (id: string, variationId: string) => void;
     onRetry: (id: string) => void;
-    onCheckBuild: (id: string) => void;
   } = $props();
 
   function parseRecord(answer?: string): Record<string, string> {
@@ -64,10 +55,6 @@
         ? selected.filter((item) => item !== value)
         : [...selected, value],
     ));
-  }
-
-  function sameMembers(left: string[], right: readonly string[]) {
-    return left.length === right.length && left.every((item) => right.includes(item));
   }
 
   function recognitionItems(block: Extract<LessonDefinitionBlockV4, { type: 'recognition-check' }>) {
@@ -136,32 +123,12 @@
         {option.label}
       </label>
     {/each}
-    {#if !response || response.status === 'draft'}
-      <button
-        type="button"
-        class="primary"
-        disabled={!response?.answer}
-        data-testid="commit-prediction"
-        onclick={() => onCommit(block.responseId)}
-      >Commit prediction</button>
-    {:else if response.status === 'committed'}
-      <button
-        type="button"
-        class="primary"
-        data-testid="reveal-prediction"
-        onclick={() => {
-          const record = assessment?.type === 'prediction' ? assessment : undefined;
-          const expected = record?.expected.branch;
-          const correct = response.answer === expected;
-          onRevealPrediction(
-            block.responseId,
-            correct,
-            correct ? (record?.successFeedback ?? 'Prediction matches.') : (record?.retryFeedback ?? 'Compare with Lens.'),
-          );
-        }}
-      >Reveal execution</button>
+    {#if response?.status === 'committed'}
+      <p class="committed">Prediction committed and ready to check.</p>
     {:else}
-      <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
+      {#if response?.status === 'revealed'}
+        <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
+      {/if}
     {/if}
   </fieldset>
 {:else if block.type === 'value-prediction'}
@@ -183,34 +150,9 @@
         </label>
       {/each}
     </div>
-    {#if !response || response.status === 'draft'}
-      <button
-        type="button"
-        class="primary"
-        disabled={block.fields.some((field) => answers[field.id] === undefined || answers[field.id] === '')}
-        data-testid="commit-prediction"
-        onclick={() => onCommit(block.responseId)}
-      >Commit prediction</button>
-    {:else if response.status === 'committed'}
+    {#if response?.status === 'committed'}
       <p class="committed">Prediction committed. It will not change when execution is revealed.</p>
-      <button
-        type="button"
-        class="primary"
-        data-testid="reveal-prediction"
-        onclick={() => {
-          const record = assessment?.type === 'prediction' ? assessment : undefined;
-          const correct = block.fields.every((field) =>
-            Number(answers[field.id]) === Number(record?.expected[field.id]));
-          onRevealPrediction(
-            block.responseId,
-            correct,
-            correct
-              ? (record?.successFeedback ?? 'Your predicted values match the execution.')
-              : (record?.retryFeedback ?? 'Compare your committed prediction with the actual State values.'),
-          );
-        }}
-      >Reveal execution</button>
-    {:else}
+    {:else if response?.status === 'revealed'}
       <div class="comparison" data-testid="prediction-comparison">
         {#each block.fields as field}
           <p><strong>{field.label}</strong><span>Predicted {answers[field.id]}</span><span>Actual {bindings[field.id] ?? '—'}</span></p>
@@ -234,32 +176,14 @@
         {option}
       </label>
     {/each}
-    {#if !response || response.status === 'draft'}
-      <button
-        type="button"
-        class="primary"
-        disabled={selected.length === 0}
-        data-testid="commit-variation-prediction"
-        onclick={() => {
-          const record = assessment?.type === 'selection' ? assessment : undefined;
-          const correct = sameMembers(selected, record?.expected ?? []);
-          onCommit(
-            block.responseId,
-            correct,
-            correct
-              ? (record?.successFeedback ?? 'Prediction committed.')
-              : (record?.retryFeedback ?? 'Prediction committed. Compare it with the resulting State rows.'),
-          );
-        }}
-      >Commit prediction</button>
-    {:else if response.status === 'committed'}
+    {#if response?.status === 'committed'}
       <button
         type="button"
         class="primary"
         data-testid="apply-variation"
         onclick={() => onApplyVariation(block.responseId, block.variationId)}
       >{variation?.applyLabel ?? variation?.label ?? 'Apply variation'}</button>
-    {:else}
+    {:else if response?.status === 'revealed'}
       <div class="comparison" data-testid="variation-comparison">
         {#each comparison?.rows ?? [] as row}
           <p><strong>{row.label}</strong><span>Original {row.baseline}</span><span>Changed {row.current}</span></p>
@@ -270,8 +194,6 @@
   </fieldset>
 {:else if block.type === 'observation'}
   <div class="observation"><strong>Try this in Lens</strong><p>{block.text}</p></div>
-{:else if block.type === 'recognition'}
-  <div class="recognition"><p>{block.prompt}</p><pre><code>{block.source}</code></pre></div>
 {:else if block.type === 'recognition-check'}
   {@const classifications = parseRecord(response?.answer)}
   {@const items = recognitionItems(block)}
@@ -299,25 +221,7 @@
         </fieldset>
       {/each}
     </div>
-    {#if response?.status !== 'revealed'}
-      <button
-        type="button"
-        class="primary"
-        disabled={items.some((item) => !classifications[item.id])}
-        data-testid="check-recognition"
-        onclick={() => {
-          const record = assessment?.type === 'recognition' ? assessment : undefined;
-          const correct = items.every((item) => classifications[item.id] === record?.expectedRoles[item.id]);
-          onRevealPrediction(
-            block.responseId,
-            correct,
-            correct
-              ? (record?.successFeedback ?? 'Correct: each name has the expected role.')
-              : (record?.retryFeedback ?? 'Review the code and classify each role again.'),
-          );
-        }}
-      >Check answer</button>
-    {:else}
+    {#if response?.status === 'revealed'}
       <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
       {#if !response.correct}
         <button type="button" data-testid="retry-recognition" onclick={() => onRetry(block.responseId)}>Try again</button>
@@ -330,9 +234,6 @@
     {#if block.criteria?.length}
       <ul>{#each block.criteria as criterion}<li>{criterion}</li>{/each}</ul>
     {/if}
-    <button type="button" class="primary" data-testid="check-build" onclick={() => onCheckBuild(block.responseId)}>
-      Run and check program
-    </button>
     {#if response?.feedback}
       <p class:success={response.correct} class:error={!response.correct} data-testid="build-feedback">{response.feedback}</p>
     {/if}
@@ -354,30 +255,14 @@
         {option.label}
       </label>
     {/each}
-    {#if response?.status !== 'revealed'}
-      <button
-        type="button"
-        class="primary"
-        disabled={!response?.answer}
-        data-testid="submit-transfer"
-        onclick={() => {
-          const record = assessment?.type === 'transfer' ? assessment : undefined;
-          const correct = response?.answer === record?.expectedOptionId;
-          onRevealPrediction(
-            block.responseId,
-            correct,
-            correct ? (record?.successFeedback ?? 'Response recorded.') : (record?.retryFeedback ?? 'Response recorded.'),
-          );
-        }}
-      >Submit {block.phase === 'pre' ? 'pre-check' : 'transfer check'}</button>
-    {:else}
+    {#if response?.status === 'revealed'}
       <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
     {/if}
   </div>
 {/if}
 
 <style>
-  .prose, .definition, .callout, .observation, .recognition, .code-shape, .assignment-shape, .code-block, .interaction { margin: 0 0 20px; }
+  .prose, .definition, .callout, .observation, .code-shape, .assignment-shape, .code-block, .interaction { margin: 0 0 20px; }
   .prose p, .definition p, .callout p, .observation p { line-height: 1.7; color: var(--ink-secondary); }
   .definition { margin-inline: 0; padding: 22px 24px; border-left: 4px solid #d36c37; background: #f6ede2; }
   .definition p, .callout p, .observation p { margin-bottom: 0; }

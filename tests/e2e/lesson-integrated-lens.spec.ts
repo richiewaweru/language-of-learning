@@ -6,7 +6,7 @@ import {
   monitorBrowserFailures,
 } from './browser-failures';
 
-const evidenceRoot = path.resolve('output/playwright/lesson-integrated-lens');
+const evidenceRoot = path.resolve('output/playwright/guided-lesson');
 
 test.beforeAll(async () => {
   await mkdir(evidenceRoot, { recursive: true });
@@ -31,36 +31,54 @@ test.afterEach(async ({ page }) => {
   expectNoBrowserFailures(page);
 });
 
-test('authored cues control availability while focus remains learner-controlled', async ({ page }) => {
+test('Lens stays contextual and always opens attached first', async ({ page }) => {
   const layout = page.getByTestId('lesson-layout');
-  const launcher = page.getByTestId('open-lesson-lens');
-
   await expect(layout).toHaveAttribute('data-lens-display-mode', 'closed');
-  await expect(launcher).toBeDisabled();
+  await expect(page.getByTestId('lesson-lens-invitation')).toHaveCount(0);
 
   await selectSection(page, /Read an assignment/);
+  await expect(layout).toHaveAttribute('data-lens-display-mode', 'closed');
+  await expect(page.getByTestId('lesson-lens-invitation')).toBeVisible();
+  await page.screenshot({
+    path: path.join(evidenceRoot, 'lesson.png'),
+    animations: 'disabled',
+  });
+  await page.getByTestId('open-lesson-lens').click();
   await expect(layout).toHaveAttribute('data-lens-display-mode', 'open');
-  await expect(page.getByTestId('lesson-context-panel')).toBeVisible();
-
-  await selectSection(page, /Build a calculation/);
-  await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-presentation', 'focus');
-  await expect(layout).toHaveAttribute('data-lens-display-mode', 'open');
+  await expect(page.getByTestId('lesson-section')).toContainText('Read an assignment');
 
   await page.getByRole('button', { name: 'Focus Lens' }).click();
   await expect(layout).toHaveAttribute('data-lens-display-mode', 'focus');
-  await page.keyboard.press('Escape');
-  await expect(layout).toHaveAttribute('data-lens-display-mode', 'open');
+  await expect(
+    page.getByTestId('lesson-lens-region').getByRole('button', { name: 'Close Lens' }),
+  ).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(layout).toHaveAttribute('data-lens-display-mode', 'closed');
-  await expect(launcher).toBeFocused();
-
-  await launcher.click();
-  await expect(layout).toHaveAttribute('data-lens-display-mode', 'open');
+  await expect(page.getByTestId('open-lesson-lens')).toBeFocused();
 });
 
-test('closing and reopening preserves Lens state and lesson scroll position', async ({ page }) => {
+test('quiet navigation closes attached Lens and responses advance only through navigation', async ({ page }) => {
   await selectSection(page, /Read an assignment/);
-  const layout = page.getByTestId('lesson-layout');
+  await page.getByTestId('open-lesson-lens').click();
+  await selectSection(page, /What will Python store/);
+  await expect(page.getByTestId('lesson-layout')).toHaveAttribute('data-lens-display-mode', 'closed');
+
+  await page.getByTestId('prediction-tax').fill('16');
+  await page.getByTestId('prediction-total').fill('116');
+  await page.getByTestId('lesson-check-action').click();
+  await expect(page.getByTestId('lesson-section')).toContainText('Your committed prediction matches');
+  await expect(page.getByTestId('lesson-section')).toContainText('What will Python store?');
+
+  await page.getByTestId('lesson-navigation').getByRole('button', { name: 'Next' }).click();
+  await expect(page.getByTestId('lesson-section')).toContainText('Follow the calculation');
+  await page.getByTestId('lesson-navigation').getByRole('button', { name: 'Back' }).click();
+  await expect(page.getByTestId('prediction-tax')).toHaveValue('16');
+  await expect(page.getByTestId('prediction-total')).toHaveValue('116');
+});
+
+test('closing and reopening preserves Lens view, frame, scroll, and launcher focus', async ({ page }) => {
+  await selectSection(page, /Read an assignment/);
+  await page.getByTestId('open-lesson-lens').click();
   const lens = page.getByTestId('lesson-lens-region');
 
   await lens.getByTestId('step-next').click();
@@ -68,98 +86,66 @@ test('closing and reopening preserves Lens state and lesson scroll position', as
   const frame = await lens.getByTestId('current-frame').textContent();
 
   await page.getByRole('button', { name: 'Close Lens' }).click();
-  await page.evaluate(() => window.scrollTo(0, 420));
+  await page.evaluate(() => window.scrollTo(0, 240));
   const beforeOpen = await page.evaluate(() => window.scrollY);
-  await page.getByTestId('open-lesson-lens').evaluate((button: HTMLButtonElement) => button.click());
+  await page.getByTestId('open-lesson-lens').click();
   await page.getByRole('button', { name: 'Close Lens' }).click();
   const afterClose = await page.evaluate(() => window.scrollY);
 
   expect(Math.abs(afterClose - beforeOpen)).toBeLessThanOrEqual(2);
+  await expect(page.getByTestId('open-lesson-lens')).toBeFocused();
   await page.getByTestId('open-lesson-lens').click();
-  await expect(layout).toHaveAttribute('data-lens-display-mode', 'open');
   await expect(lens.getByRole('tab', { name: 'State', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(lens.getByTestId('current-frame')).toHaveText(frame ?? '');
 });
 
-test('desktop open and focus modes give Lens the promised workspace share', async ({ page }) => {
+test('desktop attached and focus modes honor their workspace geometry', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await selectSection(page, /Read an assignment/);
+  await page.getByTestId('open-lesson-lens').click();
 
   const layout = page.getByTestId('lesson-layout');
-  const rail = page.getByTestId('lesson-progress-rail');
+  const lesson = page.locator('.lesson-column');
   const lens = page.getByTestId('lesson-lens-region');
-  const [layoutBox, railBox, openLensBox] = await Promise.all([
+  const [layoutBox, lessonBox, lensBox] = await Promise.all([
     layout.boundingBox(),
-    rail.boundingBox(),
+    lesson.boundingBox(),
     lens.boundingBox(),
   ]);
-  expect(layoutBox && railBox && openLensBox).toBeTruthy();
-  expect(openLensBox!.width / (layoutBox!.width - railBox!.width)).toBeGreaterThanOrEqual(.65);
+  expect(layoutBox && lessonBox && lensBox).toBeTruthy();
+  expect(lensBox!.width / layoutBox!.width).toBeGreaterThanOrEqual(.65);
+  expect(lessonBox!.width / layoutBox!.width).toBeGreaterThanOrEqual(.25);
   await page.screenshot({
-    path: path.join(evidenceRoot, 'desktop-open.png'),
+    path: path.join(evidenceRoot, 'attached.png'),
     animations: 'disabled',
   });
 
   await page.getByRole('button', { name: 'Focus Lens' }).click();
-  const focusedLensBox = await lens.boundingBox();
-  expect(focusedLensBox!.width / (layoutBox!.width - railBox!.width)).toBeGreaterThanOrEqual(.95);
+  const focused = await lens.boundingBox();
+  expect(focused!.width).toBeGreaterThan(1000);
+  expect(Math.abs((focused!.x + focused!.width / 2) - 720)).toBeLessThan(4);
+  await expect(page.locator('.focus-scrim')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
   await page.screenshot({
-    path: path.join(evidenceRoot, 'desktop-focus.png'),
+    path: path.join(evidenceRoot, 'focus.png'),
     animations: 'disabled',
   });
 });
 
-test('lesson Lens code toggle and graph controls remain contained', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
+test('mobile attached mode exposes the active lesson through a context drawer', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+  await expect(page.getByTestId('lesson-hydrating')).toHaveCount(0, { timeout: 30_000 });
   await selectSection(page, /Read an assignment/);
-  const lens = page.getByTestId('lesson-lens-region');
-  await lens.getByRole('tab', { name: 'Graph Inspector', exact: true }).click();
+  await page.getByTestId('open-lesson-lens').click();
 
-  const viewport = lens.getByLabel('Pannable semantic graph');
-  await expect(viewport).toBeVisible();
-  await lens.getByRole('button', { name: 'Fit graph to view' }).click();
-  expect(Number(await viewport.getAttribute('data-zoom'))).toBeLessThanOrEqual(1);
-
-  const before = await viewport.boundingBox();
-  await lens.getByTestId('toggle-lens-code').click();
-  await expect(lens.getByTestId('toggle-lens-code')).toHaveText('Show code');
-  const after = await viewport.boundingBox();
-  expect(after!.width).toBeGreaterThan(before!.width);
-
-  await viewport.focus();
-  await page.keyboard.press('+');
-  const zoomed = Number(await viewport.getAttribute('data-zoom'));
-  await page.keyboard.press('0');
-  expect(Number(await viewport.getAttribute('data-zoom'))).toBeLessThanOrEqual(zoomed);
+  await expect(page.getByRole('button', { name: 'Lesson context', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Lesson context', exact: true }).click();
+  await expect(page.getByTestId('lesson-section')).toBeVisible();
+  await expect(page.getByTestId('lesson-section')).toContainText('Read an assignment');
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
-});
-
-test('tablet and mobile use overlay workspaces without page overflow', async ({ page }) => {
-  for (const viewport of [
-    { width: 768, height: 1024 },
-    { width: 390, height: 844 },
-  ]) {
-    await page.setViewportSize(viewport);
-    await page.reload();
-    await expect(page.getByTestId('lesson-hydrating')).toHaveCount(0, { timeout: 30_000 });
-    if (await page.getByTestId('lesson-layout').getAttribute('data-lens-display-mode') === 'closed') {
-      await selectSection(page, /Read an assignment/);
-    }
-    await expect(page.getByTestId('lesson-layout')).toHaveAttribute('data-lens-display-mode', 'open');
-    await expect(page.getByRole('button', { name: 'Lesson context', exact: true })).toBeVisible();
-    await page.screenshot({
-      path: path.join(evidenceRoot, `responsive-${viewport.width}.png`),
-      animations: 'disabled',
-    });
-    await page.locator('.lens-host').evaluate((host) => {
-      const focusable = Array.from(host.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      )).filter((element) => element.getClientRects().length > 0);
-      focusable.at(-1)?.focus();
-    });
-    await page.keyboard.press('Tab');
-    expect(await page.locator('.lens-host').evaluate((host) => host.contains(document.activeElement))).toBe(true);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
-  }
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('lesson-layout')).toHaveAttribute('data-lens-display-mode', 'open');
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('lesson-layout')).toHaveAttribute('data-lens-display-mode', 'closed');
 });

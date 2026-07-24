@@ -150,8 +150,8 @@ const journeys = [
 for (const journey of journeys) {
   test(`${journey.slug} completes prediction, variation, and Build in one workspace`, async ({ page }) => {
     await openLesson(page, journey.slug);
-    await expect(page.getByRole('heading', { name: journey.title, exact: true })).toBeVisible();
-    await expect(page.getByTestId('lesson-section')).toHaveCount(9);
+    await expect(page.getByTestId('lesson-header')).toContainText('Python Foundations');
+    await expect(page.getByTestId('lesson-section')).toHaveCount(1);
     await expect(page.getByTestId('code-editor')).toHaveCount(1);
     const workspace = page.getByTestId('lesson-lens-region').getByTestId('lens-workspace');
     const sessionId = await workspace.getAttribute('data-session-id');
@@ -164,15 +164,16 @@ for (const journey of journeys) {
     if (journey.predictionOption) {
       await page.getByTestId('branch-prediction').getByLabel(journey.predictionOption).check();
     }
-    await page.getByTestId('commit-prediction').click();
-    await page.getByTestId('reveal-prediction').click();
+    await page.getByTestId('lesson-check-action').click();
+    await openSection(page, journey.guidedSection);
     await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-lens-mode', 'guided');
+    await reopenLens(page);
     await expect(page.getByTestId('guided-trace-view')).toBeVisible();
 
     await openSection(page, journey.variationSection);
     await returnToLesson(page);
     await page.getByTestId('variation-prediction').getByLabel(journey.variationOption, { exact: true }).check();
-    await page.getByTestId('commit-variation-prediction').click();
+    await page.getByTestId('lesson-check-action').click();
     await page.getByTestId('apply-variation').click();
     await expect(page.getByTestId('variation-comparison')).toContainText(journey.changed);
 
@@ -183,12 +184,12 @@ for (const journey of journeys) {
       await recognition.getByRole('group', { name: item, exact: true })
         .getByLabel(role, { exact: true }).check();
     }
-    await page.getByTestId('check-recognition').click();
+    await page.getByTestId('lesson-check-action').click();
     await expect(recognition).toContainText('Correct');
 
     await openSection(page, journey.buildSection);
     await returnToLesson(page);
-    await page.getByTestId('check-build').click();
+    await page.getByTestId('lesson-check-action').click();
     await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
     await reopenLens(page);
     const editor = page.getByTestId('code-editor').locator('.cm-content');
@@ -196,7 +197,7 @@ for (const journey of journeys) {
     await page.keyboard.press('ControlOrMeta+A');
     await page.keyboard.insertText(journey.buildSource);
     await returnToLesson(page);
-    await page.getByTestId('check-build').click();
+    await page.getByTestId('lesson-check-action').click();
     await expect(page.getByTestId('build-feedback')).toHaveClass(/success/);
     await expect(editor).toContainText(journey.buildSource.split('\n')[0]);
     await expect(workspace).toHaveAttribute('data-session-id', sessionId ?? '');
@@ -215,7 +216,7 @@ test('recognition conceals structure until an answer is checked', async ({ page 
   const recognition = page.getByTestId('recognition-check');
   await recognition.locator('fieldset').filter({ hasText: 'bill' }).getByLabel('parameter').check();
   await recognition.locator('fieldset').filter({ hasText: 'total' }).getByLabel('local result').check();
-  await page.getByTestId('check-recognition').click();
+  await page.getByTestId('lesson-check-action').click();
   await reopenLens(page);
   await expect(page.getByRole('tab', { name: 'Graph Inspector', exact: true })).toBeVisible();
   await expect(recognition).toContainText('Correct');
@@ -224,6 +225,7 @@ test('recognition conceals structure until an answer is checked', async ({ page 
 test('Conditions rejects a learner program with a broken true branch', async ({ page }) => {
   await openLesson(page, 'conditions-and-branches');
   await openSection(page, /Build a decision/);
+  await reopenLens(page);
   const editor = page.getByTestId('code-editor').locator('.cm-content');
   await editor.click();
   await page.keyboard.press('ControlOrMeta+A');
@@ -231,7 +233,7 @@ test('Conditions rejects a learner program with a broken true branch', async ({ 
     'age = 16\nif age >= 18:\n    status = ""\nelse:\n    status = "minor"',
   );
   await returnToLesson(page);
-  await page.getByTestId('check-build').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
   await expect(page.getByTestId('build-feedback')).toContainText('learner-source scenarios');
 });
@@ -240,7 +242,7 @@ test('Values Build rejects unchanged work, accepts alternate names, and invalida
   await openLesson(page, 'values-and-variables');
   await openSection(page, /Build a calculation/);
   await returnToLesson(page);
-  await page.getByTestId('check-build').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
 
   await reopenLens(page);
@@ -250,7 +252,7 @@ test('Values Build rejects unchanged work, accepts alternate names, and invalida
   await page.keyboard.press('ControlOrMeta+A');
   await page.keyboard.insertText(validSource);
   await returnToLesson(page);
-  await page.getByTestId('check-build').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect(page.getByTestId('build-feedback')).toHaveClass(/success/);
 
   await reopenLens(page);
@@ -264,6 +266,7 @@ test('refresh, restart, cross-lesson, and Decode storage remain isolated', async
   await openLesson(page, 'functions-and-returns');
   await openSection(page, /Build a function/);
   const attempt = await page.getByTestId('lesson-attempt-id').textContent();
+  await reopenLens(page);
   const editor = page.getByTestId('code-editor').locator('.cm-content');
   await editor.click();
   await page.keyboard.press('ControlOrMeta+A');
@@ -355,6 +358,7 @@ test('editing during delayed verification cannot publish stale Build feedback', 
   });
   await openLesson(page, 'conditions-and-branches');
   await openSection(page, /Build a decision/);
+  await reopenLens(page);
   const editor = page.getByTestId('code-editor').locator('.cm-content');
   await editor.click();
   await page.keyboard.press('ControlOrMeta+A');
@@ -362,7 +366,7 @@ test('editing during delayed verification cannot publish stale Build feedback', 
     'years = 16\nif years >= 18:\n    label = "adult"\nelse:\n    label = "minor"',
   );
   await returnToLesson(page);
-  await page.getByTestId('check-build').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect.poll(() => delayed).toBe(true);
   await reopenLens(page);
   await editor.click();

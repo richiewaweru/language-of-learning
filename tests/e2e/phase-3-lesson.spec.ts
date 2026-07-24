@@ -36,12 +36,12 @@ async function revealCanonicalPrediction(page: Page) {
   await openSection(page, /What will Python store/);
   await page.getByTestId('prediction-tax').fill('16');
   await page.getByTestId('prediction-total').fill('116');
-  await page.getByTestId('commit-prediction').click();
-  await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-presentation', 'quiet');
-  await page.getByTestId('reveal-prediction').click();
-  await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-presentation', 'focus');
+  await page.getByTestId('lesson-check-action').click();
   await expect(page.getByTestId('prediction-comparison')).toContainText('Actual 16');
   await expect(page.getByTestId('prediction-comparison')).toContainText('Actual 116');
+  await openSection(page, /Follow the calculation/);
+  await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-presentation', 'focus');
+  await page.getByTestId('open-lesson-lens').click();
 }
 
 test.beforeAll(async () => {
@@ -61,7 +61,8 @@ test.afterEach(async ({ page }) => {
 });
 
 test('renders literal assignment anatomy and one persistent mounted editor', async ({ page }) => {
-  await expect(page.getByRole('heading', { name: 'Values and Variables', exact: true })).toBeVisible();
+  await expect(page.getByTestId('lesson-header')).toContainText('Python Foundations');
+  await openSection(page, /Read an assignment/);
   await expect(page.getByTestId('lesson-assignment-shape')).toContainText('price = 100');
   await expect(page.getByTestId('lesson-assignment-shape')).toContainText('tax = price * 0.16');
   await expect(page.getByTestId('lesson-assignment-shape')).toContainText('total = price + tax');
@@ -91,7 +92,7 @@ test('applies only the authored price variation and compares State rows', async 
   for (const name of ['price', 'tax', 'total']) {
     await variation.getByLabel(name, { exact: true }).check();
   }
-  await page.getByTestId('commit-variation-prediction').click();
+  await page.getByTestId('lesson-check-action').click();
   await page.getByTestId('apply-variation').click();
   await expect(page.getByTestId('variation-comparison')).toContainText('Changed 200');
   await expect(page.getByTestId('variation-comparison')).toContainText('Changed 32');
@@ -108,14 +109,14 @@ test('recognition supports check, feedback, and retry', async ({ page }) => {
     const group = check.locator('fieldset').filter({ hasText: name });
     await group.getByLabel(name === 'speed' ? 'starting name' : 'derived name', { exact: true }).check();
   }
-  await page.getByTestId('check-recognition').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect(check).toContainText('Check which lines');
   await page.getByTestId('retry-recognition').click();
   for (const name of ['distance', 'time']) {
     await check.locator('fieldset').filter({ hasText: name }).getByLabel('starting name', { exact: true }).check();
   }
   await check.locator('fieldset').filter({ hasText: 'speed' }).getByLabel('derived name', { exact: true }).check();
-  await page.getByTestId('check-recognition').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect(check).toContainText('Correct: the first two names');
 });
 
@@ -128,14 +129,15 @@ test('Build uses the shared editor and grades dependencies deterministically', a
   await expect(page.getByTestId('code-editor')).toHaveAttribute('data-readonly', 'false');
   await expect(page.locator('textarea')).toHaveCount(0);
 
+  await page.getByTestId('open-lesson-lens').click();
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first * 2');
   await returnToLesson(page);
-  await page.getByTestId('check-build').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect(page.getByTestId('build-feedback')).toContainText('both starting bindings');
   await page.getByTestId('open-lesson-lens').click();
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first + second');
   await returnToLesson(page);
-  await page.getByTestId('check-build').click();
+  await page.getByTestId('lesson-check-action').click();
   await expect(page.getByTestId('build-feedback')).toContainText('depends on both starting bindings');
   await expect(workspace).toHaveAttribute('data-session-id', sessionId ?? '');
 });
@@ -158,25 +160,30 @@ test('refresh restores guided response, source, view, frame, and attempt identit
   await waitForLesson(page);
   await expect(page.getByTestId('lesson-attempt-id')).toHaveText(attemptId ?? '');
   await expect(lens.getByTestId('lens-workspace')).toHaveAttribute('data-hydration-status', 'restored');
+  await page.getByTestId('open-lesson-lens').click();
   await expect(lens.getByRole('tab', { name: 'State', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(lens.getByTestId('current-frame')).toHaveText(frame ?? '');
   await returnToLesson(page);
+  await openSection(page, /What will Python store/);
   await expect(page.getByTestId('prediction-comparison')).toBeVisible();
 });
 
 test('refresh in Build preserves learner source without restoring artifacts', async ({ page }) => {
   await openSection(page, /Build a calculation/);
+  await page.getByTestId('open-lesson-lens').click();
   await replaceLessonSource(page, 'alpha = 4\nbeta = 6\nsum_value = alpha + beta');
   await page.reload();
   await waitForLesson(page);
   await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-lens-mode', 'build');
   await expect(page.getByTestId('code-editor').locator('.cm-content')).toContainText('alpha = 4');
+  await page.getByTestId('open-lesson-lens').click();
   await expect(page.getByTestId('lens-empty-workspace')).toBeVisible();
 });
 
 test('restart creates a clean authored attempt', async ({ page }) => {
   await openSection(page, /Build a calculation/);
   const oldAttempt = await page.getByTestId('lesson-attempt-id').textContent();
+  await page.getByTestId('open-lesson-lens').click();
   await replaceLessonSource(page, 'changed = 999');
   await returnToLesson(page);
   await page.getByTestId('lesson-restart').click();
@@ -187,6 +194,7 @@ test('restart creates a clean authored attempt', async ({ page }) => {
 
 test('lesson storage remains isolated from Decode', async ({ page, context }) => {
   await openSection(page, /Build a calculation/);
+  await page.getByTestId('open-lesson-lens').click();
   await replaceLessonSource(page, 'lesson_only = 41');
   const decodePage = await context.newPage();
   await decodePage.goto('/decode');

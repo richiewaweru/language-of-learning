@@ -9,7 +9,8 @@
   const minimalChrome = $derived(
     $page.url.pathname.startsWith('/debug/') ||
       $page.url.pathname.startsWith('/internal/debug/') ||
-      $page.url.pathname.startsWith('/slices/'),
+      $page.url.pathname.startsWith('/slices/') ||
+      $page.route.id === '/learn/[pathway]/[lesson]',
   );
 
   $effect(() => {

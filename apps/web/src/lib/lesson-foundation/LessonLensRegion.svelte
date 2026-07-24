@@ -34,7 +34,7 @@
 <aside
   class="lens-region"
   class:quiet={presentation === 'quiet'}
-  class:focus={presentation === 'focus'}
+  class:focus={displayMode === 'focus'}
   data-testid="lesson-lens-region"
   data-presentation={presentation}
   data-lens-mode={mode}
@@ -49,10 +49,12 @@
       {#if contextAvailable && displayMode === 'open'}
         <button type="button" class="context-action" onclick={onShowContext}>Lesson context</button>
       {/if}
-      <button type="button" onclick={onToggleFocus}>
-        {displayMode === 'focus' ? 'Restore layout' : 'Focus Lens'}
+      {#if displayMode === 'open'}
+        <button type="button" onclick={onToggleFocus}>Focus Lens <span aria-hidden="true">↗</span></button>
+      {/if}
+      <button type="button" class="close" aria-label="Close Lens" onclick={onClose}>
+        <span aria-hidden="true">×</span>
       </button>
-      <button type="button" aria-label="Close Lens" onclick={onClose}>Close</button>
     </div>
   </header>
   <div class="workspace-shell">
@@ -61,7 +63,7 @@
 </aside>
 
 <style>
-  .lens-region { min-width: 0; min-height: 100%; background: #f7f5ef; transition: background .2s ease; }
+  .lens-region { min-width: 0; min-height: 100%; overflow: hidden; background: #f7f5ef; transition: background .2s ease; }
   .lens-region.focus { background: #f8f1e9; }
   .lens-header { position: sticky; top: 0; z-index: 6; display: flex; justify-content: space-between; gap: 18px; align-items: start; padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: color-mix(in srgb, #f7f5ef 94%, transparent); backdrop-filter: blur(10px); }
   header p { margin: 0; color: #4f6b5e; text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); }
@@ -69,6 +71,7 @@
   header span { display: block; margin-top: 7px; color: var(--ink-secondary); line-height: 1.45; }
   .lens-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 7px; }
   .lens-actions button { padding: 8px 10px; border: 1px solid var(--line-medium); border-radius: 7px; background: white; color: var(--ink-secondary); font-size: var(--text-xs); font-weight: 700; white-space: nowrap; cursor: pointer; }
+  .lens-actions .close { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border-color: #7da18f; color: var(--ink-primary); font-size: 25px; font-weight: 400; line-height: 1; }
   .context-action { display: none; }
   .workspace-shell { padding: 16px; }
   @media (max-width: 1023px) { .context-action { display: inline-flex; } }
