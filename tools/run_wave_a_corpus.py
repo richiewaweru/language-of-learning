@@ -218,7 +218,7 @@ class HardeningCorpusTests(unittest.TestCase):
 
     def test_p06_parameter_shadowing_rejects_atomically(self) -> None:
         message = (
-            "This pilot does not support shadowing built-in function names. "
+            "Lens does not support shadowing built-in function names. "
             "Rename the parameter or local variable."
         )
         for name in ("len", "range", "min", "max", "sum", "abs", "print"):

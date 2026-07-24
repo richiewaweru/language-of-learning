@@ -36,7 +36,7 @@ test.describe('learner route integration', () => {
   test('pathway exposes the four current lessons and their next actions', async ({ page }) => {
     await page.goto('/learn/python-foundations');
     await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toBeVisible();
-    await expect(page.getByTestId('pilot-lesson-index').getByRole('link')).toHaveCount(4);
+    await expect(page.getByTestId('lesson-index').getByRole('link')).toHaveCount(4);
     await expect(page.getByRole('link', { name: /Values and Variables/ })).toHaveAttribute(
       'href',
       '/learn/python-foundations/values-and-variables',

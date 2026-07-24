@@ -1,12 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import PageContainer from '$lib/learner-ui/shell/PageContainer.svelte';
   import Breadcrumbs from '$lib/learner-ui/shell/Breadcrumbs.svelte';
-  import { emptyProgress, loadPilotProgress } from '$lib/pilot/progress';
 
   let { data } = $props();
-  let progress = $state(emptyProgress());
-  onMount(() => (progress = loadPilotProgress()));
 </script>
 
 <svelte:head>
@@ -16,11 +12,11 @@
 <PageContainer wide>
   <Breadcrumbs items={[{ label: 'Learn', href: '/learn' }, { label: data.pathway.title }]} />
   <header class="pathway-header">
-    <p class="eyebrow">Four-lesson pilot</p>
+    <p class="eyebrow">Four foundational lessons</p>
     <h1>{data.pathway.title}</h1>
     <p>{data.pathway.summary}</p>
   </header>
-  <ol class="lesson-grid" data-testid="pilot-lesson-index">
+  <ol class="lesson-grid" data-testid="lesson-index">
     {#each data.lessons as lesson}
       <li>
         <a href="/learn/python-foundations/{lesson.id}">
@@ -28,7 +24,7 @@
           <div>
             <h2>{lesson.title}</h2>
             <p>{lesson.summary}</p>
-            <small>{progress.completedLessonIds.includes(lesson.id) ? 'Completed' : '9 learning steps'}</small>
+            <small>9 learning steps</small>
           </div>
         </a>
       </li>

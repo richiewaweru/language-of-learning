@@ -236,9 +236,33 @@ export const LessonDefinitionV4Schema = z.object({
   verifications: z.array(LessonVerificationV4Schema).default([]),
   assessments: z.array(LessonAssessmentSchema).min(1),
 }).strict().superRefine((lesson, context) => {
-  const programIds = new Set(lesson.programs.map((program) => program.id));
-  const scenarioIds = new Set(lesson.scenarios.map((scenario) => scenario.id));
-  const verificationIds = new Set(lesson.verifications.map((verification) => verification.id));
+  function unique(
+    items: readonly { id: string }[],
+    path: string,
+    label: string,
+  ): Set<string> {
+    const ids = new Set<string>();
+    items.forEach((item, index) => {
+      if (ids.has(item.id)) {
+        context.addIssue({
+          code: 'custom',
+          path: [path, index, 'id'],
+          message: `Duplicate ${label} id: ${item.id}.`,
+        });
+      }
+      ids.add(item.id);
+    });
+    return ids;
+  }
+
+  const sectionIds = unique(lesson.sections, 'sections', 'section');
+  const programIds = unique(lesson.programs, 'programs', 'program');
+  const scenarioIds = unique(lesson.scenarios, 'scenarios', 'scenario');
+  const variationIds = unique(lesson.variations, 'variations', 'variation');
+  const cueIds = unique(lesson.cues, 'cues', 'cue');
+  const verificationIds = unique(lesson.verifications, 'verifications', 'verification');
+  unique(lesson.assessments, 'assessments', 'assessment');
+
   if (!programIds.has(lesson.lens.initialProgramId)) {
     context.addIssue({
       code: 'custom',
@@ -246,10 +270,136 @@ export const LessonDefinitionV4Schema = z.object({
       message: 'Initial program does not exist.',
     });
   }
-  const responseIds = new Set(
-    lesson.sections.flatMap((section) =>
-      section.blocks.flatMap((block) => 'responseId' in block ? [block.responseId] : [])),
-  );
+  const responseIds = new Set<string>();
+  const responseBlocks = new Map<string, {
+    type: LessonDefinitionBlockV4['type'];
+    phase?: 'pre' | 'post';
+  }>();
+  lesson.sections.forEach((section, sectionIndex) => {
+    const cue = lesson.cues.find((candidate) => candidate.id === section.lensCueId);
+    if (!cueIds.has(section.lensCueId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['sections', sectionIndex, 'lensCueId'],
+        message: `Unknown Lens cue ${section.lensCueId}.`,
+      });
+    } else if (cue?.sectionId !== section.id) {
+      context.addIssue({
+        code: 'custom',
+        path: ['sections', sectionIndex, 'lensCueId'],
+        message: 'Lens cue belongs to a different section.',
+      });
+    }
+    section.blocks.forEach((block, blockIndex) => {
+      if ('responseId' in block) {
+        if (responseIds.has(block.responseId)) {
+          context.addIssue({
+            code: 'custom',
+            path: ['sections', sectionIndex, 'blocks', blockIndex, 'responseId'],
+            message: `Duplicate response id: ${block.responseId}.`,
+          });
+        }
+        responseIds.add(block.responseId);
+        responseBlocks.set(block.responseId, {
+          type: block.type,
+          ...(block.type === 'transfer-check' ? { phase: block.phase } : {}),
+        });
+      }
+      if (block.type === 'variation-prediction' && !variationIds.has(block.variationId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['sections', sectionIndex, 'blocks', blockIndex, 'variationId'],
+          message: `Unknown variation ${block.variationId}.`,
+        });
+      }
+      if (block.type === 'build' && !programIds.has(block.programId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['sections', sectionIndex, 'blocks', blockIndex, 'programId'],
+          message: `Unknown Build program ${block.programId}.`,
+        });
+      }
+    });
+  });
+
+  lesson.cues.forEach((cue, index) => {
+    if (!sectionIds.has(cue.sectionId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['cues', index, 'sectionId'],
+        message: `Unknown section ${cue.sectionId}.`,
+      });
+    }
+    if (cue.programId && !programIds.has(cue.programId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['cues', index, 'programId'],
+        message: `Unknown program ${cue.programId}.`,
+      });
+    }
+    if (cue.variationId && !variationIds.has(cue.variationId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['cues', index, 'variationId'],
+        message: `Unknown variation ${cue.variationId}.`,
+      });
+    }
+    if (cue.requiresResponseId && !responseIds.has(cue.requiresResponseId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['cues', index, 'requiresResponseId'],
+        message: `Unknown response ${cue.requiresResponseId}.`,
+      });
+    }
+    if (cue.revealPolicy && !responseIds.has(cue.revealPolicy.responseId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['cues', index, 'revealPolicy', 'responseId'],
+        message: `Unknown reveal response ${cue.revealPolicy.responseId}.`,
+      });
+    }
+    if (!lesson.sections.some((section) => section.lensCueId === cue.id)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['cues', index, 'id'],
+        message: `Lens cue ${cue.id} is not used by a section.`,
+      });
+    }
+  });
+
+  lesson.variations.forEach((variation, index) => {
+    if (!programIds.has(variation.programId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['variations', index, 'programId'],
+        message: `Unknown variation program ${variation.programId}.`,
+      });
+    }
+    if (!programIds.has(variation.comparison.baselineProgramId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['variations', index, 'comparison', 'baselineProgramId'],
+        message: `Unknown baseline program ${variation.comparison.baselineProgramId}.`,
+      });
+    }
+    variation.verificationIds.forEach((id) => {
+      if (!verificationIds.has(id)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['variations', index, 'verificationIds'],
+          message: `Unknown verification ${id}.`,
+        });
+      }
+    });
+    if (variation.predictionId && !responseIds.has(variation.predictionId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['variations', index, 'predictionId'],
+        message: `Unknown prediction response ${variation.predictionId}.`,
+      });
+    }
+  });
+
   const assessmentResponses = new Set<string>();
   lesson.assessments.forEach((assessment, index) => {
     if (!responseIds.has(assessment.responseId)) {
@@ -267,6 +417,36 @@ export const LessonDefinitionV4Schema = z.object({
       });
     }
     assessmentResponses.add(assessment.responseId);
+    const block = responseBlocks.get(assessment.responseId);
+    const expectedAssessmentType = block?.type === 'variation-prediction'
+      ? 'selection'
+      : block?.type === 'recognition-check'
+        ? 'recognition'
+        : block?.type === 'build'
+          ? 'build'
+          : block?.type === 'transfer-check'
+            ? 'transfer'
+            : block?.type === 'prediction' || block?.type === 'value-prediction'
+              ? 'prediction'
+              : null;
+    if (expectedAssessmentType && assessment.type !== expectedAssessmentType) {
+      context.addIssue({
+        code: 'custom',
+        path: ['assessments', index, 'type'],
+        message: `Assessment type ${assessment.type} does not match ${block?.type} response ${assessment.responseId}.`,
+      });
+    }
+    if (
+      assessment.type === 'transfer'
+      && block?.type === 'transfer-check'
+      && assessment.phase !== block.phase
+    ) {
+      context.addIssue({
+        code: 'custom',
+        path: ['assessments', index, 'phase'],
+        message: `Transfer phase does not match response ${assessment.responseId}.`,
+      });
+    }
     if (assessment.type === 'build') {
       for (const id of assessment.verificationIds) {
         if (!verificationIds.has(id)) {
@@ -297,17 +477,6 @@ export const LessonDefinitionV4Schema = z.object({
       });
     }
   }
-  lesson.sections.forEach((section, sectionIndex) => {
-    section.blocks.forEach((block, blockIndex) => {
-      if (block.type === 'build' && !programIds.has(block.programId)) {
-        context.addIssue({
-          code: 'custom',
-          path: ['sections', sectionIndex, 'blocks', blockIndex, 'programId'],
-          message: `Unknown Build program ${block.programId}.`,
-        });
-      }
-    });
-  });
 });
 
 export const LessonVerificationResultSchema = z.object({
@@ -327,8 +496,10 @@ export const ScenarioResultSchema = z.object({
 }).strict();
 
 export const SubmissionEvidenceSchema = z.object({
+  submissionId: z.string().min(1),
+  attemptId: z.string().min(1),
   sourceHash: z.string().min(1),
-  runRevision: z.number().int().nonnegative(),
+  lensRevision: z.number().int().nonnegative(),
   artifacts: z.custom<LensArtifacts>((value) =>
     Boolean(value && typeof value === 'object' && 'graph' in value && 'trace' in value),
   ).nullable(),

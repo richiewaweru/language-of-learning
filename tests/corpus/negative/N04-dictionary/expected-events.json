@@ -1,6 +1,6 @@
 {
   "code": "UNSUPPORTED_DICTIONARY",
-  "message": "Dictionaries are not yet supported in this pilot. Use lists for the current supported collection model.",
+  "message": "Dictionaries are not yet supported in Lens. Use lists for the current supported collection model.",
   "verifiedSteps": false
 }
 

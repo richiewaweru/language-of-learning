@@ -31,11 +31,8 @@ from apps.api.ai_runtime import (  # noqa: E402
 
 DATA = ROOT / "data"
 ANALYSES = DATA / "analyses"
-EVENTS = DATA / "events.ndjson"
 ANALYSES.mkdir(parents=True, exist_ok=True)
 DATA.mkdir(parents=True, exist_ok=True)
-if not EVENTS.exists():
-    EVENTS.write_text("", encoding="utf-8")
 
 app = FastAPI(title="Language of Learning API", version=ENGINE_VERSION)
 app.add_middleware(
@@ -68,11 +65,6 @@ class SaveAnalysisRequest(BaseModel):
     pattern: dict[str, Any] | None = None
     scene: dict[str, Any] | None = None
     id: str | None = None
-
-
-class EventRequest(BaseModel):
-    type: str
-    payload: dict[str, Any] = Field(default_factory=dict)
 
 
 GRAPH_NODE_KINDS = {
@@ -249,18 +241,6 @@ def list_analyses() -> dict[str, Any]:
         data = json.loads(path.read_text(encoding="utf-8"))
         items.append({"id": data.get("id", path.stem), "savedAt": data.get("savedAt")})
     return {"items": items}
-
-
-@app.post("/events")
-def post_event(req: EventRequest) -> dict[str, str]:
-    record = {
-        "ts": datetime.now(timezone.utc).isoformat(),
-        "type": req.type,
-        "payload": req.payload,
-    }
-    with EVENTS.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record) + "\n")
-    return {"status": "recorded"}
 
 
 @app.get("/ai/status")

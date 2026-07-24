@@ -13,6 +13,7 @@ import {
   CueTransitionGuard,
   InitializeOnceLedger,
 } from '../../apps/web/src/lib/lesson-foundation/orchestration-core';
+import { createSubmissionGuard } from '../../apps/web/src/lib/lesson-foundation/submission-guard';
 
 function valueArtifacts(): LensArtifacts {
   const graph = SemanticGraphSchema.parse(JSON.parse(
@@ -149,5 +150,42 @@ describe('lesson orchestration guards', () => {
     const second = guard.begin();
     expect(guard.isCurrent(first)).toBe(false);
     expect(guard.isCurrent(second)).toBe(true);
+  });
+
+  it('rejects submissions after an edit, restart, or navigation invalidation', () => {
+    const submissions = createSubmissionGuard(() => 'submission-1');
+    const token = submissions.begin('attempt-1');
+    const identity = submissions.bind(token, 'source-a', 4);
+    expect(identity).not.toBeNull();
+    submissions.invalidate();
+    expect(submissions.isCurrent(identity!, identity!)).toBe(false);
+  });
+
+  it('rejects older submissions when a newer Build check starts', () => {
+    let nextId = 0;
+    const submissions = createSubmissionGuard(() => `submission-${++nextId}`);
+    const first = submissions.begin('attempt-1');
+    const firstIdentity = submissions.bind(first, 'source-a', 4)!;
+    const second = submissions.begin('attempt-1');
+    const secondIdentity = submissions.bind(second, 'source-a', 4)!;
+    expect(submissions.isCurrent(firstIdentity, firstIdentity)).toBe(false);
+    expect(submissions.isCurrent(secondIdentity, secondIdentity)).toBe(true);
+  });
+
+  it.each([
+    ['attempt', { attemptId: 'attempt-2', sourceHash: 'source-a', lensRevision: 4 }],
+    ['source hash', { attemptId: 'attempt-1', sourceHash: 'source-b', lensRevision: 4 }],
+    ['Lens revision', { attemptId: 'attempt-1', sourceHash: 'source-a', lensRevision: 5 }],
+  ])('rejects a stale %s identity', (_label, current) => {
+    const submissions = createSubmissionGuard(() => 'submission-1');
+    const identity = submissions.bind(
+      submissions.begin('attempt-1'),
+      'source-a',
+      4,
+    )!;
+    expect(submissions.isCurrent(identity, {
+      submissionId: identity.submissionId,
+      ...current,
+    })).toBe(false);
   });
 });

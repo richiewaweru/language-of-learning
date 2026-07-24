@@ -197,7 +197,11 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
     },
     setSourceFromUser(source) {
       if (!capabilities.canEditSource) return;
+      runs.invalidate();
       state.source = source;
+      state.artifacts = null;
+      state.status = 'idle';
+      state.error = '';
       touch();
       options.onSourceEdited?.({ source, revision: state.revision });
     },
@@ -207,7 +211,11 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
     },
     setArgsText(argsText) {
       if (!capabilities.canUseFreeformInput) return;
+      runs.invalidate();
       state.argsText = argsText;
+      state.artifacts = null;
+      state.status = 'idle';
+      state.error = '';
       touch();
     },
     async run() {

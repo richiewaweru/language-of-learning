@@ -32,7 +32,7 @@ CANONICAL_UNSUPPORTED: dict[str, tuple[str, str]] = {
     ),
     "UNSUPPORTED_DICTIONARY": (
         "dictionaries",
-        "Dictionaries are not yet supported in this pilot. Use lists for the current supported collection model.",
+        "Dictionaries are not yet supported in Lens. Use lists for the current supported collection model.",
     ),
     "UNSUPPORTED_COMPREHENSION": (
         "comprehensions",
@@ -57,23 +57,23 @@ CANONICAL_UNSUPPORTED: dict[str, tuple[str, str]] = {
     ),
     "UNSUPPORTED_BUILTIN_SHADOWING": (
         "built-in name shadowing",
-        "This pilot does not support shadowing built-in function names. Rename the parameter or local variable.",
+        "Lens does not support shadowing built-in function names. Rename the parameter or local variable.",
     ),
     "UNSUPPORTED_ENUMERATE": (
         "enumerate",
-        "Enumerate is not yet supported in this pilot. Use an index-based range(len(values)) loop for now.",
+        "Enumerate is not yet supported in Lens. Use an index-based range(len(values)) loop for now.",
     ),
     "UNSUPPORTED_TUPLE_UNPACKING": (
         "tuple unpacking",
-        "Tuple unpacking and swaps are not yet supported. Use separate assignments for the current pilot.",
+        "Tuple unpacking and swaps are not yet supported. Use separate assignments for the current Lens proof of concept.",
     ),
     "UNSUPPORTED_MEMBERSHIP": (
         "membership checks",
-        "Membership checks are not yet supported in this pilot. Write the search as an explicit loop and comparison.",
+        "Membership checks are not yet supported in Lens. Write the search as an explicit loop and comparison.",
     ),
     "UNSUPPORTED_LIST_METHOD": (
         "list method",
-        "This list method is not yet supported. The current pilot supports indexing, indexed updates, and append.",
+        "This list method is not yet supported. Lens currently supports indexing, indexed updates, and append.",
     ),
     "UNSUPPORTED_LIST_LITERAL_RETURN": (
         "list-literal return",
@@ -81,7 +81,7 @@ CANONICAL_UNSUPPORTED: dict[str, tuple[str, str]] = {
     ),
     "UNSUPPORTED_NESTED_LIST": (
         "nested lists",
-        "Nested list access is not yet supported. The current pilot explains one-dimensional lists.",
+        "Nested list access is not yet supported. Lens currently explains one-dimensional lists.",
     ),
     "UNSUPPORTED_HELPER_FUNCTION": (
         "helper-function calls",
@@ -93,7 +93,7 @@ CANONICAL_UNSUPPORTED: dict[str, tuple[str, str]] = {
     ),
     "UNSUPPORTED_CONSTRUCT": (
         "list item expression",
-        "This pilot supports only scalar literals in list assignments.",
+        "Lens supports only scalar literals in list assignments.",
     ),
 }
 

@@ -75,4 +75,116 @@ describe('V4 lesson assessment boundary', () => {
       expect(block.options.map((option) => option.id)).toEqual(['if-branch', 'else-branch']);
     }
   });
+
+  it.each([
+    ['section', 'sections'],
+    ['program', 'programs'],
+    ['scenario', 'scenarios'],
+    ['variation', 'variations'],
+    ['cue', 'cues'],
+    ['verification', 'verifications'],
+    ['assessment', 'assessments'],
+  ] as const)('rejects duplicate %s IDs', (label, collection) => {
+    const lesson = structuredClone(loadLessonDefinition('conditions-and-branches'))!;
+    lesson[collection].push(structuredClone(lesson[collection][0]) as never);
+    const result = LessonDefinitionV4Schema.safeParse(lesson);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((issue) => issue.message)).toContain(
+        `Duplicate ${label} id: ${lesson[collection][0].id}.`,
+      );
+    }
+  });
+
+  it('rejects duplicate response IDs and orphaned response records in either direction', () => {
+    const duplicate = structuredClone(loadLessonDefinition('values-and-variables'))!;
+    const responseBlock = duplicate.sections
+      .flatMap((section) => section.blocks)
+      .find((block) => 'responseId' in block)!;
+    duplicate.sections[1].blocks.push(structuredClone(responseBlock));
+    const duplicateResult = LessonDefinitionV4Schema.safeParse(duplicate);
+    expect(duplicateResult.success).toBe(false);
+    if (!duplicateResult.success) {
+      expect(duplicateResult.error.issues.map((issue) => issue.message)).toContain(
+        `Duplicate response id: ${responseBlock.responseId}.`,
+      );
+    }
+
+    const orphanResponse = structuredClone(loadLessonDefinition('values-and-variables'))!;
+    const orphanedResponseId = orphanResponse.assessments[0].responseId;
+    orphanResponse.assessments = orphanResponse.assessments.slice(1);
+    const responseResult = LessonDefinitionV4Schema.safeParse(orphanResponse);
+    expect(responseResult.success).toBe(false);
+    if (!responseResult.success) {
+      expect(responseResult.error.issues.map((issue) => issue.message)).toContain(
+        `Response ${orphanedResponseId} has no assessment record.`,
+      );
+    }
+
+    const orphanAssessment = structuredClone(loadLessonDefinition('values-and-variables'))!;
+    orphanAssessment.assessments[0].responseId = 'missing-response';
+    const assessmentResult = LessonDefinitionV4Schema.safeParse(orphanAssessment);
+    expect(assessmentResult.success).toBe(false);
+    if (!assessmentResult.success) {
+      expect(assessmentResult.error.issues.map((issue) => issue.message)).toContain(
+        'Assessment references unknown response missing-response.',
+      );
+    }
+  });
+
+  it('validates all cue, variation, reveal, and assessment references', () => {
+    const lesson = structuredClone(loadLessonDefinition('conditions-and-branches'))!;
+    lesson.sections[0].lensCueId = 'missing-cue';
+    lesson.cues[0].programId = 'missing-program';
+    lesson.cues[1].revealPolicy = {
+      responseId: 'missing-reveal',
+      unlockAt: 'committed',
+      concealedViews: ['state'],
+      preCommitFrame: 'start',
+    };
+    lesson.variations[0].programId = 'missing-variation-program';
+    lesson.variations[0].verificationIds = ['missing-verification'];
+    const result = LessonDefinitionV4Schema.safeParse(lesson);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((issue) => issue.message)).toEqual(expect.arrayContaining([
+        'Unknown Lens cue missing-cue.',
+        'Unknown program missing-program.',
+        'Unknown reveal response missing-reveal.',
+        'Unknown variation program missing-variation-program.',
+        'Unknown verification missing-verification.',
+      ]));
+    }
+  });
+
+  it('rejects an assessment whose type does not match its response block', () => {
+    const lesson = structuredClone(loadLessonDefinition('values-and-variables'))!;
+    const responseId = lesson.assessments[0].responseId;
+    lesson.assessments[0] = {
+      id: lesson.assessments[0].id,
+      responseId,
+      type: 'transfer',
+      phase: 'pre',
+      expectedOptionId: 'anything',
+      successFeedback: 'Recorded.',
+      retryFeedback: 'Recorded.',
+    };
+    const result = LessonDefinitionV4Schema.safeParse(lesson);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((issue) => issue.message)).toContain(
+        `Assessment type transfer does not match value-prediction response ${responseId}.`,
+      );
+    }
+  });
+
+  it('keeps every complete lesson definition in its own V4 module', async () => {
+    const modules = await Promise.all([
+      import('../../apps/web/src/lib/lesson-foundation/lessons/values-and-variables'),
+      import('../../apps/web/src/lib/lesson-foundation/lessons/functions-and-returns'),
+      import('../../apps/web/src/lib/lesson-foundation/lessons/conditions-and-branches'),
+      import('../../apps/web/src/lib/lesson-foundation/lessons/loops-over-lists'),
+    ]);
+    expect(modules.map((module) => module.lesson.schemaVersion)).toEqual([4, 4, 4, 4]);
+  });
 });

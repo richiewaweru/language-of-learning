@@ -5,6 +5,7 @@ import type {
   ScenarioResult,
   SemanticGraph,
 } from '@lol/lens-contracts';
+import { resolveScenarioRoleValue } from './scenarios';
 
 export type LessonComparisonSummary = Readonly<{
   kind: 'bindings' | 'frames' | 'path' | 'return-value';
@@ -203,9 +204,16 @@ function verifyOne(
     const scenarioResults = context.scenarioResults ?? [];
     const supportedScenarios = scenarioResults.length > 0
       && scenarioResults.every((scenario) => !scenario.error && scenario.artifacts);
-    const scenarioValues = scenarioResults.flatMap((scenario) =>
-      Object.values(scenario.artifacts?.trace.steps.at(-1)?.bindings ?? {}));
-    const distinct = new Set(scenarioValues).size > 1;
+    const scenarioValues = scenarioResults.flatMap((scenario) => {
+      if (!scenario.artifacts) return [];
+      try {
+        return [resolveScenarioRoleValue(scenario.artifacts, 'branch-result').value];
+      } catch {
+        return [];
+      }
+    });
+    const distinct = scenarioValues.length === scenarioResults.length
+      && new Set(scenarioValues).size > 1;
     const correct = Boolean(
       branch
       && (!verification.requireElse || branch.falseBody)

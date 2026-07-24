@@ -1,5 +1,5 @@
 {
   "code": "UNSUPPORTED_LIST_METHOD",
-  "message": "This list method is not yet supported. The current pilot supports indexing, indexed updates, and append.",
+  "message": "This list method is not yet supported. Lens currently supports indexing, indexed updates, and append.",
   "verifiedSteps": false
 }

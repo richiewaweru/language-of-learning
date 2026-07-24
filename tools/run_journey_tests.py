@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from apps.api.main import EVENTS, app  # noqa: E402
+from apps.api.main import app  # noqa: E402
 
 
 FRESH = [
@@ -73,7 +73,6 @@ def main() -> int:
     health = client.get("/health")
     assert health.status_code == 200, health.text
 
-    before_events = EVENTS.read_text(encoding="utf-8") if EVENTS.exists() else ""
     completed = 0
 
     for snippet in FRESH:
@@ -115,12 +114,6 @@ def main() -> int:
         assert loaded.status_code == 200
         assert loaded.json()["source"].strip() == snippet["source"].strip()
 
-        event = client.post(
-            "/events",
-            json={"type": "journey_step", "payload": {"name": snippet["name"], "transferLine": check["answerLine"]}},
-        )
-        assert event.status_code == 200
-
         # Client pipeline: pattern + scene + transfer (tsx)
         import subprocess
 
@@ -152,8 +145,6 @@ def main() -> int:
         completed += 1
         print(f"  ok analyze/save/load/transfer/pattern={pipe_out['pattern']}")
 
-    after = EVENTS.read_text(encoding="utf-8")
-    assert len(after) > len(before_events)
     print(f"{completed}/3 fresh snippets complete")
     return 0 if completed == 3 else 1
 

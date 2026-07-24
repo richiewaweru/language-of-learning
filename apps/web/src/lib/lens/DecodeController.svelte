@@ -1,13 +1,12 @@
 <script lang="ts">
   import '@lol/visual-grammar/styles.css';
   import { gradeTransferCheck } from '@lol/lens-scenes';
-  import type { LensCapabilities, LensEngine } from '@lol/lens-contracts';
+  import type { LensCapabilities } from '@lol/lens-contracts';
   import { onMount, untrack } from 'svelte';
   import type { DemoPack } from '$lib/product/loadDemoPack';
   import PageContainer from '$lib/learner-ui/shell/PageContainer.svelte';
   import Breadcrumbs from '$lib/learner-ui/shell/Breadcrumbs.svelte';
   import AskLens from '$lib/learner-ui/lesson/AskLens.svelte';
-  import { recordEvent } from '$lib/api';
   import LensWorkspace from './LensWorkspace.svelte';
   import { buildLensArtifacts, createLensEngine } from './engine';
   import { parseLensArgs, sourceHasModuleEntry } from './input';
@@ -27,26 +26,7 @@
     enabledViews: ['flow', 'state', 'explain', 'structure'],
   };
 
-  const baseEngine = createLensEngine();
-  const engine: LensEngine = {
-    async analyze(request) {
-      const artifacts = await baseEngine.analyze(request);
-      await recordEvent('analyze', {
-        scopeKind: artifacts.trace.scope.kind,
-        scopeId:
-          artifacts.trace.scope.kind === 'function'
-            ? artifacts.trace.scope.functionId
-            : artifacts.trace.scope.id,
-        functionId:
-          artifacts.trace.scope.kind === 'function'
-            ? artifacts.trace.scope.functionId
-            : undefined,
-        unsupported: artifacts.graph.unsupported?.length ?? 0,
-        pattern: artifacts.pattern?.pattern ?? null,
-      });
-      return artifacts;
-    },
-  };
+  const engine = createLensEngine();
 
   const initialArtifacts = buildLensArtifacts({
     graph: initialPack.graph,
@@ -94,7 +74,6 @@
     if (!transfer) return;
     const grade = gradeTransferCheck(transfer, Number(transferAnswer));
     transferFeedback = grade.feedback;
-    void recordEvent('transfer', { correct: grade.correct, nodeId: transfer.nodeId });
   }
 </script>
 

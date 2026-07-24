@@ -25,7 +25,7 @@
           description:
             'Use a loop to go through a collection and build up a single result using an operation (like addition).',
           whenToUse: 'When you need a single value that combines many values.',
-          examples: ['Checkout totals', 'Scores & points', 'Analytics sums', 'Data aggregation'],
+          examples: ['Checkout totals', 'Scores & points', 'Running totals', 'Data aggregation'],
           related: ['Count', 'Filter', 'Transform'],
         }
       : undefined,

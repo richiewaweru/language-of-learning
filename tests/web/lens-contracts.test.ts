@@ -10,6 +10,7 @@ import {
   sourceHasModuleEntry,
 } from '../../apps/web/src/lib/lens/input';
 import { createRunCoordinator } from '../../apps/web/src/lib/lens/run-coordinator';
+import { createSafeStorage } from '../../apps/web/src/lib/storage/safe-storage';
 import { parseLensSessionSnapshot } from '@lol/lens-contracts';
 
 describe('Lens workspace contracts', () => {
@@ -59,6 +60,61 @@ describe('Lens workspace contracts', () => {
         enabledViews: ['flow'],
       }).success,
     ).toBe(false);
+  });
+
+  it('normalizes unavailable, quota, malformed, stale-version, and remove failures', async () => {
+    const values = new Map<string, string>();
+    let failReads = false;
+    let failWrites = false;
+    let failRemoves = false;
+    const safe = createSafeStorage({
+      getItem(key) {
+        if (failReads) throw new DOMException('blocked', 'SecurityError');
+        return values.get(key) ?? null;
+      },
+      setItem(key, value) {
+        if (failWrites) throw new DOMException('quota', 'QuotaExceededError');
+        values.set(key, value);
+      },
+      removeItem(key) {
+        if (failRemoves) throw new DOMException('blocked', 'SecurityError');
+        values.delete(key);
+      },
+    });
+
+    values.set('malformed', '{');
+    const malformed = safe.readJson('malformed', (value) => value);
+    expect(malformed).toMatchObject({ ok: false, kind: 'malformed' });
+
+    values.set('stale', '{"schemaVersion":0}');
+    const stale = safe.readJson('stale', (value) => {
+      const parsed = parseLensSessionSnapshot(value, {
+        id: 'a',
+        kind: 'harness',
+        enabledViews: ['flow'],
+      });
+      if (!parsed.success) throw new Error(parsed.reason);
+      return parsed.data;
+    });
+    expect(stale).toMatchObject({ ok: false, kind: 'malformed' });
+
+    failReads = true;
+    expect(safe.readText('anything')).toMatchObject({ ok: false, kind: 'unavailable' });
+    failReads = false;
+    failWrites = true;
+    expect(safe.writeJson('anything', {})).toMatchObject({ ok: false, kind: 'unavailable' });
+    failWrites = false;
+    failRemoves = true;
+    expect(safe.remove('anything')).toMatchObject({ ok: false, kind: 'unavailable' });
+
+    const unavailablePersistence = createBrowserLensPersistence({
+      getItem: () => {
+        throw new DOMException('blocked', 'SecurityError');
+      },
+      setItem: () => {},
+      removeItem: () => {},
+    });
+    await expect(unavailablePersistence.load('anything')).rejects.toThrow(/could not be read/);
   });
 
   it('parses nested argument representations and detects module entry', () => {

@@ -152,7 +152,7 @@ test.describe('Decode pasted-program acceptance', () => {
       source: 'def calculate(max, values):\n    return max(values)',
       args: '[1, 2, 3]',
       message:
-        'This pilot does not support shadowing built-in function names. Rename the parameter or local variable.',
+        'Lens does not support shadowing built-in function names. Rename the parameter or local variable.',
     },
     {
       id: 'enumerate',
@@ -160,7 +160,7 @@ test.describe('Decode pasted-program acceptance', () => {
         'def indexed_total(values):\n    total = 0\n    for index, value in enumerate(values):\n        total = total + index + value\n    return total',
       args: '[1, 2, 3]',
       message:
-        'Enumerate is not yet supported in this pilot. Use an index-based range(len(values)) loop for now.',
+        'Enumerate is not yet supported in Lens. Use an index-based range(len(values)) loop for now.',
     },
   ] as const;
 

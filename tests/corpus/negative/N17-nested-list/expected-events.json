@@ -1,5 +1,5 @@
 {
   "code": "UNSUPPORTED_NESTED_LIST",
-  "message": "Nested list access is not yet supported. The current pilot explains one-dimensional lists.",
+  "message": "Nested list access is not yet supported. Lens currently explains one-dimensional lists.",
   "verifiedSteps": false
 }

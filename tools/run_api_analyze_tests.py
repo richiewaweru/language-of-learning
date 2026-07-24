@@ -13,11 +13,11 @@ from fastapi.testclient import TestClient  # noqa: E402
 from apps.api.main import app  # noqa: E402
 
 BUILTIN_SHADOWING_MESSAGE: Final = (
-    "This pilot does not support shadowing built-in function names. "
+    "Lens does not support shadowing built-in function names. "
     "Rename the parameter or local variable."
 )
 ENUMERATE_MESSAGE: Final = (
-    "Enumerate is not yet supported in this pilot. "
+    "Enumerate is not yet supported in Lens. "
     "Use an index-based range(len(values)) loop for now."
 )
 

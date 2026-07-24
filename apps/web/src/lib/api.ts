@@ -111,13 +111,3 @@ export async function loadAnalysis(id: string): Promise<Record<string, unknown>>
   if (!res.ok) throw new Error(`load failed (${res.status})`);
   return res.json();
 }
-
-export async function recordEvent(type: string, payload: Record<string, unknown> = {}): Promise<void> {
-  await fetch(`${API_BASE}/events`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ type, payload }),
-  }).catch(() => {
-    /* telemetry must not break the UI */
-  });
-}

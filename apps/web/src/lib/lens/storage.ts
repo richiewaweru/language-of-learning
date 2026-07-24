@@ -1,4 +1,9 @@
 import type { LensSessionKind, LensSessionPersistence } from '@lol/lens-contracts';
+import {
+  createSafeStorage,
+  type SafeStorage,
+  type StorageLike,
+} from '../storage/safe-storage';
 
 const STORAGE_SCHEMA_VERSION = 'v1';
 
@@ -31,23 +36,23 @@ export const noOpLensPersistence: LensSessionPersistence = {
 };
 
 export function createBrowserLensPersistence(
-  storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>,
+  input: StorageLike | SafeStorage,
 ): LensSessionPersistence {
+  const storage = 'readJson' in input ? input : createSafeStorage(input);
   return {
     async load(key) {
-      const raw = storage.getItem(key);
-      if (!raw) return null;
-      try {
-        return JSON.parse(raw) as unknown;
-      } catch {
-        return { malformed: true };
-      }
+      const result = storage.readJson(key, (value) => value);
+      if (result.ok) return result.value;
+      if (result.kind === 'malformed') return { malformed: true };
+      throw new Error(result.message);
     },
     async save(key, session) {
-      storage.setItem(key, JSON.stringify(session));
+      const result = storage.writeJson(key, session);
+      if (!result.ok) throw new Error(result.message);
     },
     async remove(key) {
-      storage.removeItem(key);
+      const result = storage.remove(key);
+      if (!result.ok) throw new Error(result.message);
     },
   };
 }

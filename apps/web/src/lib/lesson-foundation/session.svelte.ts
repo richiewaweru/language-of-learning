@@ -1,10 +1,7 @@
 import type {
   LensSessionController,
-  LessonAssessment,
   LessonDefinitionV4,
   LessonResponse,
-  PilotExport,
-  StudyContext,
   SubmissionEvidence,
 } from '@lol/lens-contracts';
 import { LessonResponseSchema, z } from '@lol/lens-contracts';
@@ -14,6 +11,7 @@ import {
   createBrowserLensPersistence,
   lensSessionStorageKey,
 } from '$lib/lens/storage';
+import type { SafeStorage } from '$lib/storage/safe-storage';
 import {
   createLessonLensOrchestrator,
   type LessonLensOrchestrator,
@@ -27,14 +25,10 @@ import {
   type LessonVerificationResult,
 } from './verification';
 import {
-  createLearningEventStore,
-  type AssessmentEventContext,
-  type LearningEventStore,
-} from './pilot-events';
-import {
   hashSource,
   runScenariosAgainstSource,
 } from './scenarios';
+import { createSubmissionGuard } from './submission-guard';
 
 const LOCAL_OWNER = 'local';
 
@@ -78,14 +72,6 @@ export type LessonSessionController = {
   readonly state: LessonAttemptState;
   readonly lens: LensSessionController;
   readonly orchestrator: LessonLensOrchestrator;
-  readonly pilot: {
-    readonly participantCode: string | null;
-    readonly isRecording: boolean;
-    status: LearningEventStore['status'];
-    summaries: LearningEventStore['summaries'];
-    exportData(): Promise<PilotExport>;
-    deleteData(): void;
-  };
   readonly actions: {
     setActiveSection(sectionId: string): Promise<void>;
     setResponseDraft(id: string, answer: string): void;
@@ -118,38 +104,47 @@ function responseSection(definition: LessonDefinitionV4, responseId: string) {
 
 export async function createLessonSessionController(
   definition: LessonDefinitionV4,
-  storage: Storage,
+  storage: SafeStorage,
   forceNew = false,
-  study: StudyContext | null = null,
 ): Promise<LessonSessionController> {
   let warning: string | null = null;
-  let attemptId = forceNew ? newAttemptId() : storage.getItem(pointerKey(definition));
+  let attemptId: string | null = null;
   let restored: z.infer<typeof LessonAttemptSnapshotSchema> | null = null;
 
+  if (!forceNew) {
+    const pointer = storage.readText(pointerKey(definition));
+    if (pointer.ok) attemptId = pointer.value;
+    else warning = `Saved lesson progress could not be read: ${pointer.message}`;
+  }
+
   if (attemptId) {
-    try {
-      const raw = storage.getItem(attemptKey(definition, attemptId));
-      const parsed = raw ? LessonAttemptSnapshotSchema.safeParse(JSON.parse(raw)) : null;
+    const key = attemptKey(definition, attemptId);
+    const parsed = storage.readJson(key, (value) => LessonAttemptSnapshotSchema.parse(value));
+    if (parsed.ok) {
+      const snapshot = parsed.value;
       if (
-        parsed?.success
-        && parsed.data.lessonId === definition.id
-        && parsed.data.lessonVersion === definition.version
-        && parsed.data.attemptId === attemptId
-        && definition.sections.some((section) => section.id === parsed.data.activeSectionId)
+        snapshot
+        && snapshot.lessonId === definition.id
+        && snapshot.lessonVersion === definition.version
+        && snapshot.attemptId === attemptId
+        && definition.sections.some((section) => section.id === snapshot.activeSectionId)
       ) {
-        restored = parsed.data;
-      } else if (raw) {
+        restored = snapshot;
+      } else if (snapshot) {
         warning = 'Saved lesson progress was incompatible and has been replaced.';
+        storage.remove(key);
         attemptId = null;
       }
-    } catch {
-      warning = 'Saved lesson progress could not be read and has been replaced.';
+    } else {
+      warning = `${parsed.message} Saved lesson progress has been replaced.`;
+      storage.remove(key);
       attemptId = null;
     }
   }
 
   attemptId ??= newAttemptId();
-  storage.setItem(pointerKey(definition), attemptId);
+  const pointerWrite = storage.writeText(pointerKey(definition), attemptId);
+  if (!pointerWrite.ok) warning = pointerWrite.message;
 
   const state = $state<LessonAttemptState>({
     attemptId,
@@ -169,11 +164,7 @@ export async function createLessonSessionController(
 
   const persistence = createBrowserLensPersistence(storage);
   const engine = createLensEngine();
-  const eventStore = createLearningEventStore(storage, {
-    attemptId,
-    lessonId: definition.id,
-    lessonVersion: definition.version,
-  }, study);
+  const submissions = createSubmissionGuard();
   const initialProgram = definition.programs.find(
     (program) => program.id === definition.lens.initialProgramId,
   );
@@ -202,7 +193,8 @@ export async function createLessonSessionController(
       sessionId: 'primary',
     }),
     initialView: definition.lens.initialView,
-    onSourceEdited: ({ source, revision }) => {
+    onSourceEdited: () => {
+      submissions.invalidate();
       state.submissionEvidence = null;
       for (const assessment of definition.assessments.filter((item) => item.type === 'build')) {
         const previous = state.responses[assessment.responseId];
@@ -213,18 +205,6 @@ export async function createLessonSessionController(
           };
         }
       }
-      void hashSource(source).then((sourceHash) => {
-        eventStore.append('source_edited', { sourceHash, revision, length: source.length });
-      });
-    },
-    onRunCompleted: ({ revision, status }) => {
-      eventStore.append('program_run', { revision, status }, `run:${revision}`);
-    },
-    onViewChanged: (view) => {
-      eventStore.append('lens_view_changed', { view });
-    },
-    onFrameChanged: (frame) => {
-      eventStore.append('lens_frame_changed', { frame });
     },
   });
   const orchestrator = createLessonLensOrchestrator(
@@ -232,39 +212,27 @@ export async function createLessonSessionController(
     lensSession,
     () => state.responses,
   );
-  eventStore.append('lesson_started', {}, 'lesson-started');
-
-  function assessmentContext(
-    assessment: LessonAssessment | undefined,
-  ): AssessmentEventContext | undefined {
-    if (!assessment) return undefined;
-    return {
-      assessmentId: assessment.id,
-      assessmentType: assessment.type,
-      phase: assessment.type === 'transfer' ? assessment.phase : 'lesson',
-    };
-  }
-
   function saveProgress() {
-    try {
-      storage.setItem(attemptKey(definition, attemptId), JSON.stringify({
-        schemaVersion: 4,
-        lessonId: definition.id,
-        lessonVersion: definition.version,
-        attemptId,
-        activeSectionId: state.activeSectionId,
-        completedSectionIds: state.completedSectionIds,
-        responses: state.responses,
-        selectedVariationId: state.selectedVariationId,
-        selectedScenarioId: state.selectedScenarioId,
-        appliedCueIds: state.appliedCueIds,
-        updatedAt: new Date().toISOString(),
-      }));
+    const result = storage.writeJson(attemptKey(definition, attemptId), {
+      schemaVersion: 4,
+      lessonId: definition.id,
+      lessonVersion: definition.version,
+      attemptId,
+      activeSectionId: state.activeSectionId,
+      completedSectionIds: state.completedSectionIds,
+      responses: state.responses,
+      selectedVariationId: state.selectedVariationId,
+      selectedScenarioId: state.selectedScenarioId,
+      appliedCueIds: state.appliedCueIds,
+      updatedAt: new Date().toISOString(),
+    });
+    if (
+      result.ok
+      && state.persistenceWarning?.startsWith('Lesson progress could not be saved:')
+    ) {
       state.persistenceWarning = null;
-    } catch (error) {
-      state.persistenceWarning = `Lesson progress could not be saved: ${
-        error instanceof Error ? error.message : String(error)
-      }`;
+    } else if (!result.ok) {
+      state.persistenceWarning = `Lesson progress could not be saved: ${result.message}`;
     }
   }
 
@@ -314,30 +282,16 @@ export async function createLessonSessionController(
     state,
     lens: lensSession.controller,
     orchestrator,
-    pilot: {
-      participantCode: eventStore.participantCode,
-      isRecording: eventStore.isRecording,
-      status: eventStore.status,
-      summaries: eventStore.summaries,
-      exportData: eventStore.exportData,
-      deleteData: eventStore.deleteParticipantData,
-    },
     actions: {
       async setActiveSection(sectionId) {
         const section = definition.sections.find((candidate) => candidate.id === sectionId);
         if (!section) return;
+        if (sectionId !== state.activeSectionId) submissions.invalidate();
         const previousSection = definition.sections.find(
           (candidate) => candidate.id === state.activeSectionId,
         );
         const cue = definition.cues.find((candidate) => candidate.id === section.lensCueId);
         state.activeSectionId = sectionId;
-        if (previousSection?.internalRole === 'guided-explore') {
-          eventStore.append('guided_completed', { sectionId: previousSection.id });
-        }
-        eventStore.append('section_opened', { sectionId });
-        if (section.internalRole === 'guided-explore') {
-          eventStore.append('guided_started', { sectionId });
-        }
         state.interactionMessage = null;
         if (previousSection && !previousSection.blocks.some((block) => 'responseId' in block)) {
           completeSection(previousSection.id);
@@ -357,61 +311,19 @@ export async function createLessonSessionController(
         saveProgress();
       },
       setResponseDraft(id, answer) {
-        const firstDraft = !state.responses[id]?.answer;
         state.responses = {
           ...state.responses,
           [id]: { answer, status: 'draft' },
         };
         state.interactionMessage = null;
         orchestrator.refreshReveal();
-        const assessment = definition.assessments.find((item) => item.responseId === id);
-        if (firstDraft) {
-          eventStore.append(
-            'prediction_drafted',
-            { responseId: id },
-            undefined,
-            assessmentContext(assessment),
-          );
-        }
         saveProgress();
       },
       commitResponse(id, correct, feedback) {
         storeResponse(id, 'committed', { correct, feedback });
-        const assessment = definition.assessments.find((item) => item.responseId === id);
-        eventStore.append(
-          'prediction_committed',
-          { responseId: id, correct: correct ?? null },
-          undefined,
-          assessmentContext(assessment),
-        );
       },
       revealResponse(id, correct, feedback) {
         storeResponse(id, 'revealed', { correct, feedback });
-        const assessment = definition.assessments.find((item) => item.responseId === id);
-        if (assessment?.type === 'transfer') {
-          eventStore.append('transfer_submitted', {
-            responseId: id,
-            correct: correct ?? false,
-          }, undefined, assessmentContext(assessment));
-        } else {
-          eventStore.append('execution_revealed', {
-            responseId: id,
-            correct: correct ?? null,
-          }, undefined, assessmentContext(assessment));
-        }
-        const postTransfer = definition.assessments.find(
-          (item) => item.type === 'transfer' && item.phase === 'post',
-        );
-        const build = definition.assessments.find((item) => item.type === 'build');
-        if (
-          postTransfer?.responseId === id
-          && state.responses[build?.responseId ?? '']?.correct === true
-          && definition.assessments
-            .filter((item) => item.type === 'prediction')
-            .every((item) => state.responses[item.responseId]?.status === 'revealed')
-        ) {
-          eventStore.append('lesson_completed', {}, 'lesson-completed');
-        }
       },
       retryResponse(id) {
         const previous = state.responses[id];
@@ -421,16 +333,10 @@ export async function createLessonSessionController(
           [id]: { answer: previous.answer, status: 'draft' },
         };
         orchestrator.refreshReveal();
-        const assessment = definition.assessments.find((item) => item.responseId === id);
-        eventStore.append(
-          'response_retried',
-          { responseId: id },
-          undefined,
-          assessmentContext(assessment),
-        );
         saveProgress();
       },
       async applyVariation(responseId, variationId) {
+        submissions.invalidate();
         const response = state.responses[responseId];
         const variation = definition.variations.find((candidate) => candidate.id === variationId);
         if (!response || response.status === 'draft' || !variation) return false;
@@ -459,15 +365,6 @@ export async function createLessonSessionController(
         const correct = response.correct !== false && evidence.every((item) => item.correct);
         state.selectedVariationId = variationId;
         state.selectedScenarioId = null;
-        const assessment = definition.assessments.find(
-          (item) => item.responseId === responseId,
-        );
-        eventStore.append(
-          'variation_applied',
-          { responseId, variationId },
-          undefined,
-          assessmentContext(assessment),
-        );
         state.comparison = {
           kind: variation.comparison.kind,
           rows: variation.comparison.kind === 'bindings'
@@ -494,6 +391,7 @@ export async function createLessonSessionController(
         return true;
       },
       async checkBuild(responseId) {
+        const submission = submissions.begin(attemptId);
         const block = definition.sections
           .flatMap((section) => section.blocks)
           .find((candidate) => candidate.type === 'build' && candidate.responseId === responseId);
@@ -504,9 +402,24 @@ export async function createLessonSessionController(
         if (!assessment || assessment.type !== 'build') return false;
 
         await lensSession.controller.actions.run();
+        if (!submissions.isActive(submission)) return false;
         const lensState = lensSession.controller.state;
         const submittedSource = lensState.source;
+        const lensRevision = lensState.revision;
+        const artifacts = lensState.artifacts;
         const sourceHash = await hashSource(submittedSource);
+        const identity = submissions.bind(submission, sourceHash, lensRevision);
+        const isCurrent = (currentSourceHash = sourceHash) => Boolean(
+          identity
+          && lensSession.controller.state.source === submittedSource
+          && submissions.isCurrent(identity, {
+            ...identity,
+            attemptId: state.attemptId,
+            sourceHash: currentSourceHash,
+            lensRevision: lensSession.controller.state.revision,
+          }),
+        );
+        if (!identity || !isCurrent()) return false;
         const requiredScenarios = assessment.scenarioIds.map((scenarioId) =>
           definition.scenarios.find((scenario) => scenario.id === scenarioId))
           .filter((scenario): scenario is NonNullable<typeof scenario> => Boolean(scenario));
@@ -515,25 +428,27 @@ export async function createLessonSessionController(
           sourceHash,
           scenarios: requiredScenarios,
           engine,
+          baseArtifacts: artifacts,
         });
+        const currentSourceHash = await hashSource(lensSession.controller.state.source);
+        if (!isCurrent(currentSourceHash)) return false;
         const evidence = runLessonVerifications(
           definition,
           assessment.verificationIds,
           {
             source: submittedSource,
-            artifacts: lensState.artifacts,
+            artifacts,
             response: state.responses[responseId]?.answer,
             scenarioArtifacts: scenarioResults.flatMap((scenario) =>
               scenario.artifacts ? [scenario.artifacts] : []),
             scenarioResults,
           },
         );
-        const currentHash = await hashSource(lensSession.controller.state.source);
+        if (!isCurrent()) return false;
         const scenarioIntegrity = scenarioResults.length === requiredScenarios.length
           && scenarioResults.every((scenario) =>
             scenario.sourceHash === sourceHash && !scenario.error && scenario.artifacts);
-        const correct = sourceHash === currentHash
-          && Boolean(lensState.artifacts)
+        const correct = Boolean(artifacts)
           && scenarioIntegrity
           && evidence.every((item) => item.correct);
         const failed = evidence.filter((item) => !item.correct);
@@ -549,25 +464,12 @@ export async function createLessonSessionController(
           });
         }
         state.submissionEvidence = {
-          sourceHash,
-          runRevision: lensState.revision,
-          artifacts: lensState.artifacts,
+          ...identity,
+          artifacts,
           scenarioResults,
           verificationResults: evidence,
         };
-        eventStore.append('verification_completed', {
-          responseId,
-          sourceHash,
-          runRevision: lensState.revision,
-          correct,
-          failedCriteria: failed.map((item) => item.id),
-        }, undefined, assessmentContext(assessment));
-        eventStore.append('build_submission_completed', {
-          responseId,
-          sourceHash,
-          correct,
-          failedCriteria: failed.map((item) => item.id),
-        }, undefined, assessmentContext(assessment));
+        if (!isCurrent()) return false;
         storeResponse(responseId, 'revealed', {
           correct,
           feedback: correct
@@ -577,11 +479,14 @@ export async function createLessonSessionController(
         return correct;
       },
       async restart() {
-        eventStore.append('lesson_restarted');
-        storage.removeItem(attemptKey(definition, attemptId));
-        storage.removeItem(pointerKey(definition));
+        submissions.invalidate();
+        const attemptRemoval = storage.remove(attemptKey(definition, attemptId));
+        const pointerRemoval = storage.remove(pointerKey(definition));
+        if (!attemptRemoval.ok || !pointerRemoval.ok) {
+          state.persistenceWarning = 'Saved progress could not be fully cleared. A new lesson attempt will still start.';
+        }
         await lensSession.ownerActions.clearPersistence();
-        return createLessonSessionController(definition, storage, true, study);
+        return createLessonSessionController(definition, storage, true);
       },
     },
   };

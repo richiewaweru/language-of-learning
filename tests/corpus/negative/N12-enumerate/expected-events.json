@@ -1,5 +1,5 @@
 {
   "code": "UNSUPPORTED_ENUMERATE",
-  "message": "Enumerate is not yet supported in this pilot. Use an index-based range(len(values)) loop for now.",
+  "message": "Enumerate is not yet supported in Lens. Use an index-based range(len(values)) loop for now.",
   "verifiedSteps": false
 }
