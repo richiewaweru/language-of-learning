@@ -1,7 +1,8 @@
 import type {
   LensArtifacts,
-  LessonDefinitionV3,
-  LessonVerification,
+  LessonDefinitionV4,
+  LessonVerificationV4,
+  ScenarioResult,
   SemanticGraph,
 } from '@lol/lens-contracts';
 
@@ -16,6 +17,7 @@ export type LessonVerificationContext = {
   response?: string;
   baselineSummary?: LessonComparisonSummary;
   scenarioArtifacts?: readonly LensArtifacts[];
+  scenarioResults?: readonly ScenarioResult[];
 };
 
 export type LessonVerificationResult = {
@@ -26,7 +28,7 @@ export type LessonVerificationResult = {
 };
 
 function result(
-  verification: LessonVerification,
+  verification: LessonVerificationV4,
   correct: boolean,
   feedback: string,
   evidence: Record<string, unknown> = {},
@@ -121,7 +123,7 @@ function containsNode(graph: SemanticGraph, containerId: string | undefined, tar
 }
 
 function verifyOne(
-  verification: LessonVerification,
+  verification: LessonVerificationV4,
   context: LessonVerificationContext,
 ): LessonVerificationResult {
   const graph = context.artifacts?.graph;
@@ -143,6 +145,107 @@ function verifyOne(
       false,
       'Lens could not collect enough supported semantic evidence for this check.',
       { artifactsAvailable: Boolean(context.artifacts) },
+    );
+  }
+
+  if (verification.type === 'derived-assignment') {
+    const bindings = graph.nodes.filter(
+      (node) => node.kind === 'binding' && node.role !== 'parameter' && node.role !== 'iterator',
+    );
+    const starting = bindings.filter((node) => dependenciesFor(graph, node.name).length === 0);
+    const requiredStarting = starting.slice(0, verification.startingBindings.count);
+    const derived = bindings.find((node) => {
+      const dependencies = transitiveDependencies(graph, node.name);
+      return requiredStarting.every((startingNode) => dependencies.has(startingNode.name));
+    });
+    const correct = requiredStarting.length === verification.startingBindings.count && Boolean(derived);
+    return result(
+      verification,
+      correct,
+      correct
+        ? 'The derived assignment depends on both starting bindings.'
+        : 'Make one derived assignment depend on both starting bindings.',
+      { startingBindings: requiredStarting.map((node) => node.name), derivedBinding: derived?.name },
+    );
+  }
+
+  if (verification.type === 'return-dependency-role') {
+    const fn = graph.nodes.find((node) => node.kind === 'function');
+    const requiredNames = verification.requiredParameterIndexes.flatMap((index) => {
+      const parameterId = fn?.params[index];
+      const parameter = parameterId
+        ? graph.nodes.find((node) => node.id === parameterId && node.kind === 'binding')
+        : undefined;
+      return parameter?.kind === 'binding' ? [parameter.name] : [];
+    });
+    const returnNodes = graph.nodes.filter((node) => node.kind === 'return');
+    const passing = returnNodes.find((node) => {
+      const dependencies = dependenciesFromNode(graph, node.valueRef);
+      return requiredNames.length === verification.requiredParameterIndexes.length
+        && requiredNames.every((name) => dependencies.has(name));
+    });
+    const invoked = Boolean(fn && graph.relations.some(
+      (relation) => relation.type === 'invokes' && relation.to === fn.id,
+    ));
+    const correct = Boolean(passing && (!verification.requireModuleCall || invoked));
+    return result(
+      verification,
+      correct,
+      correct
+        ? 'The returned value depends on the function parameter and the function is called.'
+        : 'Return a value derived from the function parameter and call the function.',
+      { functionName: fn?.name, requiredNames, returnNode: passing?.id, invoked },
+    );
+  }
+
+  if (verification.type === 'branch-role') {
+    const branch = graph.nodes.find((node) => node.kind === 'branch');
+    const scenarioResults = context.scenarioResults ?? [];
+    const supportedScenarios = scenarioResults.length > 0
+      && scenarioResults.every((scenario) => !scenario.error && scenario.artifacts);
+    const scenarioValues = scenarioResults.flatMap((scenario) =>
+      Object.values(scenario.artifacts?.trace.steps.at(-1)?.bindings ?? {}));
+    const distinct = new Set(scenarioValues).size > 1;
+    const correct = Boolean(
+      branch
+      && (!verification.requireElse || branch.falseBody)
+      && supportedScenarios
+      && (!verification.requireDistinctScenarioResults || distinct),
+    );
+    return result(
+      verification,
+      correct,
+      correct
+        ? 'Both learner-source scenarios produce the required decision outcomes.'
+        : 'Use a supported if/else whose outcomes are correct in both scenarios.',
+      { hasElse: Boolean(branch?.falseBody), supportedScenarios, distinct },
+    );
+  }
+
+  if (verification.type === 'loop-role') {
+    const loop = graph.nodes.find((node) => node.kind === 'loop');
+    const accumulator = graph.nodes.find((node) =>
+      node.kind === 'binding'
+      && node.role !== 'iterator'
+      && node.sourceRange.startLine < (loop?.sourceRange.startLine ?? 0)
+      && graph.relations.some((relation) =>
+        relation.type === 'writes'
+        && relation.to === node.id
+        && containsNode(graph, loop?.id, relation.from)));
+    const dependencies = accumulator
+      ? transitiveDependencies(graph, accumulator.name)
+      : new Set<string>();
+    const correct = Boolean(
+      loop && accumulator && dependencies.has(loop.iteratorName)
+      && (context.scenarioResults ?? []).every((scenario) => !scenario.error),
+    );
+    return result(
+      verification,
+      correct,
+      correct
+        ? 'The accumulator is initialized before the loop and updated from the current item.'
+        : 'Initialize an accumulator before the loop and update it using the current item.',
+      { iterator: loop?.iteratorName, accumulator: accumulator?.name, dependencies: [...dependencies] },
     );
   }
 
@@ -350,7 +453,7 @@ function verifyOne(
 }
 
 export function runLessonVerifications(
-  definition: LessonDefinitionV3,
+  definition: LessonDefinitionV4,
   verificationIds: readonly string[],
   context: LessonVerificationContext,
 ): LessonVerificationResult[] {

@@ -1,15 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { LessonDefinitionV3 } from '@lol/lens-contracts';
+  import type { LessonDefinitionV4 } from '@lol/lens-contracts';
   import LessonProgressRail from './LessonProgressRail.svelte';
   import LessonNarrative from './LessonNarrative.svelte';
   import LessonLensRegion from './LessonLensRegion.svelte';
+  import PilotControls from './PilotControls.svelte';
   import {
     createLessonSessionController,
     type LessonSessionController,
   } from './session.svelte';
 
-  let { definition }: { definition: LessonDefinitionV3 } = $props();
+  let { definition }: { definition: LessonDefinitionV4 } = $props();
   let controller = $state<LessonSessionController | null>(null);
   let startupError = $state('');
   const bindings = $derived.by(() => {
@@ -50,7 +51,10 @@
       (block) => 'responseId' in block && block.responseId === id,
     );
     const nextSection = definition.sections[sectionIndex + 1];
-    if (responseBlock?.type === 'value-prediction' && nextSection) {
+    if (
+      (responseBlock?.type === 'value-prediction' || responseBlock?.type === 'prediction')
+      && nextSection
+    ) {
       await controller.actions.setActiveSection(nextSection.id);
       document.getElementById(nextSection.id)?.scrollIntoView({ behavior: 'smooth' });
     }
@@ -72,6 +76,7 @@
       <div><strong>Your goal</strong><span>{definition.goal}</span></div>
       <small data-testid="lesson-attempt-id">{controller.state.attemptId}</small>
     </header>
+    <PilotControls {controller} />
 
     {#if controller.state.persistenceWarning || controller.lens.state.persistenceWarning}
       <div class="warning" data-testid="lesson-persistence-warning" role="status">

@@ -27,6 +27,10 @@ export type LensSessionOptions = {
   persistence: LensSessionPersistence;
   persistenceKey: string;
   initialView?: LensViewId;
+  onSourceEdited?: (input: { source: string; revision: number }) => void;
+  onRunCompleted?: (input: { revision: number; status: LensSessionState['status'] }) => void;
+  onViewChanged?: (view: LensViewId) => void;
+  onFrameChanged?: (frame: number) => void;
 };
 
 function snapshot(state: LensSessionState): LensSessionSnapshot {
@@ -142,7 +146,10 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
       state.status = 'invalid';
       state.error = error instanceof Error ? error.message : String(error);
     } finally {
-      if (runs.isCurrent(generation)) touch();
+      if (runs.isCurrent(generation)) {
+        touch();
+        options.onRunCompleted?.({ revision: state.revision, status: state.status });
+      }
     }
   }
 
@@ -192,6 +199,7 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
       if (!capabilities.canEditSource) return;
       state.source = source;
       touch();
+      options.onSourceEdited?.({ source, revision: state.revision });
     },
     replaceProgramFromUser(program) {
       if (!capabilities.canReplaceProgram) return;
@@ -221,6 +229,7 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
     setActiveView(view) {
       if (!capabilities.enabledViews.includes(view)) return;
       state.activeView = view;
+      options.onViewChanged?.(view);
       touch();
     },
     setCurrentFrame(frame) {
@@ -229,6 +238,7 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
         ...state.selection,
         stepIndex: Math.min(last, Math.max(0, frame)),
       };
+      options.onFrameChanged?.(state.selection.stepIndex ?? 0);
       touch();
     },
     setSelection(selection) {

@@ -2,7 +2,7 @@ import type {
   LensCapabilities,
   LensPresentation,
   LensSessionHandle,
-  LessonDefinitionV3,
+  LessonDefinitionV4,
   LessonLensCue,
   LessonLensMode,
   LessonResponse,
@@ -41,7 +41,7 @@ function capabilitiesFor(
   };
 }
 
-function programForCue(definition: LessonDefinitionV3, cue: LessonLensCue) {
+function programForCue(definition: LessonDefinitionV4, cue: LessonLensCue) {
   const variation = cue.variationId
     ? definition.variations.find((candidate) => candidate.id === cue.variationId)
     : undefined;
@@ -65,7 +65,7 @@ export type LessonLensOrchestrator = {
 };
 
 export function createLessonLensOrchestrator(
-  definition: LessonDefinitionV3,
+  definition: LessonDefinitionV4,
   lens: LensSessionHandle,
   getResponses: () => Record<string, LessonResponse>,
 ): LessonLensOrchestrator {

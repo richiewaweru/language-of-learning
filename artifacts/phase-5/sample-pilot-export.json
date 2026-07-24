@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "participantCode": "P-SAMPLE01",
+  "generatedAt": "2026-07-24T06:00:00.000Z",
+  "lessonVersions": {
+    "values-and-variables": "4.0.0"
+  },
+  "attempts": [
+    {
+      "attemptId": "sample-attempt",
+      "lessonId": "values-and-variables"
+    }
+  ],
+  "events": [
+    {
+      "schemaVersion": 1,
+      "eventId": "sample-event",
+      "participantCode": "P-SAMPLE01",
+      "attemptId": "sample-attempt",
+      "lessonId": "values-and-variables",
+      "lessonVersion": "4.0.0",
+      "timestamp": "2026-07-24T05:55:00.000Z",
+      "sequence": 1,
+      "type": "lesson_started",
+      "payload": {}
+    }
+  ],
+  "summaries": [
+    {
+      "attemptId": "sample-attempt",
+      "lessonId": "values-and-variables",
+      "startedAt": "2026-07-24T05:55:00.000Z",
+      "completedAt": null,
+      "firstPredictionCorrect": null,
+      "finalPredictionCorrect": null,
+      "buildSuccess": false,
+      "buildRunCount": 0,
+      "failedCriteria": [],
+      "framesVisited": 0,
+      "viewsUsed": [],
+      "variationCount": 0,
+      "durationMs": 0,
+      "preTransferCorrect": null,
+      "postTransferCorrect": null
+    }
+  ]
+}

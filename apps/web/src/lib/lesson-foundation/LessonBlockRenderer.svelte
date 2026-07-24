@@ -1,6 +1,7 @@
 <script lang="ts">
   import type {
-    LessonDefinitionBlock,
+    LessonAssessment,
+    LessonDefinitionBlockV4,
     LessonResponse,
     LessonVariationV3,
   } from '@lol/lens-contracts';
@@ -8,6 +9,7 @@
 
   let {
     block,
+    assessment,
     response,
     bindings,
     variation,
@@ -19,7 +21,8 @@
     onRetry,
     onCheckBuild,
   }: {
-    block: LessonDefinitionBlock;
+    block: LessonDefinitionBlockV4;
+    assessment?: LessonAssessment;
     response?: LessonResponse;
     bindings: Record<string, string>;
     variation?: LessonVariationV3;
@@ -67,18 +70,12 @@
     return left.length === right.length && left.every((item) => right.includes(item));
   }
 
-  function recognitionItems(block: Extract<LessonDefinitionBlock, { type: 'recognition-check' }>) {
-    return block.items ?? [
-      ...(block.startingNames ?? []).map((id) => ({ id, label: id, expectedRole: 'starting' })),
-      ...(block.derivedNames ?? []).map((id) => ({ id, label: id, expectedRole: 'derived' })),
-    ];
+  function recognitionItems(block: Extract<LessonDefinitionBlockV4, { type: 'recognition-check' }>) {
+    return block.items;
   }
 
-  function recognitionRoles(block: Extract<LessonDefinitionBlock, { type: 'recognition-check' }>) {
-    return block.roles ?? [
-      { id: 'starting', label: 'starting' },
-      { id: 'derived', label: 'derived' },
-    ];
+  function recognitionRoles(block: Extract<LessonDefinitionBlockV4, { type: 'recognition-check' }>) {
+    return block.roles;
   }
 </script>
 
@@ -124,20 +121,48 @@
     <strong>{block.label ?? block.tone}</strong><p>{block.text}</p>
   </aside>
 {:else if block.type === 'prediction'}
-  <fieldset class="prediction">
+  <fieldset class="prediction" data-testid="branch-prediction">
     <legend>{block.prompt}</legend>
-    {#each block.options ?? [] as option}
+    {#each block.options as option}
       <label>
         <input
           type="radio"
-          name={block.id}
+          name={block.responseId}
           value={option.id}
           checked={response?.answer === option.id}
-          onchange={() => onDraft(block.id, option.id)}
+          disabled={response?.status === 'revealed'}
+          onchange={() => onDraft(block.responseId, option.id)}
         />
         {option.label}
       </label>
     {/each}
+    {#if !response || response.status === 'draft'}
+      <button
+        type="button"
+        class="primary"
+        disabled={!response?.answer}
+        data-testid="commit-prediction"
+        onclick={() => onCommit(block.responseId)}
+      >Commit prediction</button>
+    {:else if response.status === 'committed'}
+      <button
+        type="button"
+        class="primary"
+        data-testid="reveal-prediction"
+        onclick={() => {
+          const record = assessment?.type === 'prediction' ? assessment : undefined;
+          const expected = record?.expected.branch;
+          const correct = response.answer === expected;
+          onRevealPrediction(
+            block.responseId,
+            correct,
+            correct ? (record?.successFeedback ?? 'Prediction matches.') : (record?.retryFeedback ?? 'Compare with Lens.'),
+          );
+        }}
+      >Reveal execution</button>
+    {:else}
+      <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
+    {/if}
   </fieldset>
 {:else if block.type === 'value-prediction'}
   {@const answers = parseRecord(response?.answer)}
@@ -173,11 +198,15 @@
         class="primary"
         data-testid="reveal-prediction"
         onclick={() => {
-          const correct = block.fields.every((field) => Number(answers[field.id]) === field.expected);
+          const record = assessment?.type === 'prediction' ? assessment : undefined;
+          const correct = block.fields.every((field) =>
+            Number(answers[field.id]) === Number(record?.expected[field.id]));
           onRevealPrediction(
             block.responseId,
             correct,
-            correct ? 'Your predicted values match the execution.' : 'Compare your committed prediction with the actual State values.',
+            correct
+              ? (record?.successFeedback ?? 'Your predicted values match the execution.')
+              : (record?.retryFeedback ?? 'Compare your committed prediction with the actual State values.'),
           );
         }}
       >Reveal execution</button>
@@ -212,11 +241,14 @@
         disabled={selected.length === 0}
         data-testid="commit-variation-prediction"
         onclick={() => {
-          const correct = sameMembers(selected, block.expected);
+          const record = assessment?.type === 'selection' ? assessment : undefined;
+          const correct = sameMembers(selected, record?.expected ?? []);
           onCommit(
             block.responseId,
             correct,
-            correct ? 'Prediction committed.' : 'Prediction committed. Compare it with the resulting State rows.',
+            correct
+              ? (record?.successFeedback ?? 'Prediction committed.')
+              : (record?.retryFeedback ?? 'Prediction committed. Compare it with the resulting State rows.'),
           );
         }}
       >Commit prediction</button>
@@ -274,13 +306,14 @@
         disabled={items.some((item) => !classifications[item.id])}
         data-testid="check-recognition"
         onclick={() => {
-          const correct = items.every((item) => classifications[item.id] === item.expectedRole);
+          const record = assessment?.type === 'recognition' ? assessment : undefined;
+          const correct = items.every((item) => classifications[item.id] === record?.expectedRoles[item.id]);
           onRevealPrediction(
             block.responseId,
             correct,
             correct
-              ? (block.successFeedback ?? 'Correct: each name has the expected role.')
-              : (block.retryFeedback ?? 'Review the code and classify each role again.'),
+              ? (record?.successFeedback ?? 'Correct: each name has the expected role.')
+              : (record?.retryFeedback ?? 'Review the code and classify each role again.'),
           );
         }}
       >Check answer</button>
@@ -291,8 +324,6 @@
       {/if}
     {/if}
   </div>
-{:else if block.type === 'production'}
-  <div class="production"><p>{block.prompt}</p></div>
 {:else if block.type === 'build'}
   <div class="interaction build" data-testid="build-instructions">
     <p>{block.prompt}</p>
@@ -306,10 +337,47 @@
       <p class:success={response.correct} class:error={!response.correct} data-testid="build-feedback">{response.feedback}</p>
     {/if}
   </div>
+{:else if block.type === 'transfer-check'}
+  <div class="interaction" data-testid="transfer-check" data-phase={block.phase}>
+    <p>{block.prompt}</p>
+    <pre><code>{block.source}</code></pre>
+    {#each block.options as option}
+      <label class="choice">
+        <input
+          type="radio"
+          name={block.responseId}
+          value={option.id}
+          checked={response?.answer === option.id}
+          disabled={response?.status === 'revealed'}
+          onchange={() => onDraft(block.responseId, option.id)}
+        />
+        {option.label}
+      </label>
+    {/each}
+    {#if response?.status !== 'revealed'}
+      <button
+        type="button"
+        class="primary"
+        disabled={!response?.answer}
+        data-testid="submit-transfer"
+        onclick={() => {
+          const record = assessment?.type === 'transfer' ? assessment : undefined;
+          const correct = response?.answer === record?.expectedOptionId;
+          onRevealPrediction(
+            block.responseId,
+            correct,
+            correct ? (record?.successFeedback ?? 'Response recorded.') : (record?.retryFeedback ?? 'Response recorded.'),
+          );
+        }}
+      >Submit {block.phase === 'pre' ? 'pre-check' : 'transfer check'}</button>
+    {:else}
+      <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
+    {/if}
+  </div>
 {/if}
 
 <style>
-  .prose, .definition, .callout, .observation, .recognition, .production, .code-shape, .assignment-shape, .code-block, .interaction { margin: 0 0 20px; }
+  .prose, .definition, .callout, .observation, .recognition, .code-shape, .assignment-shape, .code-block, .interaction { margin: 0 0 20px; }
   .prose p, .definition p, .callout p, .observation p { line-height: 1.7; color: var(--ink-secondary); }
   .definition { margin-inline: 0; padding: 22px 24px; border-left: 4px solid #d36c37; background: #f6ede2; }
   .definition p, .callout p, .observation p { margin-bottom: 0; }

@@ -2,7 +2,7 @@ import type {
   LensArtifacts,
   LensEngine,
   LessonComparison,
-  LessonDefinitionV3,
+  LessonDefinitionV4,
 } from '@lol/lens-contracts';
 import { parseLensArgs } from '$lib/lens/input';
 import type { LessonComparisonSummary } from './verification';
@@ -46,7 +46,7 @@ export function projectLessonComparison(
 }
 
 export async function analyzeLessonProgram(
-  definition: LessonDefinitionV3,
+  definition: LessonDefinitionV4,
   programId: string,
   engine: LensEngine,
   argsTextOverride?: string,
@@ -58,22 +58,4 @@ export async function analyzeLessonProgram(
     source: program.source,
     argsRepr: parseLensArgs(argsTextOverride ?? program.argsText),
   });
-}
-
-export function createLessonScenarioController(
-  definition: LessonDefinitionV3,
-  engine: LensEngine,
-) {
-  return {
-    async run(scenarioId: string) {
-      const scenario = definition.scenarios.find((candidate) => candidate.id === scenarioId);
-      if (!scenario) throw new Error(`Unknown lesson scenario: ${scenarioId}`);
-      return analyzeLessonProgram(
-        definition,
-        scenario.programId,
-        engine,
-        scenario.argsText,
-      );
-    },
-  };
 }

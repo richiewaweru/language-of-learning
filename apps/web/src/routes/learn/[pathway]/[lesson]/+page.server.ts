@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { loadLessonDefinition } from '$lib/lesson-foundation/definitions';
+import { loadLessonDefinition } from '$lib/lesson-foundation/registry';
 
 export function load({ params }: { params: { pathway: string; lesson: string } }) {
   const definition = loadLessonDefinition(params.lesson);

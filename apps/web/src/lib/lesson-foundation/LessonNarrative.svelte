@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { LessonDefinitionV3, LessonResponse } from '@lol/lens-contracts';
+  import type { LessonDefinitionV4, LessonResponse } from '@lol/lens-contracts';
   import type { LessonComparisonState } from './session.svelte';
   import LessonBlockRenderer from './LessonBlockRenderer.svelte';
 
@@ -17,7 +17,7 @@
     onRetry,
     onCheckBuild,
   }: {
-    definition: LessonDefinitionV3;
+    definition: LessonDefinitionV4;
     activeSectionId: string;
     completedSectionIds: string[];
     responses: Record<string, LessonResponse>;
@@ -50,6 +50,9 @@
       {#each section.blocks as block}
         <LessonBlockRenderer
           {block}
+          assessment={'responseId' in block
+            ? definition.assessments.find((assessment) => assessment.responseId === block.responseId)
+            : undefined}
           response={'responseId' in block ? responses[block.responseId] : undefined}
           {bindings}
           variation={block.type === 'variation-prediction'

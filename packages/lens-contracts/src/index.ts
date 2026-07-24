@@ -5,6 +5,8 @@ export * from './scene.js';
 export * from './motion.js';
 export * from './selection.js';
 export * from './lesson.js';
+export * from './lesson-v4.js';
+export * from './pilot.js';
 export * from './pathway.js';
 export * from './semantic.js';
 export * from './workspace.js';
@@ -23,6 +25,8 @@ import {
   LessonDefinitionV3Schema,
   LessonRevisionSchema,
 } from './lesson.js';
+import { LessonDefinitionV4Schema } from './lesson-v4.js';
+import { PilotExportSchema } from './pilot.js';
 import { PathwaySchema } from './pathway.js';
 import { SemanticSceneSchema, SymbolManifestSchema } from './semantic.js';
 
@@ -38,6 +42,8 @@ export const ContractSchemas = {
   lessonDefinitionV1: LessonDefinitionV1Schema,
   lessonDefinitionV2: LessonDefinitionV2Schema,
   lessonDefinitionV3: LessonDefinitionV3Schema,
+  lessonDefinitionV4: LessonDefinitionV4Schema,
+  pilotExport: PilotExportSchema,
   pathway: PathwaySchema,
   semanticScene: SemanticSceneSchema,
   symbolManifest: SymbolManifestSchema,

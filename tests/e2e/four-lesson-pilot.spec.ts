@@ -11,7 +11,7 @@ const evidenceRoot = path.resolve('output/playwright/phase-4');
 async function waitForLesson(page: Page) {
   await expect(page.getByTestId('phase-2-lesson-player')).toHaveAttribute(
     'data-schema-version',
-    '3',
+    '4',
   );
   await expect(page.getByTestId('lesson-hydrating')).toHaveCount(0, { timeout: 30_000 });
   await expect(page.getByTestId('lesson-lens-region').getByTestId('lens-workspace')).toHaveCount(1);
@@ -57,33 +57,39 @@ const journeys = [
     title: 'Functions and Return Values',
     predictSection: /Predict the return/,
     predictionFields: { answer: '10' },
+    predictionOption: undefined,
     guidedSection: /Follow the call/,
     variationSection: /Change the input/,
     variationOption: 'answer',
     changed: 'Changed 16',
     buildSection: /Build a function/,
+    buildSource: 'def scale(value):\n    result = value * 2\n    return result\n\nanswer = scale(5)',
   },
   {
     slug: 'conditions-and-branches',
     title: 'Conditions and Branches',
     predictSection: /Predict the branch/,
-    predictionFields: { branch: '0' },
+    predictionFields: {},
+    predictionOption: 'else branch',
     guidedSection: /Follow the selected path/,
     variationSection: /Change the condition input/,
     variationOption: 'status',
     changed: 'Changed true',
     buildSection: /Build a decision/,
+    buildSource: 'years = 16\nif years >= 18:\n    label = "adult"\nelse:\n    label = "minor"',
   },
   {
     slug: 'loops-over-lists',
     title: 'Loops over Lists',
     predictSection: /Predict repetition/,
     predictionFields: { iterations: '3', total: '12' },
+    predictionOption: undefined,
     guidedSection: /Follow each iteration/,
     variationSection: /Change the list/,
     variationOption: 'total',
     changed: 'Changed 9',
     buildSection: /Build a loop/,
+    buildSource: 'values = [2, 4, 6]\nsum_value = 0\nfor item in values:\n    sum_value = sum_value + item',
   },
 ] as const;
 
@@ -91,7 +97,7 @@ for (const journey of journeys) {
   test(`${journey.slug} completes prediction, variation, and Build in one workspace`, async ({ page }) => {
     await openLesson(page, journey.slug);
     await expect(page.getByRole('heading', { name: journey.title, exact: true })).toBeVisible();
-    await expect(page.getByTestId('lesson-section')).toHaveCount(7);
+    await expect(page.getByTestId('lesson-section')).toHaveCount(9);
     await expect(page.getByTestId('code-editor')).toHaveCount(1);
     const workspace = page.getByTestId('lesson-lens-region').getByTestId('lens-workspace');
     const sessionId = await workspace.getAttribute('data-session-id');
@@ -100,6 +106,9 @@ for (const journey of journeys) {
     await expect(page.getByRole('tab', { name: 'State', exact: true })).toHaveCount(0);
     for (const [field, value] of Object.entries(journey.predictionFields)) {
       await page.getByTestId(`prediction-${field}`).fill(value);
+    }
+    if (journey.predictionOption) {
+      await page.getByTestId('branch-prediction').getByLabel(journey.predictionOption).check();
     }
     await page.getByTestId('commit-prediction').click();
     await page.getByTestId('reveal-prediction').click();
@@ -114,7 +123,14 @@ for (const journey of journeys) {
 
     await openSection(page, journey.buildSection);
     await page.getByTestId('check-build').click();
+    await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
+    const editor = page.getByTestId('code-editor').locator('.cm-content');
+    await editor.click();
+    await page.keyboard.press('ControlOrMeta+A');
+    await page.keyboard.insertText(journey.buildSource);
+    await page.getByTestId('check-build').click();
     await expect(page.getByTestId('build-feedback')).toHaveClass(/success/);
+    await expect(editor).toContainText(journey.buildSource.split('\n')[0]);
     await expect(workspace).toHaveAttribute('data-session-id', sessionId ?? '');
     await page.screenshot({
       path: path.join(evidenceRoot, `${journey.slug}-desktop.png`),
@@ -133,6 +149,50 @@ test('recognition conceals structure until an answer is checked', async ({ page 
   await page.getByTestId('check-recognition').click();
   await expect(page.getByRole('tab', { name: 'Graph Inspector', exact: true })).toBeVisible();
   await expect(recognition).toContainText('Correct');
+});
+
+test('Conditions rejects a learner program with a broken true branch', async ({ page }) => {
+  await openLesson(page, 'conditions-and-branches');
+  await openSection(page, /Build a decision/);
+  const editor = page.getByTestId('code-editor').locator('.cm-content');
+  await editor.click();
+  await page.keyboard.press('ControlOrMeta+A');
+  await page.keyboard.insertText(
+    'age = 16\nif age >= 18:\n    status = ""\nelse:\n    status = "minor"',
+  );
+  await page.getByTestId('check-build').click();
+  await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
+  await expect(page.getByTestId('build-feedback')).toContainText('learner-source scenarios');
+});
+
+test('Values Build rejects unchanged work, accepts alternate names, invalidates edits, and exports private events', async ({ page }) => {
+  await openLesson(page, 'values-and-variables');
+  await expect(page.getByTestId('participant-code')).toHaveText(/^P-[A-F0-9]{8}$/);
+  await openSection(page, /Build a calculation/);
+  await page.getByTestId('check-build').click();
+  await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
+
+  const editor = page.getByTestId('code-editor').locator('.cm-content');
+  const validSource = 'base = 10\nextra = 5\ncombined = base + extra';
+  await editor.click();
+  await page.keyboard.press('ControlOrMeta+A');
+  await page.keyboard.insertText(validSource);
+  await page.getByTestId('check-build').click();
+  await expect(page.getByTestId('build-feedback')).toHaveClass(/success/);
+
+  await editor.click();
+  await page.keyboard.press('End');
+  await page.keyboard.insertText(' ');
+  await expect(page.getByTestId('build-feedback')).toHaveCount(0);
+
+  const rawEvents = await page.evaluate(() => localStorage.getItem('lol:pilot:v1:events') ?? '');
+  expect(rawEvents).not.toContain(validSource);
+  expect(rawEvents).toContain('sourceHash');
+
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByTestId('export-pilot').click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^lens-pilot-P-[A-F0-9]{8}\.json$/);
 });
 
 test('refresh, restart, cross-lesson, and Decode storage remain isolated', async ({ page, context }) => {

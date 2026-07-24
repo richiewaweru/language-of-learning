@@ -1,7 +1,9 @@
 import type {
   LensSessionController,
-  LessonDefinitionV3,
+  LessonDefinitionV4,
   LessonResponse,
+  PilotExport,
+  SubmissionEvidence,
 } from '@lol/lens-contracts';
 import { LessonResponseSchema, z } from '@lol/lens-contracts';
 import { createLensEngine } from '$lib/lens/engine';
@@ -16,18 +18,22 @@ import {
 } from './orchestrator.svelte';
 import {
   analyzeLessonProgram,
-  createLessonScenarioController,
   projectLessonComparison,
 } from './services';
 import {
   runLessonVerifications,
   type LessonVerificationResult,
 } from './verification';
+import { createLearningEventStore, type LearningEventStore } from './pilot-events';
+import {
+  hashSource,
+  runScenariosAgainstSource,
+} from './scenarios';
 
 const LOCAL_OWNER = 'local';
 
 const LessonAttemptSnapshotSchema = z.object({
-  schemaVersion: z.literal(3),
+  schemaVersion: z.literal(4),
   lessonId: z.string(),
   lessonVersion: z.string(),
   attemptId: z.string(),
@@ -58,13 +64,20 @@ export type LessonAttemptState = {
   initialized: boolean;
   persistenceWarning: string | null;
   interactionMessage: string | null;
+  submissionEvidence: SubmissionEvidence | null;
 };
 
 export type LessonSessionController = {
-  readonly definition: LessonDefinitionV3;
+  readonly definition: LessonDefinitionV4;
   readonly state: LessonAttemptState;
   readonly lens: LensSessionController;
   readonly orchestrator: LessonLensOrchestrator;
+  readonly pilot: {
+    readonly participantCode: string;
+    summaries: LearningEventStore['summaries'];
+    exportData(): PilotExport;
+    deleteData(): void;
+  };
   readonly actions: {
     setActiveSection(sectionId: string): Promise<void>;
     setResponseDraft(id: string, answer: string): void;
@@ -77,26 +90,26 @@ export type LessonSessionController = {
   };
 };
 
-function pointerKey(definition: LessonDefinitionV3) {
-  return `lesson:v3:${LOCAL_OWNER}:${definition.id}:${definition.version}:active`;
+function pointerKey(definition: LessonDefinitionV4) {
+  return `lesson:v4:${LOCAL_OWNER}:${definition.id}:${definition.version}:active`;
 }
 
-function attemptKey(definition: LessonDefinitionV3, attemptId: string) {
-  return `lesson:v3:${LOCAL_OWNER}:${definition.id}:${definition.version}:${attemptId}`;
+function attemptKey(definition: LessonDefinitionV4, attemptId: string) {
+  return `lesson:v4:${LOCAL_OWNER}:${definition.id}:${definition.version}:${attemptId}`;
 }
 
 function newAttemptId() {
   return crypto.randomUUID();
 }
 
-function responseSection(definition: LessonDefinitionV3, responseId: string) {
+function responseSection(definition: LessonDefinitionV4, responseId: string) {
   return definition.sections.find((section) =>
     section.blocks.some((block) => 'responseId' in block && block.responseId === responseId),
   );
 }
 
 export async function createLessonSessionController(
-  definition: LessonDefinitionV3,
+  definition: LessonDefinitionV4,
   storage: Storage,
   forceNew = false,
 ): Promise<LessonSessionController> {
@@ -142,10 +155,16 @@ export async function createLessonSessionController(
     initialized: false,
     persistenceWarning: warning,
     interactionMessage: null,
+    submissionEvidence: null,
   });
 
   const persistence = createBrowserLensPersistence(storage);
   const engine = createLensEngine();
+  const eventStore = createLearningEventStore(storage, {
+    attemptId,
+    lessonId: definition.id,
+    lessonVersion: definition.version,
+  });
   const initialProgram = definition.programs.find(
     (program) => program.id === definition.lens.initialProgramId,
   );
@@ -174,18 +193,42 @@ export async function createLessonSessionController(
       sessionId: 'primary',
     }),
     initialView: definition.lens.initialView,
+    onSourceEdited: ({ source, revision }) => {
+      state.submissionEvidence = null;
+      for (const assessment of definition.assessments.filter((item) => item.type === 'build')) {
+        const previous = state.responses[assessment.responseId];
+        if (previous?.status === 'revealed') {
+          state.responses = {
+            ...state.responses,
+            [assessment.responseId]: { answer: previous.answer, status: 'draft' },
+          };
+        }
+      }
+      void hashSource(source).then((sourceHash) => {
+        eventStore.append('source_edited', { sourceHash, revision, length: source.length });
+      });
+    },
+    onRunCompleted: ({ revision, status }) => {
+      eventStore.append('program_run', { revision, status }, `run:${revision}`);
+    },
+    onViewChanged: (view) => {
+      eventStore.append('lens_view_changed', { view });
+    },
+    onFrameChanged: (frame) => {
+      eventStore.append('lens_frame_changed', { frame });
+    },
   });
   const orchestrator = createLessonLensOrchestrator(
     definition,
     lensSession,
     () => state.responses,
   );
-  const scenarios = createLessonScenarioController(definition, engine);
+  eventStore.append('lesson_started', {}, 'lesson-started');
 
   function saveProgress() {
     try {
       storage.setItem(attemptKey(definition, attemptId), JSON.stringify({
-        schemaVersion: 3,
+        schemaVersion: 4,
         lessonId: definition.id,
         lessonVersion: definition.version,
         attemptId,
@@ -245,16 +288,18 @@ export async function createLessonSessionController(
   state.initialized = true;
   saveProgress();
 
-  async function scenarioArtifacts() {
-    return Promise.all(definition.scenarios.map((scenario) => scenarios.run(scenario.id)));
-  }
-
   let controller: LessonSessionController;
   controller = {
     definition,
     state,
     lens: lensSession.controller,
     orchestrator,
+    pilot: {
+      participantCode: eventStore.participantCode,
+      summaries: eventStore.summaries,
+      exportData: () => eventStore.exportData({ [definition.id]: definition.version }),
+      deleteData: eventStore.deleteParticipantData,
+    },
     actions: {
       async setActiveSection(sectionId) {
         const section = definition.sections.find((candidate) => candidate.id === sectionId);
@@ -264,6 +309,7 @@ export async function createLessonSessionController(
         );
         const cue = definition.cues.find((candidate) => candidate.id === section.lensCueId);
         state.activeSectionId = sectionId;
+        eventStore.append('section_opened', { sectionId });
         state.interactionMessage = null;
         if (previousSection && !previousSection.blocks.some((block) => 'responseId' in block)) {
           completeSection(previousSection.id);
@@ -283,19 +329,51 @@ export async function createLessonSessionController(
         saveProgress();
       },
       setResponseDraft(id, answer) {
+        const firstDraft = !state.responses[id]?.answer;
         state.responses = {
           ...state.responses,
           [id]: { answer, status: 'draft' },
         };
         state.interactionMessage = null;
         orchestrator.refreshReveal();
+        if (firstDraft) eventStore.append('prediction_drafted', { responseId: id });
         saveProgress();
       },
       commitResponse(id, correct, feedback) {
         storeResponse(id, 'committed', { correct, feedback });
+        eventStore.append(
+          'prediction_committed',
+          { responseId: id, correct: correct ?? null },
+        );
       },
       revealResponse(id, correct, feedback) {
         storeResponse(id, 'revealed', { correct, feedback });
+        const assessment = definition.assessments.find((item) => item.responseId === id);
+        if (assessment?.type === 'transfer') {
+          eventStore.append('transfer_submitted', {
+            responseId: id,
+            phase: assessment.phase,
+            correct: correct ?? false,
+          });
+        } else {
+          eventStore.append('execution_revealed', {
+            responseId: id,
+            correct: correct ?? null,
+          });
+        }
+        const postTransfer = definition.assessments.find(
+          (item) => item.type === 'transfer' && item.phase === 'post',
+        );
+        const build = definition.assessments.find((item) => item.type === 'build');
+        if (
+          postTransfer?.responseId === id
+          && state.responses[build?.responseId ?? '']?.correct === true
+          && definition.assessments
+            .filter((item) => item.type === 'prediction')
+            .every((item) => state.responses[item.responseId]?.status === 'revealed')
+        ) {
+          eventStore.append('lesson_completed', {}, 'lesson-completed');
+        }
       },
       retryResponse(id) {
         const previous = state.responses[id];
@@ -305,6 +383,7 @@ export async function createLessonSessionController(
           [id]: { answer: previous.answer, status: 'draft' },
         };
         orchestrator.refreshReveal();
+        eventStore.append('response_retried', { responseId: id });
         saveProgress();
       },
       async applyVariation(responseId, variationId) {
@@ -331,14 +410,12 @@ export async function createLessonSessionController(
             artifacts: currentArtifacts,
             response: response.answer,
             baselineSummary: baseline,
-            scenarioArtifacts: await scenarioArtifacts(),
           },
         );
         const correct = response.correct !== false && evidence.every((item) => item.correct);
         state.selectedVariationId = variationId;
-        state.selectedScenarioId = definition.scenarios.find(
-          (scenario) => scenario.programId === variation.programId,
-        )?.id ?? null;
+        state.selectedScenarioId = null;
+        eventStore.append('variation_applied', { responseId, variationId });
         state.comparison = {
           kind: variation.comparison.kind,
           rows: variation.comparison.kind === 'bindings'
@@ -369,21 +446,70 @@ export async function createLessonSessionController(
           .flatMap((section) => section.blocks)
           .find((candidate) => candidate.type === 'build' && candidate.responseId === responseId);
         if (!block || block.type !== 'build') return false;
+        const assessment = definition.assessments.find(
+          (item) => item.type === 'build' && item.responseId === responseId,
+        );
+        if (!assessment || assessment.type !== 'build') return false;
 
         await lensSession.controller.actions.run();
         const lensState = lensSession.controller.state;
+        const submittedSource = lensState.source;
+        const sourceHash = await hashSource(submittedSource);
+        const requiredScenarios = assessment.scenarioIds.map((scenarioId) =>
+          definition.scenarios.find((scenario) => scenario.id === scenarioId))
+          .filter((scenario): scenario is NonNullable<typeof scenario> => Boolean(scenario));
+        const scenarioResults = await runScenariosAgainstSource({
+          source: submittedSource,
+          sourceHash,
+          scenarios: requiredScenarios,
+          engine,
+        });
         const evidence = runLessonVerifications(
           definition,
-          block.verificationIds,
+          assessment.verificationIds,
           {
-            source: lensState.source,
+            source: submittedSource,
             artifacts: lensState.artifacts,
             response: state.responses[responseId]?.answer,
-            scenarioArtifacts: await scenarioArtifacts(),
+            scenarioArtifacts: scenarioResults.flatMap((scenario) =>
+              scenario.artifacts ? [scenario.artifacts] : []),
+            scenarioResults,
           },
         );
-        const correct = evidence.every((item) => item.correct);
+        const currentHash = await hashSource(lensSession.controller.state.source);
+        const scenarioIntegrity = scenarioResults.length === requiredScenarios.length
+          && scenarioResults.every((scenario) =>
+            scenario.sourceHash === sourceHash && !scenario.error && scenario.artifacts);
+        const correct = sourceHash === currentHash
+          && Boolean(lensState.artifacts)
+          && scenarioIntegrity
+          && evidence.every((item) => item.correct);
         const failed = evidence.filter((item) => !item.correct);
+        if (!scenarioIntegrity) {
+          failed.push({
+            id: 'learner-source-scenarios',
+            correct: false,
+            feedback: 'One or more learner-source scenarios did not satisfy the required outcome.',
+            evidence: {
+              failures: scenarioResults.filter((scenario) => scenario.error)
+                .map((scenario) => ({ scenarioId: scenario.scenarioId, error: scenario.error })),
+            },
+          });
+        }
+        state.submissionEvidence = {
+          sourceHash,
+          runRevision: lensState.revision,
+          artifacts: lensState.artifacts,
+          scenarioResults,
+          verificationResults: evidence,
+        };
+        eventStore.append('verification_completed', {
+          responseId,
+          sourceHash,
+          runRevision: lensState.revision,
+          correct,
+          failedCriteria: failed.map((item) => item.id),
+        });
         storeResponse(responseId, 'revealed', {
           correct,
           feedback: correct
@@ -393,6 +519,7 @@ export async function createLessonSessionController(
         return correct;
       },
       async restart() {
+        eventStore.append('lesson_restarted');
         storage.removeItem(attemptKey(definition, attemptId));
         storage.removeItem(pointerKey(definition));
         await lensSession.ownerActions.clearPersistence();
