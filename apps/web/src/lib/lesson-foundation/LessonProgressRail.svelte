@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { LessonDefinitionV1 } from '@lol/lens-contracts';
+  import type { LessonDefinitionV2 } from '@lol/lens-contracts';
   let {
     definition,
     activeSectionId,
@@ -7,7 +7,7 @@
     onSelect,
     onRestart,
   }: {
-    definition: LessonDefinitionV1;
+    definition: LessonDefinitionV2;
     activeSectionId: string;
     completedSectionIds: string[];
     onSelect: (id: string) => void;

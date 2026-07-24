@@ -25,8 +25,8 @@
       and returns.
     </p>
     <div class="actions">
-      <a href="/learn/python-foundations/loops/accumulate" class="btn-primary">Start learning</a>
-      <a href="/learn/python-foundations/loops/accumulate" class="btn-secondary">Try the demo</a>
+      <a href="/learn/python-foundations/values-and-variables" class="btn-primary">Start learning</a>
+      <a href="/learn/python-foundations/values-and-variables" class="btn-secondary">Try the demo</a>
     </div>
     <ul class="proof-points">
       <li>Follow values as they move through code.</li>
@@ -110,7 +110,7 @@
     <p class="eyebrow">Continue learning</p>
     <h2>Python Foundations</h2>
     <p>Build a Total with a Loop — accumulate pattern</p>
-    <a href="/learn/python-foundations/loops/accumulate" class="btn-primary">Continue lesson</a>
+    <a href="/learn/python-foundations/values-and-variables" class="btn-primary">Continue lesson</a>
   </div>
   <div class="progress-panel surface-card">
     <p class="eyebrow">Today's progress</p>

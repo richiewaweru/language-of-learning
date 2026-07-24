@@ -121,6 +121,8 @@ export interface LensSessionActions {
 
 export interface LensSessionOwnerActions {
   loadProgramFromOwner(program: LensProgram): void;
+  setCapabilitiesFromOwner(capabilities: LensCapabilities): void;
+  runFromOwner(): Promise<void>;
   clearPersistence(): Promise<void>;
 }
 

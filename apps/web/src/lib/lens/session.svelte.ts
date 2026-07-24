@@ -50,6 +50,10 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
     activeView: options.initialView ?? 'flow',
   };
   const runs = createRunCoordinator();
+  const capabilities = $state<LensCapabilities>({
+    ...options.capabilities,
+    enabledViews: [...options.capabilities.enabledViews],
+  });
 
   const state = $state<LensSessionState>({
     schemaVersion: 1,
@@ -116,6 +120,32 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
     touch();
   }
 
+  async function runProgram() {
+    const generation = runs.begin();
+    state.status = 'running';
+    state.error = '';
+    // Verified artifacts are invalid as soon as a new run begins.
+    state.artifacts = null;
+    state.selection = { stepIndex: 0 };
+    try {
+      const artifacts = await options.engine.analyze({
+        language: 'python',
+        source: state.source,
+        argsRepr: sourceHasModuleEntry(state.source) ? [] : parseLensArgs(state.argsText),
+      });
+      if (!runs.isCurrent(generation)) return;
+      state.artifacts = artifacts;
+      state.status = artifacts.violation ? 'unsupported' : 'supported';
+    } catch (error) {
+      if (!runs.isCurrent(generation)) return;
+      state.artifacts = null;
+      state.status = 'invalid';
+      state.error = error instanceof Error ? error.message : String(error);
+    } finally {
+      if (runs.isCurrent(generation)) touch();
+    }
+  }
+
   const actions: LensSessionActions = {
     async hydrate() {
       if (hydrationPromise) return hydrationPromise;
@@ -129,7 +159,7 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
             const parsed = parseLensSessionSnapshot(loaded, {
               id: options.id,
               kind: options.kind,
-              enabledViews: options.capabilities.enabledViews,
+              enabledViews: capabilities.enabledViews,
             });
             if (!parsed.success) {
               state.hydrationStatus = 'invalid';
@@ -159,47 +189,25 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
       return hydrationPromise;
     },
     setSourceFromUser(source) {
-      if (!options.capabilities.canEditSource) return;
+      if (!capabilities.canEditSource) return;
       state.source = source;
       touch();
     },
     replaceProgramFromUser(program) {
-      if (!options.capabilities.canReplaceProgram) return;
+      if (!capabilities.canReplaceProgram) return;
       applyProgram(program);
     },
     setArgsText(argsText) {
-      if (!options.capabilities.canUseFreeformInput) return;
+      if (!capabilities.canUseFreeformInput) return;
       state.argsText = argsText;
       touch();
     },
     async run() {
-      if (!options.capabilities.canRun) return;
-      const generation = runs.begin();
-      state.status = 'running';
-      state.error = '';
-      // Verified artifacts are invalid as soon as a new run begins.
-      state.artifacts = null;
-      state.selection = { stepIndex: 0 };
-      try {
-        const artifacts = await options.engine.analyze({
-          language: 'python',
-          source: state.source,
-          argsRepr: sourceHasModuleEntry(state.source) ? [] : parseLensArgs(state.argsText),
-        });
-        if (!runs.isCurrent(generation)) return;
-        state.artifacts = artifacts;
-        state.status = artifacts.violation ? 'unsupported' : 'supported';
-      } catch (error) {
-        if (!runs.isCurrent(generation)) return;
-        state.artifacts = null;
-        state.status = 'invalid';
-        state.error = error instanceof Error ? error.message : String(error);
-      } finally {
-        if (runs.isCurrent(generation)) touch();
-      }
+      if (!capabilities.canRun) return;
+      await runProgram();
     },
     reset() {
-      if (!options.capabilities.canReset) return;
+      if (!capabilities.canReset) return;
       runs.invalidate();
       state.source = initial.source;
       state.argsText = initial.argsText;
@@ -211,7 +219,7 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
       touch();
     },
     setActiveView(view) {
-      if (!options.capabilities.enabledViews.includes(view)) return;
+      if (!capabilities.enabledViews.includes(view)) return;
       state.activeView = view;
       touch();
     },
@@ -232,10 +240,7 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
   const controller = {
     state,
     actions,
-    capabilities: Object.freeze({
-      ...options.capabilities,
-      enabledViews: Object.freeze([...options.capabilities.enabledViews]),
-    }),
+    capabilities,
     persistenceKey: options.persistenceKey,
   };
 
@@ -244,6 +249,19 @@ export function createLensSession(options: LensSessionOptions): LensSessionHandl
     ownerActions: {
       loadProgramFromOwner(program) {
         applyProgram(program);
+      },
+      setCapabilitiesFromOwner(nextCapabilities) {
+        Object.assign(capabilities, {
+          ...nextCapabilities,
+          enabledViews: [...nextCapabilities.enabledViews],
+        });
+        if (!capabilities.enabledViews.includes(state.activeView)) {
+          state.activeView = capabilities.enabledViews[0] ?? 'flow';
+          touch();
+        }
+      },
+      async runFromOwner() {
+        await runProgram();
       },
       async clearPersistence() {
         pendingSnapshot = null;

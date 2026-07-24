@@ -11,7 +11,7 @@
       <div class="col">
         <p class="col-title">Learn</p>
         <a href="/learn">Pathways</a>
-        <a href="/learn/python-foundations/loops/accumulate">Flagship lesson</a>
+        <a href="/learn/python-foundations/values-and-variables">Flagship lesson</a>
         <a href="/learn/python-foundations">Python Foundations</a>
       </div>
       <div class="col">

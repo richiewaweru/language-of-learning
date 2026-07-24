@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LessonDefinitionV1Schema } from './lesson.js';
+import { LessonDefinitionV1Schema, LessonDefinitionV2Schema } from './lesson.js';
 
 const lesson = {
   schemaVersion: 1 as const,
@@ -49,5 +49,124 @@ describe('LessonDefinitionV1', () => {
         lens: { ...lesson.lens, initialView: 'structure' },
       }).success,
     ).toBe(false);
+  });
+});
+
+const lessonV2 = {
+  schemaVersion: 2 as const,
+  id: 'values',
+  slug: 'values',
+  version: '2.0.0',
+  courseId: 'python',
+  title: 'Values',
+  goal: 'Follow values.',
+  sections: [{
+    id: 'predict',
+    heading: 'Predict',
+    internalRole: 'predict' as const,
+    lensCueId: 'predict-cue',
+    blocks: [{
+      type: 'value-prediction' as const,
+      responseId: 'prediction',
+      prompt: 'Predict x.',
+      fields: [{ id: 'x', label: 'x', expected: 1 }],
+    }],
+  }],
+  programs: [{ id: 'base', source: 'x = 1', argsText: '' }],
+  variations: [],
+  cues: [{
+    id: 'predict-cue',
+    sectionId: 'predict',
+    apply: 'initialize-once' as const,
+    presentation: 'quiet' as const,
+    mode: 'observe' as const,
+    programId: 'base',
+    editing: 'locked' as const,
+  }],
+  verifications: [],
+};
+
+describe('LessonDefinitionV2', () => {
+  it('accepts a referenced cue and structured response', () => {
+    expect(LessonDefinitionV2Schema.parse(lessonV2).schemaVersion).toBe(2);
+  });
+
+  it('rejects duplicate ids and unresolved references', () => {
+    const result = LessonDefinitionV2Schema.safeParse({
+      ...lessonV2,
+      programs: [...lessonV2.programs, lessonV2.programs[0]],
+      sections: [{ ...lessonV2.sections[0], lensCueId: 'missing' }],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((issue) => issue.message)).toEqual(
+        expect.arrayContaining(['Duplicate program id: base', 'Unknown Lens cue.']),
+      );
+    }
+  });
+
+  it.each([
+    ['observe', 'free'],
+    ['guided', 'authored-variations'],
+    ['explore', 'locked'],
+    ['build', 'locked'],
+  ] as const)('rejects %s mode with %s editing', (mode, editing) => {
+    expect(LessonDefinitionV2Schema.safeParse({
+      ...lessonV2,
+      cues: [{ ...lessonV2.cues[0], mode, editing }],
+    }).success).toBe(false);
+  });
+
+  it('forbids a second production editor', () => {
+    expect(LessonDefinitionV2Schema.safeParse({
+      ...lessonV2,
+      sections: [{
+        ...lessonV2.sections[0],
+        blocks: [{ type: 'production', prompt: 'Build', scaffold: 'x = ' }],
+      }],
+    }).success).toBe(false);
+  });
+
+  it('rejects cross-section cues, unresolved prediction references, and resetting guide cues', () => {
+    const result = LessonDefinitionV2Schema.safeParse({
+      ...lessonV2,
+      sections: [
+        lessonV2.sections[0],
+        {
+          ...lessonV2.sections[0],
+          id: 'guide',
+          lensCueId: 'guide-cue',
+          blocks: [{ type: 'observation', text: 'Guide.' }],
+        },
+      ],
+      variations: [{
+        id: 'variant',
+        label: 'Variant',
+        programId: 'base',
+        predictionId: 'missing-response',
+      }],
+      cues: [
+        { ...lessonV2.cues[0], sectionId: 'guide' },
+        {
+          id: 'guide-cue',
+          sectionId: 'guide',
+          apply: 'guide-without-reset',
+          presentation: 'visible',
+          mode: 'guided',
+          programId: 'base',
+          editing: 'locked',
+        },
+      ],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((issue) => issue.message)).toEqual(
+        expect.arrayContaining([
+          'Lens cue belongs to a different section.',
+          'Unknown prediction response.',
+          'guide-without-reset cannot replace the current program.',
+        ]),
+      );
+    }
   });
 });

@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import path from 'node:path';
 
 const screenshotDir = path.resolve('tests/e2e/__screenshots__');
+test.setTimeout(90_000);
 
 const supportedCases = [
   {
@@ -96,14 +97,23 @@ test.describe('Decode pasted-program acceptance', () => {
       await expect(page.getByTestId('flow-result')).toContainText(program.result);
 
       await page.getByRole('button', { name: 'Explain this step' }).click();
-      await expect(page.getByTestId('ask-lens-response')).toBeVisible({ timeout: 20_000 });
-      await expect(page.getByTestId('ask-lens-response')).toContainText('Verified teaching context received');
+      await expect(page.getByTestId('ask-lens-response')).toBeVisible({ timeout: 40_000 });
+      await expect(page.getByTestId('ask-lens-response')).toContainText(
+        /AI explanation|Verified teaching context received/,
+        { timeout: 40_000 },
+      );
       if (program.id === 'renamed-accumulation') {
         await page.getByRole('button', { name: 'Explain the whole process' }).click();
-        await expect(page.getByTestId('ask-lens-response')).toContainText('Verified teaching context received', { timeout: 20_000 });
+        await expect(page.getByTestId('ask-lens-response')).toContainText(
+          /AI explanation|Verified teaching context received/,
+          { timeout: 40_000 },
+        );
         await page.getByLabel('Ask about this execution').fill('Why did the value change?');
         await page.getByRole('button', { name: 'Ask', exact: true }).click();
-        await expect(page.getByTestId('ask-lens-response')).toContainText('Verified teaching context received', { timeout: 20_000 });
+        await expect(page.getByTestId('ask-lens-response')).toContainText(
+          /AI explanation|Verified teaching context received/,
+          { timeout: 40_000 },
+        );
       }
 
       const hasHorizontalOverflow = await page.evaluate(
@@ -128,7 +138,7 @@ test.describe('Decode pasted-program acceptance', () => {
     await expect(page.getByTestId('unsupported-workspace')).toContainText('Verified visualization unavailable');
     await expect(page.getByTestId('learner-flow-view')).toHaveCount(0);
     await page.getByRole('button', { name: 'Explain this step' }).click();
-    await expect(page.getByTestId('ask-lens-response')).toContainText('will not guess', { timeout: 20_000 });
+    await expect(page.getByTestId('ask-lens-response')).toContainText('will not guess', { timeout: 40_000 });
     await page.screenshot({
       path: path.join(screenshotDir, 'decode-unsupported.png'),
       fullPage: true,

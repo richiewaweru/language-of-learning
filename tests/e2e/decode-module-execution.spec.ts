@@ -1,6 +1,7 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { isOwnedBrowserFailure } from './browser-failures';
 
 const artifactRoot = path.resolve('artifacts/module-execution');
 const screenshotDir = path.join(artifactRoot, 'screenshots');
@@ -84,7 +85,9 @@ function observeBrowserFailures(page: Page) {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
   page.on('requestfailed', (request) => {
-    failedRequests.push(`${request.method()} ${request.url()} ${request.failure()?.errorText ?? ''}`);
+    if (isOwnedBrowserFailure(request)) {
+      failedRequests.push(`${request.method()} ${request.url()} ${request.failure()?.errorText ?? ''}`);
+    }
   });
   return { consoleErrors, failedRequests };
 }

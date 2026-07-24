@@ -183,7 +183,7 @@ describe('route redirects', () => {
       'utf8',
     );
     expect(hooks).toContain('/learn/how-loops-build-results/accumulate');
-    expect(hooks).toContain('/learn/python-foundations/loops/accumulate');
+    expect(hooks).toContain('/learn/python-foundations/loops-over-lists');
   });
 });
 

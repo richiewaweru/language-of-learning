@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { EditorView, basicSetup } from 'codemirror';
   import { python } from '@codemirror/lang-python';
-  import { EditorState } from '@codemirror/state';
+  import { Compartment, EditorState } from '@codemirror/state';
 
   let {
     value = '',
@@ -18,6 +18,8 @@
 
   let host: HTMLDivElement | undefined = $state();
   let view: EditorView | undefined;
+  const readonlyCompartment = new Compartment();
+  const pasteCompartment = new Compartment();
 
   onMount(() => {
     if (!host) return;
@@ -28,15 +30,17 @@
         extensions: [
           basicSetup,
           python(),
-          EditorState.readOnly.of(readonly),
-          EditorView.editable.of(!readonly),
-          EditorView.domEventHandlers({
+          readonlyCompartment.of([
+            EditorState.readOnly.of(readonly),
+            EditorView.editable.of(!readonly),
+          ]),
+          pasteCompartment.of(EditorView.domEventHandlers({
             paste(event) {
               if (allowPaste) return false;
               event.preventDefault();
               return true;
             },
-          }),
+          })),
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
               onchange?.(update.state.doc.toString());
@@ -52,6 +56,21 @@
 
   $effect(() => {
     if (!view) return;
+    view.dispatch({
+      effects: [
+        readonlyCompartment.reconfigure([
+          EditorState.readOnly.of(readonly),
+          EditorView.editable.of(!readonly),
+        ]),
+        pasteCompartment.reconfigure(EditorView.domEventHandlers({
+          paste(event) {
+            if (allowPaste) return false;
+            event.preventDefault();
+            return true;
+          },
+        })),
+      ],
+    });
     const current = view.state.doc.toString();
     if (value !== current) {
       view.dispatch({

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { LessonDefinitionV1 } from '@lol/lens-contracts';
+  import type { LessonDefinitionV2 } from '@lol/lens-contracts';
   import LessonProgressRail from './LessonProgressRail.svelte';
   import LessonNarrative from './LessonNarrative.svelte';
   import LessonLensRegion from './LessonLensRegion.svelte';
@@ -9,9 +9,12 @@
     type LessonSessionController,
   } from './session.svelte';
 
-  let { definition }: { definition: LessonDefinitionV1 } = $props();
+  let { definition }: { definition: LessonDefinitionV2 } = $props();
   let controller = $state<LessonSessionController | null>(null);
   let startupError = $state('');
+  const bindings = $derived(
+    controller?.lens.state.artifacts?.trace.steps.at(-1)?.bindings ?? {},
+  );
 
   async function boot(forceNew = false) {
     try {
@@ -24,6 +27,15 @@
   async function restart() {
     if (!controller) return;
     controller = await controller.actions.restart();
+  }
+
+  async function revealResponse(id: string, correct: boolean, feedback: string) {
+    if (!controller) return;
+    controller.actions.revealResponse(id, correct, feedback);
+    if (id === 'prediction-values') {
+      await controller.actions.setActiveSection('follow-calculation');
+      document.getElementById('follow-calculation')?.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   onMount(() => void boot());
@@ -48,6 +60,11 @@
         {controller.state.persistenceWarning ?? controller.lens.state.persistenceWarning}
       </div>
     {/if}
+    {#if controller.state.interactionMessage}
+      <div class="guidance" data-testid="lesson-interaction-message" role="status">
+        {controller.state.interactionMessage}
+      </div>
+    {/if}
 
     <div class="lesson-layout">
       <LessonProgressRail
@@ -55,7 +72,7 @@
         activeSectionId={controller.state.activeSectionId}
         completedSectionIds={controller.state.completedSectionIds}
         onSelect={(id) => {
-          controller?.actions.setActiveSection(id);
+          void controller?.actions.setActiveSection(id);
           document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
         }}
         onRestart={() => void restart()}
@@ -64,11 +81,23 @@
         {definition}
         activeSectionId={controller.state.activeSectionId}
         completedSectionIds={controller.state.completedSectionIds}
-        predictions={controller.state.predictions}
-        onComplete={(id) => controller?.actions.toggleSectionComplete(id)}
-        onPrediction={(id, answer) => controller?.actions.setPrediction(id, answer)}
+        responses={controller.state.responses}
+        {bindings}
+        onDraft={(id, answer) => controller?.actions.setResponseDraft(id, answer)}
+        onCommit={(id, correct, feedback) => controller?.actions.commitResponse(id, correct, feedback)}
+        onRevealPrediction={(id, correct, feedback) => void revealResponse(id, correct, feedback)}
+        onApplyVariation={(id, variationId) => void controller?.actions.applyVariation(id, variationId)}
+        onRetry={(id) => controller?.actions.retryResponse(id)}
+        onCheckBuild={(id) => void controller?.actions.checkBuild(id)}
       />
-      <div class="sticky-lens"><LessonLensRegion controller={controller.lens} /></div>
+      <div class="sticky-lens">
+        <LessonLensRegion
+          controller={controller.lens}
+          cue={controller.orchestrator.state.cue}
+          presentation={controller.orchestrator.state.presentation}
+          mode={controller.orchestrator.state.mode}
+        />
+      </div>
     </div>
   {/if}
 </div>
@@ -83,8 +112,9 @@
   .lesson-header small { display: block; margin-top: 8px; color: var(--ink-muted); }
   .lesson-layout { width: min(100%, 1780px); margin: 0 auto; display: grid; grid-template-columns: 220px minmax(360px, .8fr) minmax(620px, 1.3fr); gap: 20px; align-items: start; }
   .sticky-lens { position: sticky; top: 18px; min-width: 0; max-height: calc(100vh - 36px); overflow: auto; }
-  .loading, .startup-error, .warning { max-width: 900px; margin: 40px auto; padding: 20px; border-radius: 10px; background: white; }
+  .loading, .startup-error, .warning, .guidance { max-width: 900px; margin: 40px auto; padding: 20px; border-radius: 10px; background: white; }
   .warning { margin-block: 0 20px; background: #fff2db; color: #78521c; }
+  .guidance { margin-block: 0 20px; background: #e7eff7; color: #274f70; }
   @media (max-width: 1250px) {
     .lesson-layout { grid-template-columns: 210px minmax(0, 1fr); }
     .sticky-lens { grid-column: 2; position: static; max-height: none; }

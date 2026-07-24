@@ -1,15 +1,62 @@
 <script lang="ts">
-  import type { LessonDefinitionBlock } from '@lol/lens-contracts';
+  import type { LessonDefinitionBlock, LessonResponse } from '@lol/lens-contracts';
 
   let {
     block,
-    predictionAnswer,
-    onPrediction,
+    response,
+    bindings,
+    onDraft,
+    onCommit,
+    onRevealPrediction,
+    onApplyVariation,
+    onRetry,
+    onCheckBuild,
   }: {
     block: LessonDefinitionBlock;
-    predictionAnswer?: string;
-    onPrediction?: (id: string, answer: string) => void;
+    response?: LessonResponse;
+    bindings: Record<string, string>;
+    onDraft: (id: string, answer: string) => void;
+    onCommit: (id: string, correct?: boolean, feedback?: string) => void;
+    onRevealPrediction: (id: string, correct: boolean, feedback: string) => void;
+    onApplyVariation: (id: string, variationId: string) => void;
+    onRetry: (id: string) => void;
+    onCheckBuild: (id: string) => void;
   } = $props();
+
+  function parseRecord(answer?: string): Record<string, string> {
+    try {
+      const value: unknown = JSON.parse(answer ?? '{}');
+      return value && typeof value === 'object' ? value as Record<string, string> : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function updateRecord(id: string, key: string, value: string) {
+    onDraft(id, JSON.stringify({ ...parseRecord(response?.answer), [key]: value }));
+  }
+
+  function parseList(answer?: string): string[] {
+    try {
+      const value: unknown = JSON.parse(answer ?? '[]');
+      return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function toggleList(id: string, value: string) {
+    const selected = parseList(response?.answer);
+    onDraft(id, JSON.stringify(
+      selected.includes(value)
+        ? selected.filter((item) => item !== value)
+        : [...selected, value],
+    ));
+  }
+
+  function sameMembers(left: string[], right: readonly string[]) {
+    return left.length === right.length && left.every((item) => right.includes(item));
+  }
 </script>
 
 {#if block.type === 'prose'}
@@ -34,6 +81,21 @@
       {/each}
     </div>
   </div>
+{:else if block.type === 'assignment-shape'}
+  <div class="assignment-shape" data-testid="lesson-assignment-shape">
+    {#if block.title}<h3>{block.title}</h3>{/if}
+    {#each block.lines as line}
+      <article class="assignment-line">
+        <code class="whole-line">{line.source}</code>
+        <dl>
+          <div><dt>Target</dt><dd><code>{line.target}</code></dd></div>
+          <div><dt>Assign</dt><dd><code>{line.operator}</code></dd></div>
+          <div><dt>Value or expression</dt><dd><code>{line.expression}</code></dd></div>
+          <div><dt>Depends on</dt><dd>{line.dependencies.length ? line.dependencies.join(', ') : 'no earlier names'}</dd></div>
+        </dl>
+      </article>
+    {/each}
+  </div>
 {:else if block.type === 'callout'}
   <aside class="callout" data-tone={block.tone}>
     <strong>{block.label ?? block.tone}</strong><p>{block.text}</p>
@@ -47,45 +109,223 @@
           type="radio"
           name={block.id}
           value={option.id}
-          checked={predictionAnswer === option.id}
-          onchange={() => onPrediction?.(block.id, option.id)}
+          checked={response?.answer === option.id}
+          onchange={() => onDraft(block.id, option.id)}
         />
         {option.label}
       </label>
     {/each}
   </fieldset>
+{:else if block.type === 'value-prediction'}
+  {@const answers = parseRecord(response?.answer)}
+  <fieldset class="interaction" data-testid="value-prediction">
+    <legend>{block.prompt}</legend>
+    <div class="prediction-fields">
+      {#each block.fields as field}
+        <label>
+          <span>{field.label} =</span>
+          <input
+            type="number"
+            inputmode="decimal"
+            value={answers[field.id] ?? ''}
+            disabled={response?.status !== undefined && response.status !== 'draft'}
+            data-testid="prediction-{field.id}"
+            oninput={(event) => updateRecord(block.responseId, field.id, event.currentTarget.value)}
+          />
+        </label>
+      {/each}
+    </div>
+    {#if !response || response.status === 'draft'}
+      <button
+        type="button"
+        class="primary"
+        disabled={block.fields.some((field) => answers[field.id] === undefined || answers[field.id] === '')}
+        data-testid="commit-prediction"
+        onclick={() => onCommit(block.responseId)}
+      >Commit prediction</button>
+    {:else if response.status === 'committed'}
+      <p class="committed">Prediction committed. It will not change when execution is revealed.</p>
+      <button
+        type="button"
+        class="primary"
+        data-testid="reveal-prediction"
+        onclick={() => {
+          const correct = block.fields.every((field) => Number(answers[field.id]) === field.expected);
+          onRevealPrediction(
+            block.responseId,
+            correct,
+            correct ? 'Your predicted values match the execution.' : 'Compare your committed prediction with the actual State values.',
+          );
+        }}
+      >Reveal execution</button>
+    {:else}
+      <div class="comparison" data-testid="prediction-comparison">
+        {#each block.fields as field}
+          <p><strong>{field.label}</strong><span>Predicted {answers[field.id]}</span><span>Actual {bindings[field.id] ?? '—'}</span></p>
+        {/each}
+      </div>
+      <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
+    {/if}
+  </fieldset>
+{:else if block.type === 'variation-prediction'}
+  {@const selected = parseList(response?.answer)}
+  <fieldset class="interaction" data-testid="variation-prediction">
+    <legend>{block.prompt}</legend>
+    {#each block.options as option}
+      <label class="choice">
+        <input
+          type="checkbox"
+          checked={selected.includes(option)}
+          disabled={response?.status !== undefined && response.status !== 'draft'}
+          onchange={() => toggleList(block.responseId, option)}
+        />
+        {option}
+      </label>
+    {/each}
+    {#if !response || response.status === 'draft'}
+      <button
+        type="button"
+        class="primary"
+        disabled={selected.length === 0}
+        data-testid="commit-variation-prediction"
+        onclick={() => {
+          const correct = sameMembers(selected, block.expected);
+          onCommit(
+            block.responseId,
+            correct,
+            correct ? 'Prediction committed.' : 'Prediction committed. Compare it with the resulting State rows.',
+          );
+        }}
+      >Commit prediction</button>
+    {:else if response.status === 'committed'}
+      <button
+        type="button"
+        class="primary"
+        data-testid="apply-variation"
+        onclick={() => onApplyVariation(block.responseId, block.variationId)}
+      >Apply price = 200</button>
+    {:else}
+      <div class="comparison" data-testid="variation-comparison">
+        {#each ['price', 'tax', 'total'] as name}
+          <p><strong>{name}</strong><span>Original {name === 'price' ? '100' : name === 'tax' ? '16' : '116'}</span><span>Changed {bindings[name] ?? '—'}</span></p>
+        {/each}
+      </div>
+      <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
+    {/if}
+  </fieldset>
 {:else if block.type === 'observation'}
   <div class="observation"><strong>Try this in Lens</strong><p>{block.text}</p></div>
 {:else if block.type === 'recognition'}
   <div class="recognition"><p>{block.prompt}</p><pre><code>{block.source}</code></pre></div>
+{:else if block.type === 'recognition-check'}
+  {@const classifications = parseRecord(response?.answer)}
+  <div class="interaction" data-testid="recognition-check">
+    <p>{block.prompt}</p>
+    <pre><code>{block.source}</code></pre>
+    <div class="classification">
+      {#each block.names as name}
+        <fieldset>
+          <legend><code>{name}</code></legend>
+          {#each ['starting', 'derived'] as role}
+            <label class="choice">
+              <input
+                type="radio"
+                name={`${block.responseId}-${name}`}
+                value={role}
+                checked={classifications[name] === role}
+                disabled={response?.status === 'revealed'}
+                onchange={() => updateRecord(block.responseId, name, role)}
+              />
+              {role}
+            </label>
+          {/each}
+        </fieldset>
+      {/each}
+    </div>
+    {#if response?.status !== 'revealed'}
+      <button
+        type="button"
+        class="primary"
+        disabled={block.names.some((name) => !classifications[name])}
+        data-testid="check-recognition"
+        onclick={() => {
+          const correct = block.startingNames.every((name) => classifications[name] === 'starting')
+            && block.derivedNames.every((name) => classifications[name] === 'derived');
+          onRevealPrediction(
+            block.responseId,
+            correct,
+            correct
+              ? 'Correct: distance and time are starting names; speed is derived from both.'
+              : 'Check which lines use literal starting values and which line reads earlier names.',
+          );
+        }}
+      >Check answer</button>
+    {:else}
+      <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
+      {#if !response.correct}
+        <button type="button" data-testid="retry-recognition" onclick={() => onRetry(block.responseId)}>Try again</button>
+      {/if}
+    {/if}
+  </div>
 {:else if block.type === 'production'}
-  <div class="production">
-    <label>{block.prompt}<textarea rows="6" value={block.scaffold ?? ''}></textarea></label>
+  <div class="production"><p>{block.prompt}</p></div>
+{:else if block.type === 'build'}
+  <div class="interaction build" data-testid="build-instructions">
+    <p>{block.prompt}</p>
+    <ul>
+      <li>Use exactly three assignments.</li>
+      <li>Make the third assignment depend on both starting names.</li>
+      <li>Use supported Python that runs successfully.</li>
+    </ul>
+    <button type="button" class="primary" data-testid="check-build" onclick={() => onCheckBuild(block.responseId)}>
+      Run and check program
+    </button>
+    {#if response?.feedback}
+      <p class:success={response.correct} class:error={!response.correct} data-testid="build-feedback">{response.feedback}</p>
+    {/if}
   </div>
 {/if}
 
 <style>
-  .prose, .definition, .callout, .observation, .recognition, .production, .code-shape, .code-block { margin: 0 0 20px; }
+  .prose, .definition, .callout, .observation, .recognition, .production, .code-shape, .assignment-shape, .code-block, .interaction { margin: 0 0 20px; }
   .prose p, .definition p, .callout p, .observation p { line-height: 1.7; color: var(--ink-secondary); }
   .definition { margin-inline: 0; padding: 22px 24px; border-left: 4px solid #d36c37; background: #f6ede2; }
   .definition p, .callout p, .observation p { margin-bottom: 0; }
   pre { overflow: auto; padding: 18px; border-radius: 10px; background: #19221e; color: #eef4ef; line-height: 1.55; }
   figcaption { color: var(--ink-muted); font-size: var(--text-sm); }
-  .code-shape { padding: 22px; border: 1px solid #b9cbbf; border-radius: 12px; background: #f4f8f4; }
-  .code-shape h3 { margin-top: 0; font-family: var(--font-display); }
-  .shape-rows { display: grid; gap: 10px; }
+  .code-shape, .assignment-shape { padding: 22px; border: 1px solid #b9cbbf; border-radius: 12px; background: #f4f8f4; }
+  .code-shape h3, .assignment-shape h3 { margin-top: 0; font-family: var(--font-display); }
+  .shape-rows, .assignment-shape { display: grid; gap: 10px; }
   .shape-row { display: grid; grid-template-columns: 110px minmax(110px, .55fr) 1fr; gap: 14px; align-items: center; padding: 12px; border-radius: 8px; background: white; }
   .shape-row > span { color: #496158; font-size: var(--text-sm); font-weight: 700; }
   .shape-row code { color: #9d542e; font-weight: 700; }
   .shape-row p { margin: 0; color: var(--ink-secondary); }
+  .assignment-line { padding: 14px; border-radius: 10px; background: white; }
+  .whole-line { display: block; margin-bottom: 12px; color: #173b2f; font-size: 16px; font-weight: 700; white-space: pre-wrap; }
+  dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; }
+  dl div { min-width: 0; }
+  dt { color: var(--ink-muted); font-size: var(--text-xs); text-transform: uppercase; }
+  dd { margin: 3px 0 0; overflow-wrap: anywhere; }
   .callout, .observation { padding: 18px 20px; border-radius: 10px; background: #e8f1eb; }
   .callout[data-tone='warning'] { background: #f8e6df; }
   .callout[data-tone='idea'] { background: #e7eff7; }
-  .prediction { display: grid; gap: 10px; margin: 0 0 20px; padding: 20px; border: 1px solid var(--line-soft); border-radius: 10px; }
-  .prediction legend { padding: 0 6px; font-weight: 700; }
-  .prediction label { display: flex; gap: 9px; align-items: center; }
-  textarea { display: block; width: 100%; margin-top: 10px; padding: 14px; box-sizing: border-box; border: 1px solid var(--line-default); border-radius: 8px; font-family: monospace; }
+  .prediction, .interaction { padding: 20px; border: 1px solid var(--line-soft); border-radius: 10px; background: white; }
+  .interaction legend, .prediction legend { padding: 0 6px; font-weight: 700; }
+  .prediction-fields { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+  .prediction-fields label { display: flex; align-items: center; gap: 8px; }
+  .prediction-fields input { width: 100px; padding: 8px; }
+  .choice { display: flex; gap: 9px; align-items: center; margin: 9px 0; }
+  .primary { margin-top: 12px; padding: 10px 15px; border: 0; border-radius: 8px; background: #236b54; color: white; font-weight: 700; }
+  .primary:disabled { opacity: .45; }
+  .committed { color: #496158; }
+  .comparison { display: grid; gap: 7px; margin-top: 12px; }
+  .comparison p { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 10px; margin: 0; padding: 9px; border-radius: 6px; background: #f2f5f2; }
+  .classification { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .classification fieldset { border: 1px solid var(--line-soft); border-radius: 8px; }
+  .success { color: #176342; font-weight: 700; }
+  .error { color: #9f3b28; font-weight: 700; }
   @media (max-width: 700px) {
-    .shape-row { grid-template-columns: 1fr; gap: 6px; }
+    .shape-row, dl, .classification { grid-template-columns: 1fr; gap: 6px; }
+    .comparison p { grid-template-columns: 1fr; }
   }
 </style>

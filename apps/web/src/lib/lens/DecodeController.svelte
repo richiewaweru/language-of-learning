@@ -78,15 +78,15 @@
   const moduleInput = $derived(sourceHasModuleEntry(controller.state.source));
   const patternLessonHref = $derived(
     pattern?.pattern === 'ACCUMULATE'
-      ? '/learn/python-foundations/loops/accumulate'
+      ? '/learn/python-foundations/loops-over-lists'
       : pattern?.pattern === 'COUNT'
-        ? '/learn/python-foundations/loops/count'
+        ? '/learn/python-foundations/loops-over-lists'
         : pattern?.pattern === 'FILTER'
-          ? '/learn/python-foundations/loops/filter'
+          ? '/learn/python-foundations/loops-over-lists'
           : pattern?.pattern === 'TRANSFORM'
-            ? '/learn/python-foundations/loops/transform'
+            ? '/learn/python-foundations/loops-over-lists'
             : pattern?.pattern === 'SEARCH'
-              ? '/learn/python-foundations/loops/search'
+              ? '/learn/python-foundations/loops-over-lists'
               : null,
   );
 

@@ -1,21 +1,31 @@
 <script lang="ts">
-  import type { LessonDefinitionV1 } from '@lol/lens-contracts';
+  import type { LessonDefinitionV2, LessonResponse } from '@lol/lens-contracts';
   import LessonBlockRenderer from './LessonBlockRenderer.svelte';
 
   let {
     definition,
     activeSectionId,
     completedSectionIds,
-    predictions,
-    onComplete,
-    onPrediction,
+    responses,
+    bindings,
+    onDraft,
+    onCommit,
+    onRevealPrediction,
+    onApplyVariation,
+    onRetry,
+    onCheckBuild,
   }: {
-    definition: LessonDefinitionV1;
+    definition: LessonDefinitionV2;
     activeSectionId: string;
     completedSectionIds: string[];
-    predictions: Record<string, string>;
-    onComplete: (id: string) => void;
-    onPrediction: (id: string, answer: string) => void;
+    responses: Record<string, LessonResponse>;
+    bindings: Record<string, string>;
+    onDraft: (id: string, answer: string) => void;
+    onCommit: (id: string, correct?: boolean, feedback?: string) => void;
+    onRevealPrediction: (id: string, correct: boolean, feedback: string) => void;
+    onApplyVariation: (id: string, variationId: string) => void;
+    onRetry: (id: string) => void;
+    onCheckBuild: (id: string) => void;
   } = $props();
 </script>
 
@@ -30,19 +40,21 @@
     >
       <header>
         <div><p>Part {index + 1}</p><h2 id={`${section.id}-heading`}>{section.heading}</h2></div>
-        <button
-          type="button"
-          class:complete={completedSectionIds.includes(section.id)}
-          onclick={() => onComplete(section.id)}
-        >
-          {completedSectionIds.includes(section.id) ? 'Completed' : 'Mark complete'}
-        </button>
+        {#if completedSectionIds.includes(section.id)}
+          <span class="complete" aria-label="Completed">✓ Completed</span>
+        {/if}
       </header>
       {#each section.blocks as block}
         <LessonBlockRenderer
           {block}
-          predictionAnswer={block.type === 'prediction' ? predictions[block.id] : undefined}
-          {onPrediction}
+          response={'responseId' in block ? responses[block.responseId] : undefined}
+          {bindings}
+          {onDraft}
+          {onCommit}
+          {onRevealPrediction}
+          {onApplyVariation}
+          {onRetry}
+          {onCheckBuild}
         />
       {/each}
     </section>
@@ -56,7 +68,6 @@
   header { display: flex; justify-content: space-between; gap: 18px; align-items: start; margin-bottom: 22px; }
   header p { margin: 0 0 5px; color: #9d542e; text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); font-weight: 700; }
   h2 { margin: 0; font-family: var(--font-display); font-size: clamp(28px, 3vw, 40px); }
-  header button { padding: 8px 11px; border: 1px solid #8b968f; border-radius: 999px; background: transparent; white-space: nowrap; }
-  header button.complete { background: #236b54; border-color: #236b54; color: white; }
-  @media (max-width: 600px) { header { display: grid; } header button { justify-self: start; } }
+  .complete { padding: 8px 11px; border-radius: 999px; background: #236b54; color: white; white-space: nowrap; font-size: var(--text-sm); }
+  @media (max-width: 600px) { header { display: grid; } .complete { justify-self: start; } }
 </style>

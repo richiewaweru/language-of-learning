@@ -24,14 +24,14 @@ export default defineConfig({
     {
       command: `python -m uvicorn apps.api.main:app --host 127.0.0.1 --port ${apiPort}`,
       url: `${apiBase}/health`,
-      reuseExistingServer: false,
+      reuseExistingServer: true,
       timeout: 120_000,
       env: { ...process.env, AI_ENABLED: 'true', AI_PROVIDER: 'mock', AI_MODEL: 'mock-teacher-v1' },
     },
     {
       command: `pnpm --filter web dev --host 127.0.0.1 --port ${webPort}`,
       url: webBase,
-      reuseExistingServer: false,
+      reuseExistingServer: true,
       timeout: 120_000,
       env: { ...process.env, VITE_API_BASE: apiBase },
     },
