@@ -1,1 +1,58 @@
-export { functionsAndReturnsLesson as lesson } from '../definitions';
+import { defineLesson } from '../definitions';
+
+export const lesson = defineLesson({
+  schemaVersion: 3,
+  id: 'functions-and-returns',
+  slug: 'functions-and-returns',
+  version: '3.0.0',
+  courseId: 'python-foundations',
+  title: 'Functions and Return Values',
+  subtitle: 'Package reusable work and send a result back.',
+  goal: 'Understand parameters, local state, calls, and returned values.',
+  lens: { initialProgramId: 'double-five', initialView: 'flow' },
+  sections: [
+    { id: 'function-idea', heading: 'Reusable work', internalRole: 'introduce', lensCueId: 'functions-introduce', blocks: [{ type: 'prose', paragraphs: ['A function names a reusable piece of work.', 'A call supplies an input and receives the returned result.'] }, { type: 'definition', text: 'A return value is the result a function sends back to its caller.' }] },
+    { id: 'function-shape', heading: 'Read the function shape', internalRole: 'structural-model', lensCueId: 'functions-shape', blocks: [{ type: 'code-shape', title: 'Definition, work, return, call', rows: [{ label: 'Definition', code: 'def double(n):', explanation: 'Names the function and its parameter.', tone: 'name' }, { label: 'Work', code: 'result = n * 2', explanation: 'Builds a local result from the input.', tone: 'work' }, { label: 'Return', code: 'return result', explanation: 'Sends the result to the caller.', tone: 'output' }, { label: 'Call', code: 'answer = double(5)', explanation: 'Supplies an argument and stores the return value.', tone: 'input' }] }] },
+    { id: 'predict-return', heading: 'Predict the return', internalRole: 'predict', lensCueId: 'functions-predict', blocks: [{ type: 'value-prediction', responseId: 'functions-return-prediction', prompt: 'What value will answer store?', fields: [{ id: 'answer', label: 'answer', expected: 10 }] }] },
+    { id: 'follow-call', heading: 'Follow the call', internalRole: 'guided-explore', lensCueId: 'functions-guided', blocks: [{ type: 'observation', text: 'Follow the call, parameter binding, local result, return, and module assignment.' }] },
+    { id: 'change-input', heading: 'Change the input', internalRole: 'variation', lensCueId: 'functions-explore', blocks: [{ type: 'variation-prediction', responseId: 'functions-input-prediction', prompt: 'Which stored value changes when the argument becomes 8?', options: ['answer'], expected: ['answer'], variationId: 'double-eight' }] },
+    { id: 'recognize-function', heading: 'Recognize another function', internalRole: 'recognize', lensCueId: 'functions-recognize', blocks: [{ type: 'recognition-check', responseId: 'functions-recognition', prompt: 'Classify the names in this function.', source: 'def add_tip(bill):\n    total = bill + 5\n    return total', roles: [{ id: 'parameter', label: 'parameter' }, { id: 'local', label: 'local result' }], items: [{ id: 'bill', label: 'bill', expectedRole: 'parameter' }, { id: 'total', label: 'total', expectedRole: 'local' }], successFeedback: 'Correct: bill receives the input and total stores local work.', retryFeedback: 'Look at the function header for the parameter and the indented assignment for local work.' }] },
+    { id: 'build-function', heading: 'Build a function', internalRole: 'produce', lensCueId: 'functions-build', blocks: [{ type: 'build', responseId: 'functions-build-response', prompt: 'Build a one-parameter function whose return depends on that parameter, then call it.', programId: 'functions-build-scaffold', verificationIds: ['functions-build-supported', 'functions-build-shape', 'functions-build-return'], criteria: ['Define one function with one parameter.', 'Return a value that depends on n.', 'Call the function from module code.'] }] },
+  ],
+  programs: [
+    { id: 'double-five', source: 'def double(n):\n    result = n * 2\n    return result\n\nanswer = double(5)', argsText: '' },
+    { id: 'double-eight', source: 'def double(n):\n    result = n * 2\n    return result\n\nanswer = double(8)', argsText: '' },
+    { id: 'recognize-add-tip', source: 'def add_tip(bill):\n    total = bill + 5\n    return total\n\nanswer = add_tip(20)', argsText: '' },
+    { id: 'functions-build-scaffold', source: 'def double(n):\n    result = 0\n    return result\n\nanswer = double(5)', argsText: '' },
+  ],
+  scenarios: [
+    { id: 'double-five-scenario', label: 'Argument 5', programId: 'double-five', verificationIds: [] },
+    { id: 'double-eight-scenario', label: 'Argument 8', programId: 'double-eight', verificationIds: ['functions-eight-value'] },
+  ],
+  variations: [{
+    id: 'double-eight',
+    label: 'Argument 8',
+    applyLabel: 'Run with 8',
+    programId: 'double-eight',
+    predictionId: 'functions-input-prediction',
+    verificationIds: ['functions-eight-value'],
+    comparison: { kind: 'bindings', baselineProgramId: 'double-five', fields: [{ key: 'answer', label: 'answer' }] },
+    successFeedback: 'The changed argument produces the configured return value.',
+    retryFeedback: 'Compare the stored answer before and after the argument changes.',
+  }],
+  cues: [
+    { id: 'functions-introduce', sectionId: 'function-idea', apply: 'initialize-once', presentation: 'quiet', mode: 'observe', programId: 'double-five', view: 'flow', frame: 'start', editing: 'locked', eyebrow: 'Learning Lens · waiting', title: 'A reusable piece of work', instruction: 'Start with the function idea.' },
+    { id: 'functions-shape', sectionId: 'function-shape', apply: 'guide-without-reset', presentation: 'visible', mode: 'observe', view: 'structure', frame: 'start', editing: 'locked', eyebrow: 'Observe', title: 'Definition, parameter, return, and call', instruction: 'Match the syntax to the function structure.' },
+    { id: 'functions-predict', sectionId: 'predict-return', apply: 'guide-without-reset', presentation: 'quiet', mode: 'observe', view: 'state', frame: 'start', editing: 'locked', revealPolicy: { responseId: 'functions-return-prediction', unlockAt: 'committed', concealedViews: ['state', 'explain', 'structure'], preCommitFrame: 'start' }, eyebrow: 'Predict first', title: 'The return value is concealed', instruction: 'Commit the return prediction before inspecting execution.' },
+    { id: 'functions-guided', sectionId: 'follow-call', apply: 'guide-without-reset', presentation: 'focus', mode: 'guided', view: 'explain', frame: 'start', editing: 'locked', requiresResponseId: 'functions-return-prediction', eyebrow: 'Guided', title: 'Follow the call and return', instruction: 'Step through the call frame and return.' },
+    { id: 'functions-explore', sectionId: 'change-input', apply: 'guide-without-reset', presentation: 'visible', mode: 'explore', view: 'state', frame: 'end', editing: 'authored-variations', eyebrow: 'Explore', title: 'Change the argument', instruction: 'Predict first, then run the authored variation.' },
+    { id: 'functions-recognize', sectionId: 'recognize-function', apply: 'replace-program', presentation: 'visible', mode: 'observe', programId: 'recognize-add-tip', view: 'structure', frame: 'start', editing: 'locked', revealPolicy: { responseId: 'functions-recognition', unlockAt: 'revealed', concealedViews: ['state', 'explain', 'structure'], preCommitFrame: 'start' }, eyebrow: 'Recognize', title: 'Same function shape', instruction: 'Classify the names before viewing structure.' },
+    { id: 'functions-build', sectionId: 'build-function', apply: 'replace-program', presentation: 'focus', mode: 'build', programId: 'functions-build-scaffold', view: 'state', frame: 'start', editing: 'free', eyebrow: 'Build', title: 'Build and call a function', instruction: 'Use the shared editor and semantic checks.' },
+  ],
+  verifications: [
+    { id: 'functions-eight-value', type: 'binding-values', expectedBindings: { answer: '16' } },
+    { id: 'functions-build-supported', type: 'supported-execution' },
+    { id: 'functions-build-shape', type: 'function-shape', parameterCount: 1, requireModuleCall: true },
+    { id: 'functions-build-return', type: 'return-dependency', parameterNames: ['n'] },
+  ],
+});

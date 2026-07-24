@@ -16,5 +16,6 @@ __pycache__/
 .codex-tmp/
 .playwright-cli/
 output/playwright/
+output/phase-6-analysis/
 .DS_Store
 data/

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 2,
+  "exportId": "export-sample",
+  "generatedAt": "2026-07-24T08:01:00.000Z",
+  "study": {
+    "studyId": "lens-phase-6-pilot",
+    "studyVersion": "1.0.0",
+    "conditionId": "guided-lens-v1",
+    "releaseId": "phase-6-pilot-v1",
+    "facilitatorSessionId": "facilitator-sample",
+    "participantCode": "P-SAMPLE01",
+    "consentAcknowledgedAt": "2026-07-24T08:00:00.000Z"
+  },
+  "participantCode": "P-SAMPLE01",
+  "lessonVersions": {},
+  "attempts": [],
+  "events": [],
+  "summaries": [],
+  "integrity": {
+    "eventCount": 0,
+    "firstEventAt": null,
+    "lastEventAt": null,
+    "storageDegraded": false
+  },
+  "contentHash": "ea8b0f978fe3cf8c84360a89c5be1c530ec2087692462de847f687af302e25e7"
+}

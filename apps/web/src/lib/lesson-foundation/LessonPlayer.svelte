@@ -4,7 +4,7 @@
   import LessonProgressRail from './LessonProgressRail.svelte';
   import LessonNarrative from './LessonNarrative.svelte';
   import LessonLensRegion from './LessonLensRegion.svelte';
-  import PilotControls from './PilotControls.svelte';
+  import { loadStudyContext } from './pilot-study';
   import {
     createLessonSessionController,
     type LessonSessionController,
@@ -30,7 +30,12 @@
 
   async function boot(forceNew = false) {
     try {
-      controller = await createLessonSessionController(definition, window.localStorage, forceNew);
+      controller = await createLessonSessionController(
+        definition,
+        window.localStorage,
+        forceNew,
+        loadStudyContext(window.localStorage),
+      );
     } catch (error) {
       startupError = error instanceof Error ? error.message : String(error);
     }
@@ -76,11 +81,11 @@
       <div><strong>Your goal</strong><span>{definition.goal}</span></div>
       <small data-testid="lesson-attempt-id">{controller.state.attemptId}</small>
     </header>
-    <PilotControls {controller} />
-
-    {#if controller.state.persistenceWarning || controller.lens.state.persistenceWarning}
+    {#if controller.state.persistenceWarning || controller.lens.state.persistenceWarning || controller.pilot.status().warning}
       <div class="warning" data-testid="lesson-persistence-warning" role="status">
-        {controller.state.persistenceWarning ?? controller.lens.state.persistenceWarning}
+        {controller.state.persistenceWarning
+          ?? controller.lens.state.persistenceWarning
+          ?? 'Study evidence could not be saved to browser storage. You can continue, but tell the facilitator.'}
       </div>
     {/if}
     {#if controller.state.interactionMessage}

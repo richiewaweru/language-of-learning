@@ -1,1 +1,59 @@
-export { loopsOverListsLesson as lesson } from '../definitions';
+import { defineLesson } from '../definitions';
+
+export const lesson = defineLesson({
+  schemaVersion: 3,
+  id: 'loops-over-lists',
+  slug: 'loops-over-lists',
+  version: '3.0.0',
+  courseId: 'python-foundations',
+  title: 'Loops over Lists',
+  subtitle: 'Repeat work for every item and preserve a running result.',
+  goal: 'Understand iteration, current items, and accumulator updates.',
+  lens: { initialProgramId: 'sum-even', initialView: 'flow' },
+  sections: [
+    { id: 'loop-idea', heading: 'Repeat work', internalRole: 'introduce', lensCueId: 'loops-introduce', blocks: [{ type: 'prose', paragraphs: ['A loop repeats the same work for each item in a collection.', 'An accumulator preserves information between iterations.'] }, { type: 'definition', text: 'An accumulator is a value updated repeatedly as a loop progresses.' }] },
+    { id: 'loop-shape', heading: 'Read the loop shape', internalRole: 'structural-model', lensCueId: 'loops-shape', blocks: [{ type: 'code-shape', title: 'Collection, accumulator, iterator, update', rows: [{ label: 'Collection', code: 'numbers = [2, 4, 6]', explanation: 'Provides the items.', tone: 'input' }, { label: 'Accumulator', code: 'total = 0', explanation: 'Starts before repetition.', tone: 'value' }, { label: 'Loop', code: 'for number in numbers:', explanation: 'Selects one current item.', tone: 'name' }, { label: 'Update', code: 'total = total + number', explanation: 'Uses the prior total and current item.', tone: 'work' }] }] },
+    { id: 'predict-loop', heading: 'Predict repetition', internalRole: 'predict', lensCueId: 'loops-predict', blocks: [{ type: 'value-prediction', responseId: 'loops-prediction', prompt: 'Predict the iteration count and final total.', fields: [{ id: 'iterations', label: 'iterations', expected: 3 }, { id: 'total', label: 'total', expected: 12 }] }] },
+    { id: 'follow-loop', heading: 'Follow each iteration', internalRole: 'guided-explore', lensCueId: 'loops-guided', blocks: [{ type: 'observation', text: 'Follow each selected item and watch the accumulator preserve its previous value.' }] },
+    { id: 'change-list', heading: 'Change the list', internalRole: 'variation', lensCueId: 'loops-explore', blocks: [{ type: 'variation-prediction', responseId: 'loops-list-prediction', prompt: 'Which configured result changes for [1, 3, 5]?', options: ['total'], expected: ['total'], variationId: 'sum-odd' }] },
+    { id: 'recognize-loop', heading: 'Recognize another loop', internalRole: 'recognize', lensCueId: 'loops-recognize', blocks: [{ type: 'recognition-check', responseId: 'loops-recognition', prompt: 'Classify the loop names.', source: 'scores = [1, 2, 3]\npoints = 0\nfor score in scores:\n    points = points + score', roles: [{ id: 'collection', label: 'collection' }, { id: 'iterator', label: 'current item' }, { id: 'accumulator', label: 'accumulator' }], items: [{ id: 'scores', label: 'scores', expectedRole: 'collection' }, { id: 'score', label: 'score', expectedRole: 'iterator' }, { id: 'points', label: 'points', expectedRole: 'accumulator' }], successFeedback: 'Correct: the collection supplies items, the iterator holds the current item, and the accumulator preserves the running result.', retryFeedback: 'Find the name after in, the name after for, and the value updated inside the loop.' }] },
+    { id: 'build-loop', heading: 'Build a loop', internalRole: 'produce', lensCueId: 'loops-build', blocks: [{ type: 'build', responseId: 'loops-build-response', prompt: 'Build a loop that adds each number into total.', programId: 'loops-build-scaffold', verificationIds: ['loops-build-supported', 'loops-build-shape', 'loops-build-dependency'], criteria: ['Initialize total before the loop.', 'Iterate with number.', 'Update total using the current number.'] }] },
+  ],
+  programs: [
+    { id: 'sum-even', source: 'numbers = [2, 4, 6]\ntotal = 0\nfor number in numbers:\n    total = total + number', argsText: '' },
+    { id: 'sum-odd', source: 'numbers = [1, 3, 5]\ntotal = 0\nfor number in numbers:\n    total = total + number', argsText: '' },
+    { id: 'recognize-scores', source: 'scores = [1, 2, 3]\npoints = 0\nfor score in scores:\n    points = points + score', argsText: '' },
+    { id: 'loops-build-scaffold', source: 'numbers = [2, 4, 6]\ntotal = 0\nfor number in numbers:\n    total = total', argsText: '' },
+  ],
+  scenarios: [
+    { id: 'sum-even-scenario', label: 'Even numbers', programId: 'sum-even', verificationIds: [] },
+    { id: 'sum-odd-scenario', label: 'Odd numbers', programId: 'sum-odd', verificationIds: ['loops-odd-value', 'loops-three-iterations'] },
+  ],
+  variations: [{
+    id: 'sum-odd',
+    label: 'List [1, 3, 5]',
+    applyLabel: 'Run [1, 3, 5]',
+    programId: 'sum-odd',
+    predictionId: 'loops-list-prediction',
+    verificationIds: ['loops-odd-value', 'loops-three-iterations'],
+    comparison: { kind: 'bindings', baselineProgramId: 'sum-even', fields: [{ key: 'total', label: 'total' }] },
+    successFeedback: 'The alternate list produces the configured total in three iterations.',
+    retryFeedback: 'Compare the final accumulator and observed iteration count.',
+  }],
+  cues: [
+    { id: 'loops-introduce', sectionId: 'loop-idea', apply: 'initialize-once', presentation: 'quiet', mode: 'observe', programId: 'sum-even', view: 'flow', frame: 'start', editing: 'locked', eyebrow: 'Learning Lens · waiting', title: 'Repeat work while preserving state', instruction: 'Start with the repetition idea.' },
+    { id: 'loops-shape', sectionId: 'loop-shape', apply: 'guide-without-reset', presentation: 'visible', mode: 'observe', view: 'structure', frame: 'start', editing: 'locked', eyebrow: 'Observe', title: 'See the loop structure', instruction: 'Match collection, iterator, accumulator, and update.' },
+    { id: 'loops-predict', sectionId: 'predict-loop', apply: 'guide-without-reset', presentation: 'quiet', mode: 'observe', view: 'state', frame: 'start', editing: 'locked', revealPolicy: { responseId: 'loops-prediction', unlockAt: 'committed', concealedViews: ['state', 'explain', 'structure'], preCommitFrame: 'start' }, eyebrow: 'Predict first', title: 'Iterations and final state are concealed', instruction: 'Commit both predictions before execution.' },
+    { id: 'loops-guided', sectionId: 'follow-loop', apply: 'guide-without-reset', presentation: 'focus', mode: 'guided', view: 'explain', frame: 'start', editing: 'locked', requiresResponseId: 'loops-prediction', eyebrow: 'Guided', title: 'Follow repeated frames', instruction: 'Step through every selected item and update.' },
+    { id: 'loops-explore', sectionId: 'change-list', apply: 'guide-without-reset', presentation: 'visible', mode: 'explore', view: 'state', frame: 'end', editing: 'authored-variations', eyebrow: 'Explore', title: 'Change the list', instruction: 'Predict, then run the authored list variation.' },
+    { id: 'loops-recognize', sectionId: 'recognize-loop', apply: 'replace-program', presentation: 'visible', mode: 'observe', programId: 'recognize-scores', view: 'structure', frame: 'start', editing: 'locked', revealPolicy: { responseId: 'loops-recognition', unlockAt: 'revealed', concealedViews: ['state', 'explain', 'structure'], preCommitFrame: 'start' }, eyebrow: 'Recognize', title: 'Same loop structure', instruction: 'Classify the names before viewing Lens.' },
+    { id: 'loops-build', sectionId: 'build-loop', apply: 'replace-program', presentation: 'focus', mode: 'build', programId: 'loops-build-scaffold', view: 'state', frame: 'start', editing: 'free', eyebrow: 'Build', title: 'Build an accumulator loop', instruction: 'Use the shared editor and semantic checks.' },
+  ],
+  verifications: [
+    { id: 'loops-odd-value', type: 'binding-values', expectedBindings: { total: '9' } },
+    { id: 'loops-three-iterations', type: 'loop-iterations', expected: 3 },
+    { id: 'loops-build-supported', type: 'supported-execution' },
+    { id: 'loops-build-shape', type: 'loop-shape', iterator: 'number', accumulator: 'total' },
+    { id: 'loops-build-dependency', type: 'accumulator-dependency', accumulator: 'total', iterator: 'number' },
+  ],
+});

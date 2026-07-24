@@ -11,7 +11,7 @@ for (const legacyPath of [
     await expect(page.getByRole('heading', { name: 'Loops over Lists', exact: true })).toBeVisible();
     await expect(page.getByTestId('phase-2-lesson-player')).toHaveAttribute(
       'data-schema-version',
-      '3',
+      '4',
     );
   });
 }

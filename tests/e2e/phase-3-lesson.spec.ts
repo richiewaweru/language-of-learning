@@ -122,10 +122,10 @@ test('Build uses the shared editor and grades dependencies deterministically', a
 
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first * 2');
   await page.getByTestId('check-build').click();
-  await expect(page.getByTestId('build-feedback')).toContainText('result ← second');
+  await expect(page.getByTestId('build-feedback')).toContainText('both starting bindings');
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first + second');
   await page.getByTestId('check-build').click();
-  await expect(page.getByTestId('build-feedback')).toContainText('required assignment dependencies');
+  await expect(page.getByTestId('build-feedback')).toContainText('depends on both starting bindings');
   await expect(workspace).toHaveAttribute('data-session-id', sessionId ?? '');
 });
 

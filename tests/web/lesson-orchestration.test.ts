@@ -7,7 +7,7 @@ import {
   type LessonDefinitionV3,
   type LessonVerification,
 } from '@lol/lens-contracts';
-import { valuesAndVariablesLesson } from '../../apps/web/src/lib/lesson-foundation/definitions';
+import { lesson as valuesAndVariablesLesson } from '../../apps/web/src/lib/lesson-foundation/lessons/values-and-variables';
 import { runLessonVerifications } from '../../apps/web/src/lib/lesson-foundation/verification';
 import {
   CueTransitionGuard,

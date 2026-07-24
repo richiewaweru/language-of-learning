@@ -51,6 +51,28 @@ test('course index exposes exactly four intentional lessons', async ({ page }) =
   }
 });
 
+test('direct lesson use records no study evidence before consent', async ({ page }) => {
+  await openLesson(page, 'values-and-variables');
+  await expect(page.getByTestId('participant-code')).toHaveCount(0);
+  await expect(page.getByTestId('pilot-controls')).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('lol:pilot:v2:study'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('lol:pilot:v2:events'))).toBeNull();
+});
+
+test('facilitator setup launches a learner-only lesson tab', async ({ page, context }) => {
+  await page.goto('/pilot');
+  await page.getByLabel(/I understand this local recording/).check();
+  await page.getByRole('button', { name: 'Create consented study session' }).click();
+  const learnerPromise = context.waitForEvent('page');
+  await page.getByTestId('launch-pilot-lesson').click();
+  const learner = await learnerPromise;
+  await waitForLesson(learner);
+  await expect(learner.getByTestId('participant-code')).toHaveCount(0);
+  await expect(learner.getByTestId('export-pilot')).toHaveCount(0);
+  await expect(learner.getByTestId('delete-pilot')).toHaveCount(0);
+  await learner.close();
+});
+
 const journeys = [
   {
     slug: 'functions-and-returns',
@@ -166,8 +188,15 @@ test('Conditions rejects a learner program with a broken true branch', async ({ 
 });
 
 test('Values Build rejects unchanged work, accepts alternate names, invalidates edits, and exports private events', async ({ page }) => {
+  await page.goto('/pilot');
+  await expect(page.getByTestId('participant-code')).toHaveCount(0);
+  await page.getByLabel(/I understand this local recording/).check();
+  await page.getByRole('button', { name: 'Create consented study session' }).click();
+  const participantCode = await page.getByTestId('participant-code').textContent();
+  expect(participantCode).toMatch(/^P-[A-F0-9]{8}$/);
   await openLesson(page, 'values-and-variables');
-  await expect(page.getByTestId('participant-code')).toHaveText(/^P-[A-F0-9]{8}$/);
+  await expect(page.getByTestId('participant-code')).toHaveCount(0);
+  await expect(page.getByTestId('pilot-controls')).toHaveCount(0);
   await openSection(page, /Build a calculation/);
   await page.getByTestId('check-build').click();
   await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
@@ -185,14 +214,18 @@ test('Values Build rejects unchanged work, accepts alternate names, invalidates 
   await page.keyboard.insertText(' ');
   await expect(page.getByTestId('build-feedback')).toHaveCount(0);
 
-  const rawEvents = await page.evaluate(() => localStorage.getItem('lol:pilot:v1:events') ?? '');
+  const rawEvents = await page.evaluate(() => localStorage.getItem('lol:pilot:v2:events') ?? '');
   expect(rawEvents).not.toContain(validSource);
   expect(rawEvents).toContain('sourceHash');
+  expect(rawEvents).toContain('build_submission_completed');
 
+  await page.goto('/pilot');
+  await expect(page.getByTestId('participant-code')).toHaveText(participantCode ?? '');
+  await page.getByTestId('record-intervention').click();
   const downloadPromise = page.waitForEvent('download');
   await page.getByTestId('export-pilot').click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/^lens-pilot-P-[A-F0-9]{8}\.json$/);
+  expect(download.suggestedFilename()).toMatch(/^lens-pilot-v2-P-[A-F0-9]{8}\.json$/);
 });
 
 test('refresh, restart, cross-lesson, and Decode storage remain isolated', async ({ page, context }) => {
