@@ -43,4 +43,3 @@ export function deleteLegacyPilotData(storage: Storage): void {
   storage.removeItem(LEGACY_PARTICIPANT_KEY);
   storage.removeItem(LEGACY_EVENTS_KEY);
 }
-

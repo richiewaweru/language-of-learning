@@ -29,4 +29,3 @@ criteria, timing, views/frames, variations, and structured facilitator intervent
 finding as strong only when at least two evidence sources align.
 
 Do not record names, email addresses, employer source code, or other direct identifiers.
-

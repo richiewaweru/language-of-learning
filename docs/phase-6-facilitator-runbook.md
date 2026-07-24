@@ -59,4 +59,3 @@ intentional.
 - Record the technical interruption externally and exclude invalid evidence.
 - If browser storage is malformed, do not overwrite or manually edit it. Export what is available,
   delete the affected participant data, and restart with a new acknowledgement.
-

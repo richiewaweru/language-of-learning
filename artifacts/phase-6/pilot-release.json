@@ -1,0 +1,38 @@
+{
+  "releaseId": "phase-6-pilot-v1",
+  "sourceCommit": "61e2b7306c658fe8f2f11c38ab58ffe475daa042",
+  "generatedAt": "2026-07-24T10:55:45+03:00",
+  "study": {
+    "studyId": "lens-phase-6-pilot",
+    "studyVersion": "1.0.0",
+    "conditionId": "guided-lens-v1"
+  },
+  "schemas": {
+    "learningEvent": 2,
+    "pilotExport": 2,
+    "lessonDefinition": 4
+  },
+  "lessonVersions": {
+    "values-and-variables": "4.0.0",
+    "functions-and-returns": "4.0.0",
+    "conditions-and-branches": "4.0.0",
+    "loops-over-lists": "4.0.0"
+  },
+  "browserMatrix": {
+    "engine": "Playwright Chromium",
+    "viewports": [
+      "1440x1000",
+      "1024x768",
+      "768x1024",
+      "390x844"
+    ]
+  },
+  "gates": [
+    "pnpm test:pilot",
+    "pnpm test:all",
+    "pnpm test:e2e",
+    "pnpm --filter web build",
+    "pnpm pilot:validate -- artifacts/phase-6/sample-pilot-export.json",
+    "pnpm pilot:analyze -- artifacts/phase-6 --out output/phase-6-analysis"
+  ]
+}

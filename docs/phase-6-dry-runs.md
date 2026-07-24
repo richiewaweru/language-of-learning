@@ -39,4 +39,3 @@ Manual operator check:
 
 The release readiness report records the executed gate results. These dry runs do not substitute
 for the 5–10 consenting human pilot sessions.
-
