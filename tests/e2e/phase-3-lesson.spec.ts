@@ -18,6 +18,12 @@ async function openSection(page: Page, heading: RegExp) {
   await page.getByTestId('lesson-progress-rail').getByRole('button', { name: heading }).click();
 }
 
+async function returnToLesson(page: Page) {
+  if (await page.getByTestId('lesson-layout').getAttribute('data-lens-display-mode') !== 'closed') {
+    await page.getByRole('button', { name: 'Close Lens' }).click();
+  }
+}
+
 async function replaceLessonSource(page: Page, source: string) {
   const editor = page.getByTestId('lesson-lens-region').getByTestId('code-editor').locator('.cm-content');
   await editor.click();
@@ -80,6 +86,7 @@ test('keeps one session through quiet prediction and guided reveal', async ({ pa
 test('applies only the authored price variation and compares State rows', async ({ page }) => {
   await revealCanonicalPrediction(page);
   await openSection(page, /Change one value/);
+  await returnToLesson(page);
   const variation = page.getByTestId('variation-prediction');
   for (const name of ['price', 'tax', 'total']) {
     await variation.getByLabel(name, { exact: true }).check();
@@ -95,6 +102,7 @@ test('applies only the authored price variation and compares State rows', async 
 
 test('recognition supports check, feedback, and retry', async ({ page }) => {
   await openSection(page, /Recognize the same structure/);
+  await returnToLesson(page);
   const check = page.getByTestId('recognition-check');
   for (const name of ['distance', 'time', 'speed']) {
     const group = check.locator('fieldset').filter({ hasText: name });
@@ -121,9 +129,12 @@ test('Build uses the shared editor and grades dependencies deterministically', a
   await expect(page.locator('textarea')).toHaveCount(0);
 
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first * 2');
+  await returnToLesson(page);
   await page.getByTestId('check-build').click();
   await expect(page.getByTestId('build-feedback')).toContainText('both starting bindings');
+  await page.getByTestId('open-lesson-lens').click();
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first + second');
+  await returnToLesson(page);
   await page.getByTestId('check-build').click();
   await expect(page.getByTestId('build-feedback')).toContainText('depends on both starting bindings');
   await expect(workspace).toHaveAttribute('data-session-id', sessionId ?? '');
@@ -149,6 +160,7 @@ test('refresh restores guided response, source, view, frame, and attempt identit
   await expect(lens.getByTestId('lens-workspace')).toHaveAttribute('data-hydration-status', 'restored');
   await expect(lens.getByRole('tab', { name: 'State', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(lens.getByTestId('current-frame')).toHaveText(frame ?? '');
+  await returnToLesson(page);
   await expect(page.getByTestId('prediction-comparison')).toBeVisible();
 });
 
@@ -166,6 +178,7 @@ test('restart creates a clean authored attempt', async ({ page }) => {
   await openSection(page, /Build a calculation/);
   const oldAttempt = await page.getByTestId('lesson-attempt-id').textContent();
   await replaceLessonSource(page, 'changed = 999');
+  await returnToLesson(page);
   await page.getByTestId('lesson-restart').click();
   await expect(page.getByTestId('lesson-attempt-id')).not.toHaveText(oldAttempt ?? '');
   await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-presentation', 'quiet');

@@ -6,17 +6,28 @@
     LessonLensMode,
   } from '@lol/lens-contracts';
   import LensWorkspace from '$lib/lens/LensWorkspace.svelte';
+  import type { LensDisplayMode } from './lens-display';
 
   let {
     controller,
     cue,
     presentation,
     mode,
+    displayMode,
+    contextAvailable = false,
+    onClose,
+    onToggleFocus,
+    onShowContext,
   }: {
     controller: LensSessionController;
     cue: LessonLensCue;
     presentation: LensPresentation;
     mode: LessonLensMode;
+    displayMode: LensDisplayMode;
+    contextAvailable?: boolean;
+    onClose: () => void;
+    onToggleFocus: () => void;
+    onShowContext: () => void;
   } = $props();
 </script>
 
@@ -28,26 +39,44 @@
   data-presentation={presentation}
   data-lens-mode={mode}
 >
-  <header>
-    <p>{cue.eyebrow ?? 'Learning Lens'}</p>
-    <h2>{cue.title ?? 'Follow the program in Lens'}</h2>
-    {#if cue.instruction}<span>{cue.instruction}</span>{/if}
+  <header class="lens-header">
+    <div>
+      <p>{cue.eyebrow ?? 'Learning Lens'}</p>
+      <h2 id="lesson-lens-heading" tabindex="-1">{cue.title ?? 'Follow the program in Lens'}</h2>
+      {#if cue.instruction}<span>{cue.instruction}</span>{/if}
+    </div>
+    <div class="lens-actions">
+      {#if contextAvailable && displayMode === 'open'}
+        <button type="button" class="context-action" onclick={onShowContext}>Lesson context</button>
+      {/if}
+      <button type="button" onclick={onToggleFocus}>
+        {displayMode === 'focus' ? 'Restore layout' : 'Focus Lens'}
+      </button>
+      <button type="button" aria-label="Close Lens" onclick={onClose}>Close</button>
+    </div>
   </header>
-  {#if presentation === 'quiet'}
-    <p class="quiet-note">Lens remains mounted with this attempt. Complete the current prompt to bring execution forward.</p>
-  {/if}
-  <div class="workspace-shell" aria-hidden={presentation === 'quiet'}>
-    <LensWorkspace {controller} />
+  <div class="workspace-shell">
+    <LensWorkspace {controller} layout="lesson" />
   </div>
 </aside>
 
 <style>
-  .lens-region { min-width: 0; padding: 16px; border: 1px solid #a8c0b3; border-radius: 14px; background: #edf2ed; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
-  .lens-region.focus { border-color: #d36c37; background: #f5eee6; box-shadow: 0 16px 38px rgba(78, 55, 36, .14); }
-  header { margin-bottom: 14px; }
+  .lens-region { min-width: 0; min-height: 100%; background: #f7f5ef; transition: background .2s ease; }
+  .lens-region.focus { background: #f8f1e9; }
+  .lens-header { position: sticky; top: 0; z-index: 6; display: flex; justify-content: space-between; gap: 18px; align-items: start; padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: color-mix(in srgb, #f7f5ef 94%, transparent); backdrop-filter: blur(10px); }
   header p { margin: 0; color: #4f6b5e; text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); }
   header h2 { margin: 5px 0 0; font-family: var(--font-display); font-size: 25px; }
   header span { display: block; margin-top: 7px; color: var(--ink-secondary); line-height: 1.45; }
-  .quiet-note { margin: 8px 0 0; color: #52665d; font-size: var(--text-sm); }
-  .quiet .workspace-shell { max-height: 0; overflow: hidden; visibility: hidden; }
+  .lens-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 7px; }
+  .lens-actions button { padding: 8px 10px; border: 1px solid var(--line-medium); border-radius: 7px; background: white; color: var(--ink-secondary); font-size: var(--text-xs); font-weight: 700; white-space: nowrap; cursor: pointer; }
+  .context-action { display: none; }
+  .workspace-shell { padding: 16px; }
+  @media (max-width: 1023px) { .context-action { display: inline-flex; } }
+  @media (max-width: 600px) {
+    .lens-header { align-items: center; padding: 10px 12px; }
+    .lens-header h2, .lens-header span, .lens-header p { display: none; }
+    .lens-actions { width: 100%; justify-content: space-between; }
+    .workspace-shell { padding: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .lens-region { transition: none; } }
 </style>

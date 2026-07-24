@@ -26,6 +26,16 @@ async function openSection(page: Page, heading: RegExp) {
   await page.getByTestId('lesson-progress-rail').getByRole('button', { name: heading }).click();
 }
 
+async function returnToLesson(page: Page) {
+  if (await page.getByTestId('lesson-layout').getAttribute('data-lens-display-mode') !== 'closed') {
+    await page.getByRole('button', { name: 'Close Lens' }).click();
+  }
+}
+
+async function reopenLens(page: Page) {
+  await page.getByTestId('open-lesson-lens').click();
+}
+
 test.beforeAll(async () => {
   await mkdir(evidenceRoot, { recursive: true });
 });
@@ -160,12 +170,14 @@ for (const journey of journeys) {
     await expect(page.getByTestId('guided-trace-view')).toBeVisible();
 
     await openSection(page, journey.variationSection);
+    await returnToLesson(page);
     await page.getByTestId('variation-prediction').getByLabel(journey.variationOption, { exact: true }).check();
     await page.getByTestId('commit-variation-prediction').click();
     await page.getByTestId('apply-variation').click();
     await expect(page.getByTestId('variation-comparison')).toContainText(journey.changed);
 
     await openSection(page, journey.recognitionSection);
+    await returnToLesson(page);
     const recognition = page.getByTestId('recognition-check');
     for (const [item, role] of journey.recognition) {
       await recognition.getByRole('group', { name: item, exact: true })
@@ -175,12 +187,15 @@ for (const journey of journeys) {
     await expect(recognition).toContainText('Correct');
 
     await openSection(page, journey.buildSection);
+    await returnToLesson(page);
     await page.getByTestId('check-build').click();
     await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
+    await reopenLens(page);
     const editor = page.getByTestId('code-editor').locator('.cm-content');
     await editor.click();
     await page.keyboard.press('ControlOrMeta+A');
     await page.keyboard.insertText(journey.buildSource);
+    await returnToLesson(page);
     await page.getByTestId('check-build').click();
     await expect(page.getByTestId('build-feedback')).toHaveClass(/success/);
     await expect(editor).toContainText(journey.buildSource.split('\n')[0]);
@@ -196,10 +211,12 @@ test('recognition conceals structure until an answer is checked', async ({ page 
   await openLesson(page, 'functions-and-returns');
   await openSection(page, /Recognize another function/);
   await expect(page.getByRole('tab', { name: 'Graph Inspector', exact: true })).toHaveCount(0);
+  await returnToLesson(page);
   const recognition = page.getByTestId('recognition-check');
   await recognition.locator('fieldset').filter({ hasText: 'bill' }).getByLabel('parameter').check();
   await recognition.locator('fieldset').filter({ hasText: 'total' }).getByLabel('local result').check();
   await page.getByTestId('check-recognition').click();
+  await reopenLens(page);
   await expect(page.getByRole('tab', { name: 'Graph Inspector', exact: true })).toBeVisible();
   await expect(recognition).toContainText('Correct');
 });
@@ -213,6 +230,7 @@ test('Conditions rejects a learner program with a broken true branch', async ({ 
   await page.keyboard.insertText(
     'age = 16\nif age >= 18:\n    status = ""\nelse:\n    status = "minor"',
   );
+  await returnToLesson(page);
   await page.getByTestId('check-build').click();
   await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
   await expect(page.getByTestId('build-feedback')).toContainText('learner-source scenarios');
@@ -221,17 +239,21 @@ test('Conditions rejects a learner program with a broken true branch', async ({ 
 test('Values Build rejects unchanged work, accepts alternate names, and invalidates edits', async ({ page }) => {
   await openLesson(page, 'values-and-variables');
   await openSection(page, /Build a calculation/);
+  await returnToLesson(page);
   await page.getByTestId('check-build').click();
   await expect(page.getByTestId('build-feedback')).toHaveClass(/error/);
 
+  await reopenLens(page);
   const editor = page.getByTestId('code-editor').locator('.cm-content');
   const validSource = 'base = 10\nextra = 5\ncombined = base + extra';
   await editor.click();
   await page.keyboard.press('ControlOrMeta+A');
   await page.keyboard.insertText(validSource);
+  await returnToLesson(page);
   await page.getByTestId('check-build').click();
   await expect(page.getByTestId('build-feedback')).toHaveClass(/success/);
 
+  await reopenLens(page);
   await editor.click();
   await page.keyboard.press('End');
   await page.keyboard.insertText(' ');
@@ -261,6 +283,7 @@ test('refresh, restart, cross-lesson, and Decode storage remain isolated', async
   await decode.close();
   await other.close();
 
+  await returnToLesson(page);
   await page.getByTestId('lesson-restart').click();
   await expect(page.getByTestId('lesson-attempt-id')).not.toHaveText(attempt ?? '');
   await expect(page.getByTestId('code-editor').locator('.cm-content')).toContainText('def double');
@@ -338,8 +361,10 @@ test('editing during delayed verification cannot publish stale Build feedback', 
   await page.keyboard.insertText(
     'years = 16\nif years >= 18:\n    label = "adult"\nelse:\n    label = "minor"',
   );
+  await returnToLesson(page);
   await page.getByTestId('check-build').click();
   await expect.poll(() => delayed).toBe(true);
+  await reopenLens(page);
   await editor.click();
   await page.keyboard.press('End');
   await page.keyboard.insertText(' ');
