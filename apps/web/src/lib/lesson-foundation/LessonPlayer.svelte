@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { LessonDefinitionV2 } from '@lol/lens-contracts';
+  import type { LessonDefinitionV3 } from '@lol/lens-contracts';
   import LessonProgressRail from './LessonProgressRail.svelte';
   import LessonNarrative from './LessonNarrative.svelte';
   import LessonLensRegion from './LessonLensRegion.svelte';
@@ -9,12 +9,23 @@
     type LessonSessionController,
   } from './session.svelte';
 
-  let { definition }: { definition: LessonDefinitionV2 } = $props();
+  let { definition }: { definition: LessonDefinitionV3 } = $props();
   let controller = $state<LessonSessionController | null>(null);
   let startupError = $state('');
-  const bindings = $derived(
-    controller?.lens.state.artifacts?.trace.steps.at(-1)?.bindings ?? {},
-  );
+  const bindings = $derived.by(() => {
+    const trace = controller?.lens.state.artifacts?.trace;
+    const values = { ...(trace?.steps.at(-1)?.bindings ?? {}) };
+    if (trace) {
+      values.iterations = String(
+        trace.steps.filter((step) => step.event.type === 'loop_advance').length,
+      );
+      const branch = trace.steps.find((step) => step.event.type === 'condition_eval');
+      if (branch?.event.type === 'condition_eval') {
+        values.branch = branch.event.result ? '1' : '0';
+      }
+    }
+    return values;
+  });
 
   async function boot(forceNew = false) {
     try {
@@ -32,16 +43,23 @@
   async function revealResponse(id: string, correct: boolean, feedback: string) {
     if (!controller) return;
     controller.actions.revealResponse(id, correct, feedback);
-    if (id === 'prediction-values') {
-      await controller.actions.setActiveSection('follow-calculation');
-      document.getElementById('follow-calculation')?.scrollIntoView({ behavior: 'smooth' });
+    const sectionIndex = definition.sections.findIndex((section) =>
+      section.blocks.some((block) => 'responseId' in block && block.responseId === id),
+    );
+    const responseBlock = definition.sections[sectionIndex]?.blocks.find(
+      (block) => 'responseId' in block && block.responseId === id,
+    );
+    const nextSection = definition.sections[sectionIndex + 1];
+    if (responseBlock?.type === 'value-prediction' && nextSection) {
+      await controller.actions.setActiveSection(nextSection.id);
+      document.getElementById(nextSection.id)?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
   onMount(() => void boot());
 </script>
 
-<div class="lesson-player" data-testid="phase-2-lesson-player">
+<div class="lesson-player" data-testid="phase-2-lesson-player" data-schema-version={definition.schemaVersion}>
   {#if startupError}
     <div class="startup-error" role="alert">The lesson could not start. {startupError}</div>
   {:else if !controller}
@@ -83,6 +101,7 @@
         completedSectionIds={controller.state.completedSectionIds}
         responses={controller.state.responses}
         {bindings}
+        comparison={controller.state.comparison}
         onDraft={(id, answer) => controller?.actions.setResponseDraft(id, answer)}
         onCommit={(id, correct, feedback) => controller?.actions.commitResponse(id, correct, feedback)}
         onRevealPrediction={(id, correct, feedback) => void revealResponse(id, correct, feedback)}

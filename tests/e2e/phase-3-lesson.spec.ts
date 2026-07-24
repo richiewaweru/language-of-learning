@@ -98,17 +98,17 @@ test('recognition supports check, feedback, and retry', async ({ page }) => {
   const check = page.getByTestId('recognition-check');
   for (const name of ['distance', 'time', 'speed']) {
     const group = check.locator('fieldset').filter({ hasText: name });
-    await group.getByLabel(name === 'speed' ? 'starting' : 'derived', { exact: true }).check();
+    await group.getByLabel(name === 'speed' ? 'starting name' : 'derived name', { exact: true }).check();
   }
   await page.getByTestId('check-recognition').click();
   await expect(check).toContainText('Check which lines');
   await page.getByTestId('retry-recognition').click();
   for (const name of ['distance', 'time']) {
-    await check.locator('fieldset').filter({ hasText: name }).getByLabel('starting', { exact: true }).check();
+    await check.locator('fieldset').filter({ hasText: name }).getByLabel('starting name', { exact: true }).check();
   }
-  await check.locator('fieldset').filter({ hasText: 'speed' }).getByLabel('derived', { exact: true }).check();
+  await check.locator('fieldset').filter({ hasText: 'speed' }).getByLabel('derived name', { exact: true }).check();
   await page.getByTestId('check-recognition').click();
-  await expect(check).toContainText('Correct: distance and time');
+  await expect(check).toContainText('Correct: the first two names');
 });
 
 test('Build uses the shared editor and grades dependencies deterministically', async ({ page }) => {
@@ -122,10 +122,10 @@ test('Build uses the shared editor and grades dependencies deterministically', a
 
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first * 2');
   await page.getByTestId('check-build').click();
-  await expect(page.getByTestId('build-feedback')).toContainText('Missing: second');
+  await expect(page.getByTestId('build-feedback')).toContainText('result ← second');
   await replaceLessonSource(page, 'first = 10\nsecond = 5\nresult = first + second');
   await page.getByTestId('check-build').click();
-  await expect(page.getByTestId('build-feedback')).toContainText('correctly depends');
+  await expect(page.getByTestId('build-feedback')).toContainText('required assignment dependencies');
   await expect(workspace).toHaveAttribute('data-session-id', sessionId ?? '');
 });
 

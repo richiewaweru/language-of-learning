@@ -100,7 +100,7 @@ export const LessonPedagogicalRoleSchema = z.enum([
   'produce',
 ]);
 
-const LessonDefinitionBlockSchema = z.discriminatedUnion('type', [
+export const LessonDefinitionBlockSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('prose'), paragraphs: z.array(z.string().min(1)).min(1) }),
   z.object({ type: z.literal('definition'), text: z.string().min(1) }),
   z.object({
@@ -176,9 +176,20 @@ const LessonDefinitionBlockSchema = z.discriminatedUnion('type', [
     responseId: z.string().min(1),
     prompt: z.string().min(1),
     source: z.string().min(1),
-    names: z.array(z.string().min(1)).min(2),
-    startingNames: z.array(z.string().min(1)).min(1),
-    derivedNames: z.array(z.string().min(1)).min(1),
+    names: z.array(z.string().min(1)).min(2).optional(),
+    startingNames: z.array(z.string().min(1)).min(1).optional(),
+    derivedNames: z.array(z.string().min(1)).min(1).optional(),
+    roles: z.array(z.object({
+      id: z.string().min(1),
+      label: z.string().min(1),
+    })).min(2).optional(),
+    items: z.array(z.object({
+      id: z.string().min(1),
+      label: z.string().min(1),
+      expectedRole: z.string().min(1),
+    })).min(1).optional(),
+    successFeedback: z.string().min(1).optional(),
+    retryFeedback: z.string().min(1).optional(),
   }),
   z.object({
     type: z.literal('build'),
@@ -186,8 +197,18 @@ const LessonDefinitionBlockSchema = z.discriminatedUnion('type', [
     prompt: z.string().min(1),
     programId: z.string().min(1),
     verificationIds: z.array(z.string().min(1)).min(1),
+    criteria: z.array(z.string().min(1)).optional(),
   }),
 ]);
+
+function hasRecognitionContract(
+  block: Extract<z.infer<typeof LessonDefinitionBlockSchema>, { type: 'recognition-check' }>,
+) {
+  return Boolean(
+    (block.names?.length && block.startingNames?.length && block.derivedNames?.length)
+    || (block.roles?.length && block.items?.length && block.successFeedback && block.retryFeedback),
+  );
+}
 
 const LensCapabilitiesSchema = z.object({
   canEditSource: z.boolean(),
@@ -244,6 +265,17 @@ export const LessonDefinitionV1Schema = z.object({
       message: 'Initial Lens view must be enabled.',
     });
   }
+  lesson.sections.forEach((section, sectionIndex) => {
+    section.blocks.forEach((block, blockIndex) => {
+      if (block.type === 'recognition-check' && !hasRecognitionContract(block)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['sections', sectionIndex, 'blocks', blockIndex],
+          message: 'Recognition is missing its role contract.',
+        });
+      }
+    });
+  });
 });
 
 export type LessonPedagogicalRole = z.infer<typeof LessonPedagogicalRoleSchema>;
@@ -274,6 +306,42 @@ export const LessonVariationSchema = z.object({
   predictionId: z.string().min(1).optional(),
 });
 
+export const LessonComparisonKindSchema = z.enum([
+  'bindings',
+  'frames',
+  'path',
+  'return-value',
+]);
+
+export const LessonComparisonSchema = z.object({
+  kind: LessonComparisonKindSchema,
+  baselineProgramId: z.string().min(1),
+  fields: z.array(z.object({
+    key: z.string().min(1),
+    label: z.string().min(1),
+  })).default([]),
+});
+
+export const LessonVariationV3Schema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  applyLabel: z.string().min(1),
+  programId: z.string().min(1),
+  predictionId: z.string().min(1).optional(),
+  verificationIds: z.array(z.string().min(1)).min(1),
+  comparison: LessonComparisonSchema,
+  successFeedback: z.string().min(1),
+  retryFeedback: z.string().min(1),
+});
+
+export const LessonScenarioSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  programId: z.string().min(1),
+  argsText: z.string().optional(),
+  verificationIds: z.array(z.string().min(1)).default([]),
+});
+
 export const LessonLensCueSchema = z.object({
   id: z.string().min(1),
   sectionId: z.string().min(1),
@@ -289,9 +357,29 @@ export const LessonLensCueSchema = z.object({
   title: z.string().min(1).optional(),
   instruction: z.string().min(1).optional(),
   requiresResponseId: z.string().min(1).optional(),
+  revealPolicy: z.object({
+    responseId: z.string().min(1),
+    unlockAt: z.enum(['committed', 'revealed']),
+    concealedViews: z.array(z.enum(['flow', 'state', 'explain', 'structure'])).min(1),
+    preCommitFrame: z.literal('start'),
+  }).optional(),
 });
 
 export const LessonVerificationSchema = z.discriminatedUnion('type', [
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('supported-execution'),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('binding-values'),
+    expectedBindings: z.record(z.string(), z.string()),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('assignment-count'),
+    expected: z.number().int().positive(),
+  }),
   z.object({
     id: z.string().min(1),
     type: z.literal('execution-values'),
@@ -307,6 +395,46 @@ export const LessonVerificationSchema = z.discriminatedUnion('type', [
     type: z.literal('program-shape'),
     requiredAssignments: z.number().int().positive(),
     derivedTargets: z.array(z.string()),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('function-shape'),
+    functionName: z.string().min(1).optional(),
+    parameterCount: z.number().int().nonnegative(),
+    requireModuleCall: z.boolean().default(true),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('return-dependency'),
+    parameterNames: z.array(z.string().min(1)).min(1),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('branch-shape'),
+    requireElse: z.boolean().default(true),
+    resultBinding: z.string().min(1).optional(),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('branch-coverage'),
+    expectedOutcomes: z.array(z.boolean()).min(1),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('loop-shape'),
+    iterator: z.string().min(1),
+    accumulator: z.string().min(1),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('loop-iterations'),
+    expected: z.number().int().nonnegative(),
+  }),
+  z.object({
+    id: z.string().min(1),
+    type: z.literal('accumulator-dependency'),
+    accumulator: z.string().min(1),
+    iterator: z.string().min(1),
   }),
 ]);
 
@@ -380,6 +508,13 @@ export const LessonDefinitionV2Schema = z.object({
       if (block.type === 'variation-prediction' && !variationIds.has(block.variationId)) {
         context.addIssue({ code: 'custom', path: ['sections', sectionIndex, 'blocks', blockIndex, 'variationId'], message: 'Unknown variation.' });
       }
+      if (block.type === 'recognition-check' && !hasRecognitionContract(block)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['sections', sectionIndex, 'blocks', blockIndex],
+          message: 'Recognition is missing its role contract.',
+        });
+      }
       if (block.type === 'build') {
         if (!programIds.has(block.programId)) {
           context.addIssue({ code: 'custom', path: ['sections', sectionIndex, 'blocks', blockIndex, 'programId'], message: 'Unknown Build program.' });
@@ -444,13 +579,261 @@ export const LessonDefinitionV2Schema = z.object({
   });
 });
 
+const LessonDefinitionV3BaseSchema = z.object({
+  schemaVersion: z.literal(3),
+  id: z.string().min(1),
+  slug: z.string().min(1),
+  version: z.string().min(1),
+  courseId: z.string().min(1),
+  title: z.string().min(1),
+  subtitle: z.string().optional(),
+  goal: z.string().min(1),
+  sections: z.array(z.object({
+    id: z.string().min(1),
+    heading: z.string().min(1),
+    internalRole: LessonPedagogicalRoleSchema,
+    blocks: z.array(LessonDefinitionBlockSchema),
+    lensCueId: z.string().min(1),
+  })).min(1),
+  lens: z.object({
+    initialProgramId: z.string().min(1),
+    initialView: z.enum(['flow', 'state', 'explain', 'structure']),
+  }),
+  programs: z.array(LessonProgramSchema).min(1),
+  scenarios: z.array(LessonScenarioSchema).default([]),
+  variations: z.array(LessonVariationV3Schema).default([]),
+  cues: z.array(LessonLensCueSchema).min(1),
+  verifications: z.array(LessonVerificationSchema).default([]),
+});
+
+export const LessonDefinitionV3Schema = LessonDefinitionV3BaseSchema.superRefine(
+  (lesson, context) => {
+    function unique(items: readonly { id: string }[], path: string, label: string) {
+      const ids = new Set<string>();
+      items.forEach((item, index) => {
+        if (ids.has(item.id)) {
+          context.addIssue({
+            code: 'custom',
+            path: [path, index, 'id'],
+            message: `Duplicate ${label} id: ${item.id}`,
+          });
+        }
+        ids.add(item.id);
+      });
+      return ids;
+    }
+
+    const sectionIds = unique(lesson.sections, 'sections', 'section');
+    const programIds = unique(lesson.programs, 'programs', 'program');
+    const scenarioIds = unique(lesson.scenarios, 'scenarios', 'scenario');
+    const variationIds = unique(lesson.variations, 'variations', 'variation');
+    const cueIds = unique(lesson.cues, 'cues', 'cue');
+    const verificationIds = unique(lesson.verifications, 'verifications', 'verification');
+    const responseIds = new Set<string>();
+
+    if (!programIds.has(lesson.lens.initialProgramId)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['lens', 'initialProgramId'],
+        message: 'Initial program does not exist.',
+      });
+    }
+
+    lesson.sections.forEach((section, sectionIndex) => {
+      const cue = lesson.cues.find((candidate) => candidate.id === section.lensCueId);
+      if (!cue) {
+        context.addIssue({
+          code: 'custom',
+          path: ['sections', sectionIndex, 'lensCueId'],
+          message: 'Unknown Lens cue.',
+        });
+      } else if (cue.sectionId !== section.id) {
+        context.addIssue({
+          code: 'custom',
+          path: ['sections', sectionIndex, 'lensCueId'],
+          message: 'Lens cue belongs to a different section.',
+        });
+      }
+
+      section.blocks.forEach((block, blockIndex) => {
+        if (block.type === 'production') {
+          context.addIssue({
+            code: 'custom',
+            path: ['sections', sectionIndex, 'blocks', blockIndex],
+            message: 'V3 production must use the shared Lens Build editor.',
+          });
+        }
+        if ('responseId' in block) {
+          if (responseIds.has(block.responseId)) {
+            context.addIssue({
+              code: 'custom',
+              path: ['sections', sectionIndex, 'blocks', blockIndex, 'responseId'],
+              message: `Duplicate response id: ${block.responseId}`,
+            });
+          }
+          responseIds.add(block.responseId);
+        }
+        if (block.type === 'recognition-check') {
+          if (!block.items?.length || !block.roles?.length || !block.successFeedback || !block.retryFeedback) {
+            context.addIssue({
+              code: 'custom',
+              path: ['sections', sectionIndex, 'blocks', blockIndex],
+              message: 'V3 recognition requires items, roles, and authored feedback.',
+            });
+          }
+        }
+        if (block.type === 'variation-prediction' && !variationIds.has(block.variationId)) {
+          context.addIssue({
+            code: 'custom',
+            path: ['sections', sectionIndex, 'blocks', blockIndex, 'variationId'],
+            message: 'Unknown variation.',
+          });
+        }
+        if (block.type === 'build') {
+          if (!programIds.has(block.programId)) {
+            context.addIssue({
+              code: 'custom',
+              path: ['sections', sectionIndex, 'blocks', blockIndex, 'programId'],
+              message: 'Unknown Build program.',
+            });
+          }
+          block.verificationIds.forEach((id) => {
+            if (!verificationIds.has(id)) {
+              context.addIssue({
+                code: 'custom',
+                path: ['sections', sectionIndex, 'blocks', blockIndex, 'verificationIds'],
+                message: `Unknown verification: ${id}`,
+              });
+            }
+          });
+        }
+      });
+    });
+
+    lesson.scenarios.forEach((scenario, index) => {
+      if (!programIds.has(scenario.programId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['scenarios', index, 'programId'],
+          message: 'Unknown scenario program.',
+        });
+      }
+      scenario.verificationIds.forEach((id) => {
+        if (!verificationIds.has(id)) {
+          context.addIssue({
+            code: 'custom',
+            path: ['scenarios', index, 'verificationIds'],
+            message: `Unknown verification: ${id}`,
+          });
+        }
+      });
+    });
+
+    lesson.variations.forEach((variation, index) => {
+      if (!programIds.has(variation.programId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['variations', index, 'programId'],
+          message: 'Unknown variation program.',
+        });
+      }
+      if (!programIds.has(variation.comparison.baselineProgramId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['variations', index, 'comparison', 'baselineProgramId'],
+          message: 'Unknown baseline program.',
+        });
+      }
+      if (variation.comparison.kind === 'bindings' && variation.comparison.fields.length === 0) {
+        context.addIssue({
+          code: 'custom',
+          path: ['variations', index, 'comparison', 'fields'],
+          message: 'Binding comparisons require at least one configured field.',
+        });
+      }
+      variation.verificationIds.forEach((id) => {
+        if (!verificationIds.has(id)) {
+          context.addIssue({
+            code: 'custom',
+            path: ['variations', index, 'verificationIds'],
+            message: `Unknown verification: ${id}`,
+          });
+        }
+      });
+    });
+
+    lesson.cues.forEach((cue, index) => {
+      if (!sectionIds.has(cue.sectionId)) {
+        context.addIssue({ code: 'custom', path: ['cues', index, 'sectionId'], message: 'Unknown section.' });
+      }
+      if (cue.programId && !programIds.has(cue.programId)) {
+        context.addIssue({ code: 'custom', path: ['cues', index, 'programId'], message: 'Unknown program.' });
+      }
+      if (cue.variationId && !variationIds.has(cue.variationId)) {
+        context.addIssue({ code: 'custom', path: ['cues', index, 'variationId'], message: 'Unknown variation.' });
+      }
+      if (cue.revealPolicy && cue.mode === 'build') {
+        context.addIssue({
+          code: 'custom',
+          path: ['cues', index, 'revealPolicy'],
+          message: 'Build cues cannot conceal answer-bearing views.',
+        });
+      }
+      const expectedEditing = cue.mode === 'explore'
+        ? 'authored-variations'
+        : cue.mode === 'build'
+          ? 'free'
+          : 'locked';
+      if (cue.editing !== expectedEditing) {
+        context.addIssue({
+          code: 'custom',
+          path: ['cues', index, 'editing'],
+          message: `${cue.mode} mode requires ${expectedEditing} editing.`,
+        });
+      }
+      if (cue.apply !== 'guide-without-reset' && !cue.programId && !cue.variationId) {
+        context.addIssue({
+          code: 'custom',
+          path: ['cues', index],
+          message: `${cue.apply} requires a program or variation.`,
+        });
+      }
+      if (cue.apply === 'guide-without-reset' && (cue.programId || cue.variationId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['cues', index],
+          message: 'guide-without-reset cannot replace the current program.',
+        });
+      }
+    });
+
+    lesson.cues.forEach((cue, index) => {
+      const responseId = cue.revealPolicy?.responseId ?? cue.requiresResponseId;
+      if (responseId && !responseIds.has(responseId)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['cues', index, cue.revealPolicy ? 'revealPolicy' : 'requiresResponseId'],
+          message: 'Unknown response.',
+        });
+      }
+    });
+
+    void scenarioIds;
+    void cueIds;
+  },
+);
+
 export type LessonDefinitionV2 = z.infer<typeof LessonDefinitionV2Schema>;
+export type LessonDefinitionV3 = z.infer<typeof LessonDefinitionV3Schema>;
 export type LessonLensMode = z.infer<typeof LessonLensModeSchema>;
 export type LensPresentation = z.infer<typeof LensPresentationSchema>;
 export type LessonResponse = z.infer<typeof LessonResponseSchema>;
 export type LessonLensCue = z.infer<typeof LessonLensCueSchema>;
 export type LessonVerification = z.infer<typeof LessonVerificationSchema>;
-export type AnyLessonDefinition = LessonDefinitionV1 | LessonDefinitionV2;
+export type LessonScenario = z.infer<typeof LessonScenarioSchema>;
+export type LessonVariationV3 = z.infer<typeof LessonVariationV3Schema>;
+export type LessonComparison = z.infer<typeof LessonComparisonSchema>;
+export type AnyLessonDefinition = LessonDefinitionV1 | LessonDefinitionV2 | LessonDefinitionV3;
 
 // Re-exported here to keep lesson and session persistence contracts discoverable together.
 export const DurableLessonLensSnapshotSchema = LensSessionSnapshotSchema;

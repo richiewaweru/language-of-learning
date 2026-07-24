@@ -89,13 +89,13 @@ describe('Lens workspace contracts', () => {
     expect(workspace).not.toMatch(/routes\/decode|lessonMode|isLesson|localStorage/);
   });
 
-  it('routes only Values and Variables through the Phase 2 player', () => {
+  it('routes all foundational lessons through the shared lesson player', () => {
     const routeRoot = path.resolve('apps/web/src/routes/learn/[pathway]/[lesson]');
     const server = readFileSync(path.join(routeRoot, '+page.server.ts'), 'utf8');
     const page = readFileSync(path.join(routeRoot, '+page.svelte'), 'utf8');
-    expect(server).toContain("renderer: 'phase2'");
-    expect(server).toContain("renderer: 'pilot'");
+    expect(server).toContain('loadLessonDefinition');
+    expect(server).not.toContain("renderer: 'pilot'");
     expect(page).toContain('LessonPlayer');
-    expect(page).toContain('LessonRenderer');
+    expect(page).not.toContain('LessonRenderer');
   });
 });

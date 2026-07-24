@@ -2,15 +2,34 @@ import type {
   LensCapabilities,
   LensPresentation,
   LensSessionHandle,
-  LessonDefinitionV2,
+  LessonDefinitionV3,
   LessonLensCue,
   LessonLensMode,
+  LessonResponse,
 } from '@lol/lens-contracts';
 import { CueTransitionGuard, InitializeOnceLedger } from './orchestration-core';
 
-const enabledViews = ['flow', 'state', 'explain', 'structure'] as const;
+const allViews = ['flow', 'state', 'explain', 'structure'] as const;
 
-function capabilitiesFor(mode: LessonLensMode): LensCapabilities {
+function revealUnlocked(cue: LessonLensCue, responses: Record<string, LessonResponse>) {
+  const policy = cue.revealPolicy;
+  if (!policy) return true;
+  const response = responses[policy.responseId];
+  if (!response) return false;
+  return policy.unlockAt === 'committed'
+    ? response.status === 'committed' || response.status === 'revealed'
+    : response.status === 'revealed';
+}
+
+function capabilitiesFor(
+  mode: LessonLensMode,
+  cue: LessonLensCue,
+  responses: Record<string, LessonResponse>,
+): LensCapabilities {
+  const unlocked = revealUnlocked(cue, responses);
+  const enabledViews = unlocked || !cue.revealPolicy
+    ? [...allViews]
+    : allViews.filter((view) => !cue.revealPolicy?.concealedViews.includes(view));
   return {
     canEditSource: mode === 'build',
     canPasteSource: mode === 'build',
@@ -22,7 +41,7 @@ function capabilitiesFor(mode: LessonLensMode): LensCapabilities {
   };
 }
 
-function programForCue(definition: LessonDefinitionV2, cue: LessonLensCue) {
+function programForCue(definition: LessonDefinitionV3, cue: LessonLensCue) {
   const variation = cue.variationId
     ? definition.variations.find((candidate) => candidate.id === cue.variationId)
     : undefined;
@@ -38,14 +57,17 @@ export type LessonLensOrchestrator = {
     presentation: LensPresentation;
     mode: LessonLensMode;
     transitionRevision: number;
+    revealUnlocked: boolean;
   };
   applyCue(cueId: string, options?: { restoring?: boolean }): Promise<boolean>;
   applyVariation(variationId: string): Promise<boolean>;
+  refreshReveal(): void;
 };
 
 export function createLessonLensOrchestrator(
-  definition: LessonDefinitionV2,
+  definition: LessonDefinitionV3,
   lens: LensSessionHandle,
+  getResponses: () => Record<string, LessonResponse>,
 ): LessonLensOrchestrator {
   const initialCue = definition.cues.find(
     (cue) => cue.sectionId === definition.sections[0].id,
@@ -55,9 +77,22 @@ export function createLessonLensOrchestrator(
     presentation: initialCue.presentation,
     mode: initialCue.mode,
     transitionRevision: 0,
+    revealUnlocked: revealUnlocked(initialCue, getResponses()),
   });
   const transitions = new CueTransitionGuard();
   const initializedCues = new InitializeOnceLedger();
+
+  function applyCapabilities(cue: LessonLensCue) {
+    state.revealUnlocked = revealUnlocked(cue, getResponses());
+    const capabilities = capabilitiesFor(cue.mode, cue, getResponses());
+    lens.ownerActions.setCapabilitiesFromOwner(capabilities);
+    if (!capabilities.enabledViews.includes(lens.controller.state.activeView)) {
+      lens.controller.actions.setActiveView(capabilities.enabledViews[0]);
+    }
+    if (!state.revealUnlocked && cue.revealPolicy) {
+      lens.controller.actions.setCurrentFrame(0);
+    }
+  }
 
   async function guide(cue: LessonLensCue, restoring = false) {
     const currentGeneration = transitions.begin();
@@ -67,7 +102,7 @@ export function createLessonLensOrchestrator(
     state.presentation = cue.presentation;
     state.mode = cue.mode;
     state.transitionRevision += 1;
-    lens.ownerActions.setCapabilitiesFromOwner(capabilitiesFor(cue.mode));
+    applyCapabilities(cue);
 
     const program = programForCue(definition, cue);
     const shouldInitialize = cue.apply === 'initialize-once'
@@ -75,10 +110,7 @@ export function createLessonLensOrchestrator(
       && initializedCues.shouldApply(cue.id);
     const shouldReplace = cue.apply === 'replace-program' && !restoring;
     if (program && (shouldInitialize || shouldReplace)) {
-      lens.ownerActions.loadProgramFromOwner({
-        ...program,
-        language: 'python',
-      });
+      lens.ownerActions.loadProgramFromOwner({ ...program, language: 'python' });
     }
     if (cue.apply === 'initialize-once' && restoring) initializedCues.shouldApply(cue.id);
 
@@ -86,13 +118,19 @@ export function createLessonLensOrchestrator(
       await lens.ownerActions.runFromOwner();
       if (!transitions.isCurrent(currentGeneration)) return false;
     }
-    if (restoring) {
+
+    const capabilities = capabilitiesFor(cue.mode, cue, getResponses());
+    if (restoring && capabilities.enabledViews.includes(restoredView)) {
       lens.controller.actions.setActiveView(restoredView);
-      lens.controller.actions.setCurrentFrame(restoredFrame);
-    } else if (cue.view) {
+      lens.controller.actions.setCurrentFrame(
+        state.revealUnlocked ? restoredFrame : 0,
+      );
+    } else if (cue.view && capabilities.enabledViews.includes(cue.view)) {
       lens.controller.actions.setActiveView(cue.view);
+    } else {
+      lens.controller.actions.setActiveView(capabilities.enabledViews[0]);
     }
-    if (!restoring && cue.frame !== undefined) {
+    if (!restoring && cue.frame !== undefined && state.revealUnlocked) {
       const last = Math.max(
         0,
         (lens.controller.state.artifacts?.semanticScene?.steps.length ?? 1) - 1,
@@ -131,46 +169,13 @@ export function createLessonLensOrchestrator(
       lens.controller.actions.setCurrentFrame(last);
       return true;
     },
+    refreshReveal() {
+      applyCapabilities(state.cue);
+    },
   };
 }
 
 export function finalBindings(handle: LensSessionHandle['controller']) {
   const steps = handle.state.artifacts?.trace.steps ?? [];
   return steps.at(-1)?.bindings ?? {};
-}
-
-export function verifyBuildProgram(source: string) {
-  const assignmentPattern = /^\s*([A-Za-z_]\w*)\s*=\s*(.+?)\s*$/;
-  const assignments = source
-    .split(/\r?\n/)
-    .map((line) => assignmentPattern.exec(line))
-    .filter((match): match is RegExpExecArray => Boolean(match))
-    .map((match) => ({ target: match[1], expression: match[2] }));
-
-  if (assignments.length !== 3) {
-    return {
-      correct: false,
-      feedback: `Use exactly three assignments; Lens found ${assignments.length}.`,
-    };
-  }
-  const [first, second, derived] = assignments;
-  const identifierPattern = /\b[A-Za-z_]\w*\b/g;
-  const dependencies = new Set(derived.expression.match(identifierPattern) ?? []);
-  if (dependencies.has(derived.target)) {
-    return {
-      correct: false,
-      feedback: 'The derived assignment must calculate a new value, not read itself.',
-    };
-  }
-  const missing = [first.target, second.target].filter((name) => !dependencies.has(name));
-  if (missing.length) {
-    return {
-      correct: false,
-      feedback: `The final assignment must depend on both starting names. Missing: ${missing.join(', ')}.`,
-    };
-  }
-  return {
-    correct: true,
-    feedback: `${derived.target} correctly depends on ${first.target} and ${second.target}.`,
-  };
 }

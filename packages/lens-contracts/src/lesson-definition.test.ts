@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { LessonDefinitionV1Schema, LessonDefinitionV2Schema } from './lesson.js';
+import {
+  LessonDefinitionV1Schema,
+  LessonDefinitionV2Schema,
+  LessonDefinitionV3Schema,
+} from './lesson.js';
 
 const lesson = {
   schemaVersion: 1 as const,
@@ -168,5 +172,132 @@ describe('LessonDefinitionV2', () => {
         ]),
       );
     }
+  });
+});
+
+const lessonV3 = {
+  schemaVersion: 3 as const,
+  id: 'generic',
+  slug: 'generic',
+  version: '3.0.0',
+  courseId: 'python',
+  title: 'Generic lesson',
+  goal: 'Use definition-driven behavior.',
+  lens: { initialProgramId: 'base', initialView: 'flow' as const },
+  sections: [{
+    id: 'predict',
+    heading: 'Predict',
+    internalRole: 'predict' as const,
+    lensCueId: 'predict-cue',
+    blocks: [{
+      type: 'value-prediction' as const,
+      responseId: 'prediction',
+      prompt: 'Predict x.',
+      fields: [{ id: 'x', label: 'x', expected: 1 }],
+    }],
+  }],
+  programs: [
+    { id: 'base', source: 'x = 1', argsText: '' },
+    { id: 'changed', source: 'x = 2', argsText: '' },
+  ],
+  scenarios: [{
+    id: 'changed-scenario',
+    label: 'Changed',
+    programId: 'changed',
+    verificationIds: ['changed-value'],
+  }],
+  variations: [{
+    id: 'changed',
+    label: 'Changed',
+    applyLabel: 'Apply changed value',
+    programId: 'changed',
+    predictionId: 'prediction',
+    verificationIds: ['changed-value'],
+    comparison: {
+      kind: 'bindings' as const,
+      baselineProgramId: 'base',
+      fields: [{ key: 'x', label: 'x' }],
+    },
+    successFeedback: 'Changed as expected.',
+    retryFeedback: 'Compare the values.',
+  }],
+  cues: [{
+    id: 'predict-cue',
+    sectionId: 'predict',
+    apply: 'initialize-once' as const,
+    presentation: 'quiet' as const,
+    mode: 'observe' as const,
+    programId: 'base',
+    editing: 'locked' as const,
+    revealPolicy: {
+      responseId: 'prediction',
+      unlockAt: 'committed' as const,
+      concealedViews: ['state' as const, 'explain' as const, 'structure' as const],
+      preCommitFrame: 'start' as const,
+    },
+  }],
+  verifications: [{
+    id: 'changed-value',
+    type: 'binding-values' as const,
+    expectedBindings: { x: '2' },
+  }],
+};
+
+describe('LessonDefinitionV3', () => {
+  it('accepts explicit initial ownership and definition-driven references', () => {
+    expect(LessonDefinitionV3Schema.parse(lessonV3).schemaVersion).toBe(3);
+  });
+
+  it('rejects a missing initial program', () => {
+    const result = LessonDefinitionV3Schema.safeParse({
+      ...lessonV3,
+      lens: { ...lessonV3.lens, initialProgramId: 'missing' },
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((issue) => issue.message)).toContain(
+        'Initial program does not exist.',
+      );
+    }
+  });
+
+  it('rejects invalid scenario, comparison, and verification references', () => {
+    const result = LessonDefinitionV3Schema.safeParse({
+      ...lessonV3,
+      scenarios: [{
+        ...lessonV3.scenarios[0],
+        programId: 'missing',
+        verificationIds: ['missing'],
+      }],
+      variations: [{
+        ...lessonV3.variations[0],
+        verificationIds: ['missing'],
+        comparison: {
+          ...lessonV3.variations[0].comparison,
+          baselineProgramId: 'missing',
+        },
+      }],
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.map((issue) => issue.message)).toEqual(
+        expect.arrayContaining([
+          'Unknown scenario program.',
+          'Unknown verification: missing',
+          'Unknown baseline program.',
+        ]),
+      );
+    }
+  });
+
+  it('rejects reveal policies on Build cues', () => {
+    expect(LessonDefinitionV3Schema.safeParse({
+      ...lessonV3,
+      cues: [{
+        ...lessonV3.cues[0],
+        mode: 'build',
+        editing: 'free',
+      }],
+    }).success).toBe(false);
   });
 });

@@ -1,10 +1,17 @@
 <script lang="ts">
-  import type { LessonDefinitionBlock, LessonResponse } from '@lol/lens-contracts';
+  import type {
+    LessonDefinitionBlock,
+    LessonResponse,
+    LessonVariationV3,
+  } from '@lol/lens-contracts';
+  import type { LessonComparisonState } from './session.svelte';
 
   let {
     block,
     response,
     bindings,
+    variation,
+    comparison,
     onDraft,
     onCommit,
     onRevealPrediction,
@@ -15,6 +22,8 @@
     block: LessonDefinitionBlock;
     response?: LessonResponse;
     bindings: Record<string, string>;
+    variation?: LessonVariationV3;
+    comparison: LessonComparisonState;
     onDraft: (id: string, answer: string) => void;
     onCommit: (id: string, correct?: boolean, feedback?: string) => void;
     onRevealPrediction: (id: string, correct: boolean, feedback: string) => void;
@@ -56,6 +65,20 @@
 
   function sameMembers(left: string[], right: readonly string[]) {
     return left.length === right.length && left.every((item) => right.includes(item));
+  }
+
+  function recognitionItems(block: Extract<LessonDefinitionBlock, { type: 'recognition-check' }>) {
+    return block.items ?? [
+      ...(block.startingNames ?? []).map((id) => ({ id, label: id, expectedRole: 'starting' })),
+      ...(block.derivedNames ?? []).map((id) => ({ id, label: id, expectedRole: 'derived' })),
+    ];
+  }
+
+  function recognitionRoles(block: Extract<LessonDefinitionBlock, { type: 'recognition-check' }>) {
+    return block.roles ?? [
+      { id: 'starting', label: 'starting' },
+      { id: 'derived', label: 'derived' },
+    ];
   }
 </script>
 
@@ -203,11 +226,11 @@
         class="primary"
         data-testid="apply-variation"
         onclick={() => onApplyVariation(block.responseId, block.variationId)}
-      >Apply price = 200</button>
+      >{variation?.applyLabel ?? variation?.label ?? 'Apply variation'}</button>
     {:else}
       <div class="comparison" data-testid="variation-comparison">
-        {#each ['price', 'tax', 'total'] as name}
-          <p><strong>{name}</strong><span>Original {name === 'price' ? '100' : name === 'tax' ? '16' : '116'}</span><span>Changed {bindings[name] ?? '—'}</span></p>
+        {#each comparison?.rows ?? [] as row}
+          <p><strong>{row.label}</strong><span>Original {row.baseline}</span><span>Changed {row.current}</span></p>
         {/each}
       </div>
       <p class:success={response.correct} class:error={!response.correct}>{response.feedback}</p>
@@ -219,24 +242,26 @@
   <div class="recognition"><p>{block.prompt}</p><pre><code>{block.source}</code></pre></div>
 {:else if block.type === 'recognition-check'}
   {@const classifications = parseRecord(response?.answer)}
+  {@const items = recognitionItems(block)}
+  {@const roles = recognitionRoles(block)}
   <div class="interaction" data-testid="recognition-check">
     <p>{block.prompt}</p>
     <pre><code>{block.source}</code></pre>
     <div class="classification">
-      {#each block.names as name}
+      {#each items as item}
         <fieldset>
-          <legend><code>{name}</code></legend>
-          {#each ['starting', 'derived'] as role}
+          <legend><code>{item.label}</code></legend>
+          {#each roles as role}
             <label class="choice">
               <input
                 type="radio"
-                name={`${block.responseId}-${name}`}
-                value={role}
-                checked={classifications[name] === role}
+                name={`${block.responseId}-${item.id}`}
+                value={role.id}
+                checked={classifications[item.id] === role.id}
                 disabled={response?.status === 'revealed'}
-                onchange={() => updateRecord(block.responseId, name, role)}
+                onchange={() => updateRecord(block.responseId, item.id, role.id)}
               />
-              {role}
+              {role.label}
             </label>
           {/each}
         </fieldset>
@@ -246,17 +271,16 @@
       <button
         type="button"
         class="primary"
-        disabled={block.names.some((name) => !classifications[name])}
+        disabled={items.some((item) => !classifications[item.id])}
         data-testid="check-recognition"
         onclick={() => {
-          const correct = block.startingNames.every((name) => classifications[name] === 'starting')
-            && block.derivedNames.every((name) => classifications[name] === 'derived');
+          const correct = items.every((item) => classifications[item.id] === item.expectedRole);
           onRevealPrediction(
             block.responseId,
             correct,
             correct
-              ? 'Correct: distance and time are starting names; speed is derived from both.'
-              : 'Check which lines use literal starting values and which line reads earlier names.',
+              ? (block.successFeedback ?? 'Correct: each name has the expected role.')
+              : (block.retryFeedback ?? 'Review the code and classify each role again.'),
           );
         }}
       >Check answer</button>
@@ -272,11 +296,9 @@
 {:else if block.type === 'build'}
   <div class="interaction build" data-testid="build-instructions">
     <p>{block.prompt}</p>
-    <ul>
-      <li>Use exactly three assignments.</li>
-      <li>Make the third assignment depend on both starting names.</li>
-      <li>Use supported Python that runs successfully.</li>
-    </ul>
+    {#if block.criteria?.length}
+      <ul>{#each block.criteria as criterion}<li>{criterion}</li>{/each}</ul>
+    {/if}
     <button type="button" class="primary" data-testid="check-build" onclick={() => onCheckBuild(block.responseId)}>
       Run and check program
     </button>

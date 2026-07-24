@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { LessonDefinitionV2, LessonResponse } from '@lol/lens-contracts';
+  import type { LessonDefinitionV3, LessonResponse } from '@lol/lens-contracts';
+  import type { LessonComparisonState } from './session.svelte';
   import LessonBlockRenderer from './LessonBlockRenderer.svelte';
 
   let {
@@ -8,6 +9,7 @@
     completedSectionIds,
     responses,
     bindings,
+    comparison,
     onDraft,
     onCommit,
     onRevealPrediction,
@@ -15,11 +17,12 @@
     onRetry,
     onCheckBuild,
   }: {
-    definition: LessonDefinitionV2;
+    definition: LessonDefinitionV3;
     activeSectionId: string;
     completedSectionIds: string[];
     responses: Record<string, LessonResponse>;
     bindings: Record<string, string>;
+    comparison: LessonComparisonState;
     onDraft: (id: string, answer: string) => void;
     onCommit: (id: string, correct?: boolean, feedback?: string) => void;
     onRevealPrediction: (id: string, correct: boolean, feedback: string) => void;
@@ -49,6 +52,10 @@
           {block}
           response={'responseId' in block ? responses[block.responseId] : undefined}
           {bindings}
+          variation={block.type === 'variation-prediction'
+            ? definition.variations.find((variation) => variation.id === block.variationId)
+            : undefined}
+          {comparison}
           {onDraft}
           {onCommit}
           {onRevealPrediction}

@@ -1,6 +1,6 @@
 import type {
   LensSessionController,
-  LessonDefinitionV2,
+  LessonDefinitionV3,
   LessonResponse,
 } from '@lol/lens-contracts';
 import { LessonResponseSchema, z } from '@lol/lens-contracts';
@@ -12,15 +12,22 @@ import {
 } from '$lib/lens/storage';
 import {
   createLessonLensOrchestrator,
-  finalBindings,
-  verifyBuildProgram,
   type LessonLensOrchestrator,
 } from './orchestrator.svelte';
+import {
+  analyzeLessonProgram,
+  createLessonScenarioController,
+  projectLessonComparison,
+} from './services';
+import {
+  runLessonVerifications,
+  type LessonVerificationResult,
+} from './verification';
 
 const LOCAL_OWNER = 'local';
 
 const LessonAttemptSnapshotSchema = z.object({
-  schemaVersion: z.literal(2),
+  schemaVersion: z.literal(3),
   lessonId: z.string(),
   lessonVersion: z.string(),
   attemptId: z.string(),
@@ -28,9 +35,16 @@ const LessonAttemptSnapshotSchema = z.object({
   completedSectionIds: z.array(z.string()),
   responses: z.record(z.string(), LessonResponseSchema),
   selectedVariationId: z.string().nullable(),
+  selectedScenarioId: z.string().nullable(),
   appliedCueIds: z.array(z.string()),
   updatedAt: z.string().datetime(),
 }).strict();
+
+export type LessonComparisonState = {
+  kind: 'bindings' | 'frames' | 'path' | 'return-value';
+  rows: Array<{ label: string; baseline: string; current: string }>;
+  evidence: LessonVerificationResult[];
+} | null;
 
 export type LessonAttemptState = {
   attemptId: string;
@@ -38,14 +52,16 @@ export type LessonAttemptState = {
   completedSectionIds: string[];
   responses: Record<string, LessonResponse>;
   selectedVariationId: string | null;
+  selectedScenarioId: string | null;
   appliedCueIds: string[];
+  comparison: LessonComparisonState;
   initialized: boolean;
   persistenceWarning: string | null;
   interactionMessage: string | null;
 };
 
 export type LessonSessionController = {
-  readonly definition: LessonDefinitionV2;
+  readonly definition: LessonDefinitionV3;
   readonly state: LessonAttemptState;
   readonly lens: LensSessionController;
   readonly orchestrator: LessonLensOrchestrator;
@@ -61,26 +77,26 @@ export type LessonSessionController = {
   };
 };
 
-function pointerKey(definition: LessonDefinitionV2) {
-  return `lesson:v2:${LOCAL_OWNER}:${definition.id}:${definition.version}:active`;
+function pointerKey(definition: LessonDefinitionV3) {
+  return `lesson:v3:${LOCAL_OWNER}:${definition.id}:${definition.version}:active`;
 }
 
-function attemptKey(definition: LessonDefinitionV2, attemptId: string) {
-  return `lesson:v2:${LOCAL_OWNER}:${definition.id}:${definition.version}:${attemptId}`;
+function attemptKey(definition: LessonDefinitionV3, attemptId: string) {
+  return `lesson:v3:${LOCAL_OWNER}:${definition.id}:${definition.version}:${attemptId}`;
 }
 
 function newAttemptId() {
   return crypto.randomUUID();
 }
 
-function responseSection(definition: LessonDefinitionV2, responseId: string) {
+function responseSection(definition: LessonDefinitionV3, responseId: string) {
   return definition.sections.find((section) =>
     section.blocks.some((block) => 'responseId' in block && block.responseId === responseId),
   );
 }
 
 export async function createLessonSessionController(
-  definition: LessonDefinitionV2,
+  definition: LessonDefinitionV3,
   storage: Storage,
   forceNew = false,
 ): Promise<LessonSessionController> {
@@ -93,11 +109,11 @@ export async function createLessonSessionController(
       const raw = storage.getItem(attemptKey(definition, attemptId));
       const parsed = raw ? LessonAttemptSnapshotSchema.safeParse(JSON.parse(raw)) : null;
       if (
-        parsed?.success &&
-        parsed.data.lessonId === definition.id &&
-        parsed.data.lessonVersion === definition.version &&
-        parsed.data.attemptId === attemptId &&
-        definition.sections.some((section) => section.id === parsed.data.activeSectionId)
+        parsed?.success
+        && parsed.data.lessonId === definition.id
+        && parsed.data.lessonVersion === definition.version
+        && parsed.data.attemptId === attemptId
+        && definition.sections.some((section) => section.id === parsed.data.activeSectionId)
       ) {
         restored = parsed.data;
       } else if (raw) {
@@ -120,21 +136,28 @@ export async function createLessonSessionController(
       definition.sections.some((section) => section.id === id)) ?? [],
     responses: restored?.responses ?? {},
     selectedVariationId: restored?.selectedVariationId ?? null,
+    selectedScenarioId: restored?.selectedScenarioId ?? null,
     appliedCueIds: restored?.appliedCueIds ?? [],
+    comparison: null,
     initialized: false,
     persistenceWarning: warning,
     interactionMessage: null,
   });
 
   const persistence = createBrowserLensPersistence(storage);
-  const initialProgram = definition.programs[0];
+  const engine = createLensEngine();
+  const initialProgram = definition.programs.find(
+    (program) => program.id === definition.lens.initialProgramId,
+  );
+  if (!initialProgram) throw new Error(`Missing initial program ${definition.lens.initialProgramId}.`);
+
   const lensSession = createLensSession({
     id: `${attemptId}:primary`,
     kind: 'lesson',
     source: initialProgram.source,
     argsText: initialProgram.argsText,
     artifacts: null,
-    engine: createLensEngine(),
+    engine,
     capabilities: {
       canEditSource: false,
       canPasteSource: false,
@@ -150,14 +173,19 @@ export async function createLessonSessionController(
       ownerId: attemptId,
       sessionId: 'primary',
     }),
-    initialView: 'flow',
+    initialView: definition.lens.initialView,
   });
-  const orchestrator = createLessonLensOrchestrator(definition, lensSession);
+  const orchestrator = createLessonLensOrchestrator(
+    definition,
+    lensSession,
+    () => state.responses,
+  );
+  const scenarios = createLessonScenarioController(definition, engine);
 
   function saveProgress() {
     try {
       storage.setItem(attemptKey(definition, attemptId), JSON.stringify({
-        schemaVersion: 2,
+        schemaVersion: 3,
         lessonId: definition.id,
         lessonVersion: definition.version,
         attemptId,
@@ -165,6 +193,7 @@ export async function createLessonSessionController(
         completedSectionIds: state.completedSectionIds,
         responses: state.responses,
         selectedVariationId: state.selectedVariationId,
+        selectedScenarioId: state.selectedScenarioId,
         appliedCueIds: state.appliedCueIds,
         updatedAt: new Date().toISOString(),
       }));
@@ -201,6 +230,7 @@ export async function createLessonSessionController(
       const section = responseSection(definition, id);
       if (section) completeSection(section.id);
     }
+    orchestrator.refreshReveal();
     saveProgress();
   }
 
@@ -214,6 +244,10 @@ export async function createLessonSessionController(
   }
   state.initialized = true;
   saveProgress();
+
+  async function scenarioArtifacts() {
+    return Promise.all(definition.scenarios.map((scenario) => scenarios.run(scenario.id)));
+  }
 
   let controller: LessonSessionController;
   controller = {
@@ -254,6 +288,7 @@ export async function createLessonSessionController(
           [id]: { answer, status: 'draft' },
         };
         state.interactionMessage = null;
+        orchestrator.refreshReveal();
         saveProgress();
       },
       commitResponse(id, correct, feedback) {
@@ -269,44 +304,93 @@ export async function createLessonSessionController(
           ...state.responses,
           [id]: { answer: previous.answer, status: 'draft' },
         };
+        orchestrator.refreshReveal();
         saveProgress();
       },
       async applyVariation(responseId, variationId) {
         const response = state.responses[responseId];
-        if (!response || response.status === 'draft') return false;
+        const variation = definition.variations.find((candidate) => candidate.id === variationId);
+        if (!response || response.status === 'draft' || !variation) return false;
+
+        const baselineArtifacts = await analyzeLessonProgram(
+          definition,
+          variation.comparison.baselineProgramId,
+          engine,
+        );
+        const baseline = projectLessonComparison(variation.comparison, baselineArtifacts);
         const applied = await orchestrator.applyVariation(variationId);
-        if (!applied) return false;
-        state.selectedVariationId = variationId;
-        const bindings = finalBindings(lensSession.controller);
-        const correct = response.correct !== false
-          && bindings.price === '200'
-          && bindings.tax === '32.0'
-          && bindings.total === '232.0';
-        storeResponse(
-          responseId,
-          'revealed',
+        if (!applied || !lensSession.controller.state.artifacts) return false;
+
+        const currentArtifacts = lensSession.controller.state.artifacts;
+        const current = projectLessonComparison(variation.comparison, currentArtifacts);
+        const evidence = runLessonVerifications(
+          definition,
+          variation.verificationIds,
           {
-            correct,
-            feedback: correct
-              ? 'Changing price updates price, tax, and total.'
-              : 'Compare the final State rows: all three stored values change.',
+            source: lensSession.controller.state.source,
+            artifacts: currentArtifacts,
+            response: response.answer,
+            baselineSummary: baseline,
+            scenarioArtifacts: await scenarioArtifacts(),
           },
         );
+        const correct = response.correct !== false && evidence.every((item) => item.correct);
+        state.selectedVariationId = variationId;
+        state.selectedScenarioId = definition.scenarios.find(
+          (scenario) => scenario.programId === variation.programId,
+        )?.id ?? null;
+        state.comparison = {
+          kind: variation.comparison.kind,
+          rows: variation.comparison.kind === 'bindings'
+            ? variation.comparison.fields.map((field) => ({
+                label: field.label,
+                baseline: baseline.values[field.key] ?? '—',
+                current: current.values[field.key] ?? '—',
+              }))
+            : [{
+                label: variation.comparison.kind === 'return-value'
+                  ? 'Return value'
+                  : variation.comparison.kind === 'frames'
+                    ? 'Frames'
+                    : 'Path',
+                baseline: Object.values(baseline.values)[0] ?? '—',
+                current: Object.values(current.values)[0] ?? '—',
+              }],
+          evidence,
+        };
+        storeResponse(responseId, 'revealed', {
+          correct,
+          feedback: correct ? variation.successFeedback : variation.retryFeedback,
+        });
         return true;
       },
       async checkBuild(responseId) {
+        const block = definition.sections
+          .flatMap((section) => section.blocks)
+          .find((candidate) => candidate.type === 'build' && candidate.responseId === responseId);
+        if (!block || block.type !== 'build') return false;
+
         await lensSession.controller.actions.run();
         const lensState = lensSession.controller.state;
-        if (lensState.status !== 'supported' || lensState.artifacts?.violation) {
-          storeResponse(responseId, 'revealed', {
-            correct: false,
-            feedback: lensState.error || lensState.artifacts?.violation?.message || 'The program must execute successfully before it can pass.',
-          });
-          return false;
-        }
-        const result = verifyBuildProgram(lensState.source);
-        storeResponse(responseId, 'revealed', result);
-        return result.correct;
+        const evidence = runLessonVerifications(
+          definition,
+          block.verificationIds,
+          {
+            source: lensState.source,
+            artifacts: lensState.artifacts,
+            response: state.responses[responseId]?.answer,
+            scenarioArtifacts: await scenarioArtifacts(),
+          },
+        );
+        const correct = evidence.every((item) => item.correct);
+        const failed = evidence.filter((item) => !item.correct);
+        storeResponse(responseId, 'revealed', {
+          correct,
+          feedback: correct
+            ? evidence.map((item) => item.feedback).join(' ')
+            : failed.map((item) => item.feedback).join(' '),
+        });
+        return correct;
       },
       async restart() {
         storage.removeItem(attemptKey(definition, attemptId));

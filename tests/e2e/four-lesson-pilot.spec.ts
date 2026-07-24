@@ -1,141 +1,181 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
+import {
+  expectNoBrowserFailures,
+  monitorBrowserFailures,
+} from './browser-failures';
 
-const evidenceRoot = path.resolve('output/playwright/four-lesson-pilot');
+const evidenceRoot = path.resolve('output/playwright/phase-4');
 
-async function waitForPilot(page: import('@playwright/test').Page) {
-  await expect(page.getByTestId('four-lesson-pilot')).toHaveAttribute(
-    'data-hydrated',
-    'true',
-    { timeout: 20_000 },
+async function waitForLesson(page: Page) {
+  await expect(page.getByTestId('phase-2-lesson-player')).toHaveAttribute(
+    'data-schema-version',
+    '3',
   );
+  await expect(page.getByTestId('lesson-hydrating')).toHaveCount(0, { timeout: 30_000 });
+  await expect(page.getByTestId('lesson-lens-region').getByTestId('lens-workspace')).toHaveCount(1);
 }
 
-async function revealLens(page: import('@playwright/test').Page, prediction: string) {
-  await page.getByRole('button', { name: prediction, exact: true }).click();
-  await expect(page.getByTestId('pilot-lens-embed')).toHaveCount(3);
+async function openLesson(page: Page, slug: string) {
+  await page.goto(`/learn/python-foundations/${slug}`);
+  await waitForLesson(page);
+}
+
+async function openSection(page: Page, heading: RegExp) {
+  await page.getByTestId('lesson-progress-rail').getByRole('button', { name: heading }).click();
 }
 
 test.beforeAll(async () => {
   await mkdir(evidenceRoot, { recursive: true });
 });
 
-test('pilot index exposes exactly four intentional lessons', async ({ page }) => {
-  await page.goto('/learn/python-foundations');
-  await expect(page.getByTestId('pilot-lesson-index').locator('li')).toHaveCount(4);
-  await expect(page.getByText('Values and Variables')).toBeVisible();
-  await expect(page.getByText('Functions and Return Values')).toBeVisible();
-  await expect(page.getByText('Conditions and Branches')).toBeVisible();
-  await expect(page.getByText('Loops over Lists')).toBeVisible();
-  await expect(page.getByText('Accumulate', { exact: true })).toHaveCount(0);
+test.beforeEach(async ({ page }) => {
+  monitorBrowserFailures(page);
 });
 
-const canonical = [
+test.afterEach(async ({ page }) => {
+  expectNoBrowserFailures(page);
+});
+
+test('course index exposes exactly four intentional lessons', async ({ page }) => {
+  await page.goto('/learn/python-foundations');
+  await expect(page.getByTestId('pilot-lesson-index').locator('li')).toHaveCount(4);
+  for (const title of [
+    'Values and Variables',
+    'Functions and Return Values',
+    'Conditions and Branches',
+    'Loops over Lists',
+  ]) {
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+  }
+});
+
+const journeys = [
   {
-    lesson: 'functions-and-returns',
-    source: 'def calculate_tax(price, rate):',
-    forbidden: 'classify_temperature',
-    prediction: '16.0',
-    screenshot: 'lesson-2-functions.png',
+    slug: 'functions-and-returns',
+    title: 'Functions and Return Values',
+    predictSection: /Predict the return/,
+    predictionFields: { answer: '10' },
+    guidedSection: /Follow the call/,
+    variationSection: /Change the input/,
+    variationOption: 'answer',
+    changed: 'Changed 16',
+    buildSection: /Build a function/,
   },
   {
-    lesson: 'conditions-and-branches',
-    source: 'def classify_temperature(temp):',
-    forbidden: 'count_passing',
-    prediction: 'return "hot"',
-    screenshot: 'lesson-3-conditions.png',
+    slug: 'conditions-and-branches',
+    title: 'Conditions and Branches',
+    predictSection: /Predict the branch/,
+    predictionFields: { branch: '0' },
+    guidedSection: /Follow the selected path/,
+    variationSection: /Change the condition input/,
+    variationOption: 'status',
+    changed: 'Changed true',
+    buildSection: /Build a decision/,
   },
   {
-    lesson: 'loops-over-lists',
-    source: 'def count_passing(scores):',
-    forbidden: 'calculate_tax',
-    prediction: '2',
-    screenshot: 'lesson-4-loops.png',
+    slug: 'loops-over-lists',
+    title: 'Loops over Lists',
+    predictSection: /Predict repetition/,
+    predictionFields: { iterations: '3', total: '12' },
+    guidedSection: /Follow each iteration/,
+    variationSection: /Change the list/,
+    variationOption: 'total',
+    changed: 'Changed 9',
+    buildSection: /Build a loop/,
   },
-];
+] as const;
 
-for (const item of canonical) {
-  test(`${item.lesson} is one flowing lesson with its own embedded Lens scenes`, async ({
-    page,
-  }) => {
-    await page.goto(`/learn/python-foundations/${item.lesson}`);
-    await waitForPilot(page);
+for (const journey of journeys) {
+  test(`${journey.slug} completes prediction, variation, and Build in one workspace`, async ({ page }) => {
+    await openLesson(page, journey.slug);
+    await expect(page.getByRole('heading', { name: journey.title, exact: true })).toBeVisible();
+    await expect(page.getByTestId('lesson-section')).toHaveCount(7);
+    await expect(page.getByTestId('code-editor')).toHaveCount(1);
+    const workspace = page.getByTestId('lesson-lens-region').getByTestId('lens-workspace');
+    const sessionId = await workspace.getAttribute('data-session-id');
 
-    await expect(page.getByTestId('pilot-lesson-link')).toHaveCount(4);
-    await expect(page.getByTestId('pilot-step-section')).toHaveCount(9);
-    await expect(page.getByTestId('pilot-lens-embed')).toHaveCount(0);
+    await openSection(page, journey.predictSection);
+    await expect(page.getByRole('tab', { name: 'State', exact: true })).toHaveCount(0);
+    for (const [field, value] of Object.entries(journey.predictionFields)) {
+      await page.getByTestId(`prediction-${field}`).fill(value);
+    }
+    await page.getByTestId('commit-prediction').click();
+    await page.getByTestId('reveal-prediction').click();
+    await expect(page.getByTestId('lesson-lens-region')).toHaveAttribute('data-lens-mode', 'guided');
+    await expect(page.getByTestId('guided-trace-view')).toBeVisible();
 
-    await revealLens(page, item.prediction);
+    await openSection(page, journey.variationSection);
+    await page.getByTestId('variation-prediction').getByLabel(journey.variationOption, { exact: true }).check();
+    await page.getByTestId('commit-variation-prediction').click();
+    await page.getByTestId('apply-variation').click();
+    await expect(page.getByTestId('variation-comparison')).toContainText(journey.changed);
 
-    const syntaxLens = page.locator('[data-lens-mode="syntax"]');
-    const watchLens = page.locator('[data-lens-mode="watch"]');
-    const exploreLens = page.locator('[data-lens-mode="explore"]');
-    await expect(syntaxLens).toHaveCount(1);
-    await expect(watchLens).toHaveCount(1);
-    await expect(exploreLens).toHaveCount(1);
-    await expect(syntaxLens).toContainText(item.source);
-    await expect(watchLens).toContainText(item.source);
-    await expect(syntaxLens).not.toContainText(item.forbidden);
-    await expect(syntaxLens).not.toContainText('calculate_total(2, 4, 6, 8)');
-
-    await syntaxLens.scrollIntoViewIfNeeded();
+    await openSection(page, journey.buildSection);
+    await page.getByTestId('check-build').click();
+    await expect(page.getByTestId('build-feedback')).toHaveClass(/success/);
+    await expect(workspace).toHaveAttribute('data-session-id', sessionId ?? '');
     await page.screenshot({
-      path: path.join(evidenceRoot, item.screenshot),
+      path: path.join(evidenceRoot, `${journey.slug}-desktop.png`),
+      fullPage: true,
     });
   });
 }
 
-test('legacy prediction unlocks the inline syntax, watch, and exploration sequence', async ({ page }) => {
-  await page.goto('/learn/python-foundations/functions-and-returns');
-  await waitForPilot(page);
-
-  await expect(page.getByTestId('pilot-step-section')).toHaveCount(9);
-  await expect(page.getByTestId('pilot-lens-embed')).toHaveCount(0);
-  await expect(page.getByText('Prediction comes first')).toBeVisible();
-
-  await page.getByRole('button', { name: '100', exact: true }).click();
-  await expect(page.getByTestId('pilot-lens-embed')).toHaveCount(0);
-
-  await revealLens(page, '16.0');
-  await expect(page.locator('[data-lens-mode="syntax"]')).toContainText('Structure beside syntax');
-  await expect(page.locator('[data-lens-mode="watch"]')).toContainText('Watch the canonical run');
-  await expect(page.locator('[data-lens-mode="explore"]')).toContainText('Explore mode');
-
-  await page.getByRole('button', { name: 'Change the arguments' }).click();
-  await expect(page.locator('[data-lens-mode="explore"]')).toContainText('250');
+test('recognition conceals structure until an answer is checked', async ({ page }) => {
+  await openLesson(page, 'functions-and-returns');
+  await openSection(page, /Recognize another function/);
+  await expect(page.getByRole('tab', { name: 'Graph Inspector', exact: true })).toHaveCount(0);
+  const recognition = page.getByTestId('recognition-check');
+  await recognition.locator('fieldset').filter({ hasText: 'bill' }).getByLabel('parameter').check();
+  await recognition.locator('fieldset').filter({ hasText: 'total' }).getByLabel('local result').check();
+  await page.getByTestId('check-recognition').click();
+  await expect(page.getByRole('tab', { name: 'Graph Inspector', exact: true })).toBeVisible();
+  await expect(recognition).toContainText('Correct');
 });
 
-test('progress persists through refresh and reset clears it', async ({ page }) => {
-  await page.goto('/learn/python-foundations/functions-and-returns');
-  await waitForPilot(page);
-
-  await page.getByRole('button', { name: 'Mark Name it complete' }).click();
-  await expect(page.getByText('1/9')).toBeVisible();
+test('refresh, restart, cross-lesson, and Decode storage remain isolated', async ({ page, context }) => {
+  await openLesson(page, 'functions-and-returns');
+  await openSection(page, /Build a function/);
+  const attempt = await page.getByTestId('lesson-attempt-id').textContent();
+  const editor = page.getByTestId('code-editor').locator('.cm-content');
+  await editor.click();
+  await page.keyboard.press('ControlOrMeta+A');
+  await page.keyboard.insertText('lesson_a_only = 41');
   await page.reload();
-  await waitForPilot(page);
-  await expect(page.getByText('1/9')).toBeVisible();
+  await waitForLesson(page);
+  await expect(page.getByTestId('lesson-attempt-id')).toHaveText(attempt ?? '');
+  await expect(editor).toContainText('lesson_a_only');
 
-  await page.getByTestId('reset-progress').click();
-  await expect(page.getByText('0/9')).toBeVisible();
-  await page.reload();
-  await waitForPilot(page);
-  await expect(page.getByText('0/9')).toBeVisible();
+  const other = await context.newPage();
+  monitorBrowserFailures(other);
+  await openLesson(other, 'conditions-and-branches');
+  await expect(other.getByTestId('code-editor').locator('.cm-content')).not.toContainText('lesson_a_only');
+  const decode = await context.newPage();
+  await decode.goto('/decode');
+  await expect(decode.getByTestId('code-editor').locator('.cm-content')).not.toContainText('lesson_a_only');
+  await decode.close();
+  await other.close();
+
+  await page.getByTestId('lesson-restart').click();
+  await expect(page.getByTestId('lesson-attempt-id')).not.toHaveText(attempt ?? '');
+  await expect(page.getByTestId('code-editor').locator('.cm-content')).toContainText('def double');
 });
 
-test('mobile layout keeps the complete lesson and embedded Lens usable', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/learn/python-foundations/loops-over-lists');
-  await waitForPilot(page);
-
-  await expect(page.getByTestId('pilot-lesson-link')).toHaveCount(4);
-  await expect(page.getByTestId('pilot-step-section')).toHaveCount(9);
-  await revealLens(page, '2');
-
-  const syntaxLens = page.locator('[data-lens-mode="syntax"]');
-  await expect(syntaxLens).toContainText('count_passing');
-  await syntaxLens.scrollIntoViewIfNeeded();
-  await page.screenshot({
-    path: path.join(evidenceRoot, 'mobile-loops.png'),
+for (const viewport of [
+  { width: 1440, height: 1000, name: 'desktop' },
+  { width: 1024, height: 768, name: 'tablet-landscape' },
+  { width: 768, height: 1024, name: 'tablet-portrait' },
+  { width: 390, height: 844, name: 'mobile' },
+]) {
+  test(`${viewport.name} Phase 4 layout has no horizontal overflow`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await openLesson(page, 'loops-over-lists');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+    await page.screenshot({
+      path: path.join(evidenceRoot, `loops-${viewport.name}.png`),
+      fullPage: true,
+    });
   });
-});
+}

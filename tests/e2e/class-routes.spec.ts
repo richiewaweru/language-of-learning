@@ -9,6 +9,9 @@ for (const legacyPath of [
     await page.goto(legacyPath);
     await expect(page).toHaveURL('/learn/python-foundations/loops-over-lists');
     await expect(page.getByRole('heading', { name: 'Loops over Lists', exact: true })).toBeVisible();
-    await expect(page.getByTestId('four-lesson-pilot')).toBeVisible();
+    await expect(page.getByTestId('phase-2-lesson-player')).toHaveAttribute(
+      'data-schema-version',
+      '3',
+    );
   });
 }
