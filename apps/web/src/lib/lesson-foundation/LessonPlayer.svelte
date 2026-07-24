@@ -18,7 +18,7 @@
   let lensDisplayMode = $state<LensDisplayMode>('closed');
   let contextOpen = $state(false);
   let lessonScrollPosition = 0;
-  let lensLauncher: HTMLButtonElement | null = null;
+  let lensLauncher = $state<HTMLButtonElement | null>(null);
   let playerElement!: HTMLDivElement;
   let lastCueRevision = -1;
   const activeSection = $derived(

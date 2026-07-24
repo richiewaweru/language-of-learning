@@ -39,7 +39,7 @@
   let dragPanX = 0;
   let dragPanY = 0;
   let userTransformed = false;
-  let focusOnly = $state(initialFocusOnly);
+  let focusOnly = $state(true);
   const stepIndex = $derived(selection.stepIndex ?? 0);
   const semanticStep = $derived(semanticScene.steps[stepIndex] ?? semanticScene.steps[0]);
   const visibleNodes = $derived(
@@ -134,6 +134,7 @@
   }
 
   onMount(() => {
+    focusOnly = initialFocusOnly;
     const observer = new ResizeObserver(() => {
       if (userTransformed) constrainPan();
       else fitToView();
@@ -158,6 +159,7 @@
     class="viewport"
     class:focus-only={focusOnly}
     class:dragging
+    role="application"
     aria-label="Pannable semantic graph"
     tabindex="0"
     onpointerdown={startPan}
